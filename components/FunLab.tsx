@@ -25,11 +25,13 @@ const PRETEND = [
   { value: "", label: "Real time" },
   { value: "2027-01-18T12:00:00Z", label: "Mon 18 Jan 2027, noon (night before)" },
   { value: "2027-01-19T15:00:00Z", label: "Tue 19 Jan 2027, 3pm (day of)" },
+  { value: "2027-01-19T20:05:00Z", label: "Tue 19 Jan 2027, 8:05pm (the shorts)" },
   { value: "2027-01-19T20:40:00Z", label: "Tue 19 Jan 2027, 8:40pm (during the film)" },
   { value: "2027-01-19T22:50:00Z", label: "Tue 19 Jan 2027, 10:50pm (after)" },
   { value: "2027-01-20T03:14:00Z", label: "Wed 20 Jan 2027, 3:14am" },
   { value: "2027-01-21T10:00:00Z", label: "Thu 21 Jan 2027, 10am (week after)" },
   { value: "2027-03-02T20:10:00Z", label: "Tue 2 Mar 2027, 8:10pm (Nebraska City)" },
+  { value: "2027-03-10T12:00:00Z", label: "Wed 10 Mar 2027, noon (later)" },
 ];
 
 const KEY = "tube-fun-lab";

@@ -30,12 +30,14 @@ export default function Scrubber({
   alt,
   duration,
   onFrame,
+  lazy,
 }: {
   frames: string[];
   seed: string;
   alt: string;
   duration?: string; // e.g. "2:24:21"; badge hidden when not given
   onFrame?: (i: number) => void; // told whenever the showing frame changes
+  lazy?: boolean; // don't load even the first frame until it's on screen (hidden Fun lab pieces)
 }) {
   const count = frames.length || PLACEHOLDER_FRAMES;
   const [i, setI] = useState(0);
@@ -80,7 +82,7 @@ export default function Scrubber({
               key={n}
               src={frames[n]}
               alt={n === 0 ? alt : ""}
-              loading={n === 0 ? "eager" : "lazy"}
+              loading={n === 0 && !lazy ? "eager" : "lazy"}
               draggable={false}
             />
           ) : (

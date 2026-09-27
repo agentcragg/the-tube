@@ -1,7 +1,5 @@
-// Fun lab idea: laurels. Slot components (placeholders until built).
+// Fun lab idea: laurels. Videos from the wall that have been shown at The Tube
+// get a small festival laurel on their tile.
 
 // Wall, inside each tile (client).
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function Laurel({ videoId }: { videoId: string }): React.ReactNode {
-  return null;
-}
+export { Laurel } from "./Laurel";

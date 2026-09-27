@@ -1,1 +1,106 @@
-/* running: styles for this Fun lab idea. Gate everything behind html.x-running where it changes existing elements. */
+/* running: Tuesday night as it happens. A running order on each film page,
+   a live band at the top of the front page during a night, and a Spotlight
+   Videos box in the sidebar the week after. Every element here only exists
+   inside the Fun slot, so nothing needs the html.x-running gate. No
+   animation anywhere: things change when the clock does. */
+
+/* Shared: sealed shorts are flat grey with only the runtime badge */
+.run-pic .scrub-time,
+.run-band-pic .scrub-time { right: 3px; bottom: 3px; }
+
+/* ---------- Film page: Running order ---------- */
+.run-list { list-style: none; margin: 0; padding: 0; }
+.run-list > li {
+  display: grid; grid-template-columns: 4.5em minmax(0, 1fr); align-items: baseline;
+  padding: 5px 0; border-top: 1px dotted #ccc;
+}
+.run-list > li:first-child { border-top: 0; padding-top: 0; }
+.run-list time { font: 12px var(--mono); color: #666; }
+.run-what { font: bold 13px/1.35 var(--sans); }
+.run-list > li.is-now time { color: color-mix(in srgb, var(--film) 85%, black); font-weight: bold; }
+.run-on { margin-left: 2px; font-size: 11px; color: color-mix(in srgb, var(--film) 85%, black); }
+
+.run-tiles {
+  grid-column: 2; list-style: none; margin: 8px 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fill, 96px); gap: 10px;
+}
+.run-tile a { display: block; text-decoration: none; }
+.run-pic { position: relative; display: block; width: 96px; height: 72px; background: #000; box-sizing: border-box; }
+.run-pic img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.run-tile.is-sealed .run-pic { background: #e4e4e4; border: 1px dashed #bbb; }
+.run-tile.is-now .run-pic { outline: 2px solid var(--film); outline-offset: 2px; }
+.run-tile strong {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  margin-top: 4px; font-size: 11px; line-height: 1.25; color: var(--link);
+}
+.run-tile a:hover strong { text-decoration: underline; }
+.run-tile em { display: block; margin-top: 1px; font-style: normal; font-size: 11px; line-height: 1.3; color: #777; }
+.run-seal { grid-column: 2; margin: 6px 0 0; font-size: 11px; color: #777; }
+.run-order .run-foot { margin-top: 8px; font-size: 11px; color: #777; }
+
+/* ---------- Front page: the live band ---------- */
+.run-band {
+  grid-column: 1 / -1; min-width: 0;
+  background: #fff; border: 1px solid var(--box-edge); border-top: 3px solid var(--film); border-radius: 4px;
+  padding: 8px 10px 4px;
+}
+.run-band-caption { margin: 0; font-size: 12px; color: #666; }
+/* Padding so the outline on the current item isn't clipped by the scroller */
+.run-band-row {
+  position: relative; display: flex; gap: 12px;
+  list-style: none; margin: 2px -4px 0; padding: 4px 4px 6px;
+  overflow-x: auto; scrollbar-width: thin;
+}
+.run-band-row > li { flex: 0 0 120px; font-size: 11px; line-height: 1.25; }
+.run-band-row a { display: block; text-decoration: none; }
+.run-band-pic {
+  position: relative; display: grid; place-items: center;
+  width: 120px; height: 68px; background: #000; box-sizing: border-box;
+}
+.run-band-pic img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.run-band-label {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  margin-top: 4px; font-weight: bold; color: var(--link);
+}
+.run-band-label time { font: 11px var(--mono); color: #666; }
+.run-band a:hover .run-band-label { text-decoration: underline; }
+
+.run-band .is-now .run-band-pic { outline: 2px solid var(--film); outline-offset: 2px; }
+.run-band .is-next .run-band-pic img { filter: grayscale(1); opacity: 0.5; }
+.run-band .is-sealed .run-band-pic { background: #e4e4e4; border: 1px dashed #bbb; }
+.run-band .is-sealed .run-band-label em { font-style: normal; font-weight: normal; color: #888; }
+.run-band .is-extra .run-band-pic { background: #f1f1f1; border: 1px solid #ccc; }
+.run-band .is-extra .run-band-pic svg { width: 24px; height: 24px; }
+.run-band .is-extra.is-next .run-band-pic svg { opacity: 0.5; }
+.run-band .is-extra .run-band-label { color: #333; }
+
+/* ---------- Front page: Spotlight Videos, the week after ---------- */
+.run-spot { --accent: var(--film); }
+.run-spot .run-spot-sub { font: bold 12px var(--sans); color: color-mix(in srgb, var(--film) 85%, black); }
+.run-spot-sub a { color: inherit; }
+.run-spot .run-spot-note { margin-top: 4px; font-size: 12px; color: #444; }
+.run-spot .run-spot-by { display: flex; align-items: center; gap: 7px; margin: 8px 0 10px; font-size: 11px; line-height: 1.3; color: #666; }
+.run-spot-avatar { flex: 0 0 auto; width: 30px; height: 30px; border: 1px solid #bbb; overflow: hidden; }
+.run-spot-avatar img, .run-spot-avatar svg { display: block; width: 30px; height: 30px; object-fit: cover; }
+.run-spot-by strong { font-size: 12px; color: var(--ink); }
+.run-spot-by a strong { color: var(--link); }
+.run-spot .run-spot-list a { grid-template-columns: 120px minmax(0, 1fr); }
+.run-spot-list .scrub { border: 1px solid #ccc; }
+.run-spot .run-spot-list .scrub img { width: 100%; height: 100%; aspect-ratio: auto; border: 0; }
+
+/* ---------- Phones ---------- */
+@media (max-width: 720px) {
+  /* The live band above everything; the Spotlight straight after Next screening */
+  .home .run-band { order: -2; }
+  .home .run-spot { order: -1; }
+
+  .run-band-caption { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .run-band-row { scroll-snap-type: x mandatory; scroll-padding-inline: 4px; scrollbar-width: none; }
+  .run-band-row::-webkit-scrollbar { display: none; }
+  .run-band-row > li { scroll-snap-align: start; }
+
+  /* Three shorts to a row, across the full width of the box */
+  .run-tiles, .run-seal { grid-column: 1 / -1; }
+  .run-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .run-pic { width: 100%; height: auto; aspect-ratio: 4 / 3; }
+}

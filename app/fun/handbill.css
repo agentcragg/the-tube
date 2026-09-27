@@ -1,1 +1,100 @@
-/* handbill: styles for this Fun lab idea. Gate everything behind html.x-handbill where it changes existing elements. */
+/* handbill: the weekly hand-made banner. A strip of live text over the week's
+   art, full width at the top of the front page and again on the film page.
+   The banner's own elements only exist inside the Fun slot, so they need no
+   gate; anything that changes existing elements is gated on html.x-handbill. */
+
+/* The banner is the next screening, so the sidebar box steps aside */
+html.x-handbill .next-box { display: none; }
+
+.handbill {
+  --accent: var(--film);
+  /* Darker than the site's usual 85% so small type stays readable on the wash,
+     even for the light colours (honey, mustard) */
+  --film-ink: color-mix(in srgb, var(--film) 70%, black);
+}
+.handbill-home { grid-column: 1 / -1; }
+.handbill-film { margin-bottom: 16px; }
+
+/* Where 2009 YouTube had "Hide Advertisement". Only there when someone real made it. */
+.handbill-by { text-align: right; font: 11px var(--sans); color: #888; margin: 0 0 3px; }
+
+.handbill-card {
+  border: 1px solid var(--box-edge); border-top: 3px solid var(--film); border-radius: 4px;
+  overflow: hidden; background: #fff;
+}
+
+/* ----- The strip ----- */
+.handbill-strip {
+  display: flex; flex-wrap: wrap; align-items: baseline; align-content: center; gap: 6px 10px;
+  min-height: 36px; box-sizing: border-box; padding: 4px 10px;
+  background: color-mix(in srgb, var(--film) 14%, #fff);
+  border-bottom: 1px solid color-mix(in srgb, var(--film) 35%, #bbb);
+}
+.handbill-name { flex: 1 1 12em; min-width: 0; line-height: 20px; }
+.handbill-when {
+  display: inline-block; margin-right: 4px; white-space: nowrap; vertical-align: 1px;
+  background: var(--film-ink); color: #fff; border-radius: 2px; padding: 2px 6px;
+  font: bold 11px/14px var(--sans); letter-spacing: 0.08em; text-transform: uppercase;
+}
+.handbill-title {
+  display: inline; margin: 0;
+  font: bold 14px/20px var(--sans); text-transform: uppercase; letter-spacing: 0.02em;
+  color: var(--film-ink);
+}
+.handbill-title a { color: inherit; text-decoration: none; }
+.handbill-title a:hover { text-decoration: underline; }
+.handbill-aside { display: inline; margin: 0; font-size: 13px; color: #444; }
+
+.handbill-book {
+  flex: none; margin: 0 0 0 auto;
+  display: flex; align-items: baseline; gap: 10px;
+  font-size: 13px; color: #333; white-space: nowrap;
+}
+.handbill .book {
+  font-size: 13px; padding: 5px 16px;
+  background: linear-gradient(color-mix(in srgb, var(--film) 55%, white), var(--film) 55%, color-mix(in srgb, var(--film) 80%, black));
+  border-color: color-mix(in srgb, var(--film) 60%, black);
+}
+.handbill .book:hover {
+  background: linear-gradient(color-mix(in srgb, var(--film) 55%, white), var(--film) 40%, var(--film));
+}
+
+/* ----- The art ----- */
+.handbill-art { display: block; }
+
+/* The week's handbill, 1920x440 (phones: 800x1000) */
+.handbill-pic img { display: block; width: 100%; height: auto; aspect-ratio: 960 / 220; object-fit: cover; }
+
+/* No handbill this week: the stills printed in one ink on a pale ground, like a riso flyer */
+.handbill-collage {
+  display: grid; gap: 3px;
+  grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: minmax(0, 1fr);
+  aspect-ratio: 960 / 220;
+  background: color-mix(in srgb, var(--film) 55%, #fff);
+}
+.handbill-collage[data-n="3"] { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.handbill-collage[data-n="2"] { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.handbill-collage[data-n="1"] { grid-template-columns: minmax(0, 1fr); }
+.handbill-collage img {
+  display: block; width: 100%; height: 100%; object-fit: cover;
+  filter: grayscale(1) contrast(1.35); mix-blend-mode: multiply;
+}
+
+/* ----- Phones ----- */
+@media (max-width: 720px) {
+  /* Date, price and Book get a line of their own */
+  .handbill-book { flex-basis: 100%; margin-left: 0; justify-content: space-between; align-items: center; }
+  .handbill-book .book { padding: 7px 22px; }
+
+  .handbill-pic.has-tall img { aspect-ratio: 4 / 5; }
+
+  /* 2x2 stand-in, kept to 4:3 so Coming up isn't pushed off the screen */
+  .handbill-collage,
+  .handbill-collage[data-n="3"] {
+    aspect-ratio: 4 / 3;
+    grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr));
+  }
+  .handbill-collage[data-n="3"] img:first-child { grid-column: 1 / -1; }
+  .handbill-collage[data-n="2"] { aspect-ratio: 4 / 3; grid-template-columns: minmax(0, 1fr); grid-template-rows: repeat(2, minmax(0, 1fr)); }
+  .handbill-collage[data-n="1"] { aspect-ratio: 4 / 3; }
+}

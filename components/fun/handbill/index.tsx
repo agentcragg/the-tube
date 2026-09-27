@@ -1,14 +1,14 @@
-// Fun lab idea: handbill. Slot components (placeholders until built).
+// Fun lab idea: handbill. One hand-made banner for the next night at the top
+// of the front page, and the same banner on each film's page.
 import type { Film } from "@/lib/films";
+import Handbill from "./Handbill";
 
 // Front page, full width above Coming up. Next film.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function HandbillHome({ film }: { film: Film }): React.ReactNode {
-  return null;
+  return <Handbill film={film} variant="home" />;
 }
 
 // Film page, between the action row and Programme notes.
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 export function HandbillFilm({ film }: { film: Film }): React.ReactNode {
-  return null;
+  return <Handbill film={film} variant="film" />;
 }
