@@ -149,7 +149,7 @@ export const films: Film[] = [
     date: "2027-03-02",
     runtime: 2648, // episodes 1–7 and 9–11 back to back, from YouTube (44m 8s); Q&A not included
     runtimeExact: true,
-    extra: "Followed by a Q&A with the director",
+    extra: "Followed by a Q&A with director Nick Varvaro",
     colour: "#5b8f2a", // grass green from the outdoor scenes
     stills: [
       "https://i.ytimg.com/vi/KWuYp3u52UI/maxresdefault.jpg", // episode 11
