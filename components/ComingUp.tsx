@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import Scrubber from "@/components/Scrubber";
 import { CalendarIcon, ClockIcon, TicketIcon } from "@/components/Icons";
-import { bookingUrl, formatDate, runningTime, type Film } from "@/lib/films";
+import { badgeTime, bookingUrl, formatDate, runningTime, type Film } from "@/lib/films";
 
 // The "Coming up" box: YouTube-style sort tabs plus a search field that
 // filters the grid as you type.
@@ -71,7 +71,7 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
             {shown.map((f) => (
               <li key={f.slug}>
                 <Link href={`/films/${f.slug}`}>
-                  <Scrubber frames={f.stills} seed={f.slug} alt={f.title} />
+                  <Scrubber frames={f.stills} seed={f.slug} alt={f.title} duration={badgeTime(f)} />
                 </Link>
                 <h3>
                   <Link href={`/films/${f.slug}`}>{f.title}</Link>

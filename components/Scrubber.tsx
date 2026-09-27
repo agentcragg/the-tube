@@ -24,7 +24,17 @@ function placeholder(seed: string, i: number) {
     linear-gradient(${h % 180}deg, hsl(${(hue + 40) % 360} 35% 22%), hsl(${(hue + 200) % 360} 30% 8%))`;
 }
 
-export default function Scrubber({ frames, seed, alt }: { frames: string[]; seed: string; alt: string }) {
+export default function Scrubber({
+  frames,
+  seed,
+  alt,
+  duration,
+}: {
+  frames: string[];
+  seed: string;
+  alt: string;
+  duration?: string; // e.g. "2:24:21"; badge hidden when not given
+}) {
   const count = frames.length || PLACEHOLDER_FRAMES;
   const [i, setI] = useState(0);
   const [active, setActive] = useState(false);
@@ -79,6 +89,7 @@ export default function Scrubber({ frames, seed, alt }: { frames: string[]; seed
           ),
         )}
       </div>
+      {duration && <span className="scrub-time">{duration}</span>}
       {count > 1 && (
         <>
           <div className="scrub-bar" aria-hidden>

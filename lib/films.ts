@@ -122,3 +122,13 @@ export function runningTime(f: Film) {
   const sec = f.runtime % 60;
   return [h && `${h}h`, m && `${m}m`, f.runtimeExact && sec && `${sec}s`].filter(Boolean).join(" ");
 }
+
+// "2:24:21", as on a YouTube thumbnail. Seconds show as :00 unless known.
+export function badgeTime(f: Film) {
+  if (!f.runtime) return undefined;
+  const h = Math.floor(f.runtime / 3600);
+  const m = Math.floor((f.runtime % 3600) / 60);
+  const sec = f.runtimeExact ? f.runtime % 60 : 0;
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return h ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
+}
