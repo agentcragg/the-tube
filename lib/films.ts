@@ -73,10 +73,10 @@ export const films: Film[] = [
     credit: "Ryan Trecartin, 2004",
     date: "2027-02-02",
     runtime: 42 * 60, // TMDB
-    colour: "#ad502c", // burnt orange from the wigs and plaid
+    colour: "#a39a1b", // acid mustard from the face paint in the first still (#cfc54b), deepened for legibility
     stills: [
-      `${TMDB}/syvkd78a169rKQBSGoClWPH2hiD.jpg`,
       `${TMDB}/qgvSsvpaSswgM6av75xHIbpdYf5.jpg`,
+      `${TMDB}/syvkd78a169rKQBSGoClWPH2hiD.jpg`,
       `${YT}/ObcDCDDJN8k/hq2.jpg`,
       `${YT}/ObcDCDDJN8k/hq3.jpg`,
     ],
@@ -137,3 +137,11 @@ export function badgeTime(f: Film) {
   const pad = (n: number) => String(n).padStart(2, "0");
   return h ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
 }
+
+// The venue, used in the footer, Find us, calendar entries and map links
+export const VENUE = {
+  name: "Endeavour",
+  lines: ["Endeavour", "39 Deptford Broadway", "London SE8 4PQ"],
+  oneLine: "Endeavour, 39 Deptford Broadway, London SE8 4PQ",
+  map: "https://www.google.com/maps/search/?api=1&query=Endeavour%2C+39+Deptford+Broadway%2C+London+SE8+4PQ",
+};

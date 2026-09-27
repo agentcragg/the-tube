@@ -32,7 +32,7 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
     .filter((f) => !q || `${f.title} ${f.credit}`.toLowerCase().includes(q.toLowerCase()));
 
   return (
-    <section className="box tone-blue">
+    <section className="box">
       <div className="box-head">
         <h2>Coming up at The Tube</h2>
         <form className="box-search" role="search" onSubmit={(e) => e.preventDefault()}>

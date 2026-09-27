@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Scrubber from "@/components/Scrubber";
 import Notes from "@/components/Notes";
 import { CalendarIcon, PinIcon, TicketIcon } from "@/components/Icons";
-import { bookingUrl, films, formatDate, getFilm } from "@/lib/films";
+import { bookingUrl, films, formatDate, getFilm, VENUE } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
 
 export function generateStaticParams() {
@@ -29,7 +29,7 @@ function icsLink(title: string, date: string) {
     `UID:${d}-the-tube`,
     `DTSTART;VALUE=DATE:${d}`,
     `SUMMARY:${title} at The Tube`,
-    "LOCATION:Endeavour, Deptford, London",
+    `LOCATION:${VENUE.oneLine.replaceAll(",", "\\,")}`,
     "END:VEVENT",
     "END:VCALENDAR",
   ].join("\r\n");
@@ -69,7 +69,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           </a>
           <a
             className="action"
-            href="https://www.google.com/maps/search/?api=1&query=Endeavour+Deptford+London"
+            href={VENUE.map}
             target="_blank"
             rel="noreferrer"
           >
@@ -77,7 +77,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           </a>
         </div>
 
-        <section className="box tone-teal">
+        <section className="box">
           <div className="box-head">
             <h2>Programme notes</h2>
           </div>
@@ -88,7 +88,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
       </article>
 
       <aside className="side">
-        <section className="box tone-pink">
+        <section className="box">
           <div className="box-head">
             <h2>Also showing</h2>
           </div>
@@ -110,7 +110,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           </div>
         </section>
 
-        <section className="box tone-yellow">
+        <section className="box">
           <div className="box-head">
             <h2>Rabbit hole</h2>
           </div>

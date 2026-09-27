@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ComingUp from "@/components/ComingUp";
 import { CalendarIcon, PinIcon, TvIcon } from "@/components/Icons";
-import { films, formatDate } from "@/lib/films";
+import { films, formatDate, VENUE } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
 import { credit, seedVideos, thumb, withYouTubeDetails } from "@/lib/videos";
 
@@ -17,7 +17,7 @@ export default async function WhatsOn() {
       <ComingUp films={films} seats={SAMPLE_SEATS} />
 
       <aside className="side">
-        <section className="box tone-orange" style={{ "--film": next.colour } as React.CSSProperties}>
+        <section className="box" style={{ "--film": next.colour } as React.CSSProperties}>
           <div className="box-head">
             <h2>
               <CalendarIcon /> Next screening
@@ -32,7 +32,7 @@ export default async function WhatsOn() {
           </div>
         </section>
 
-        <section className="box tone-purple">
+        <section className="box">
           <div className="box-head">
             <h2>
               <TvIcon /> Just suggested
@@ -59,7 +59,7 @@ export default async function WhatsOn() {
           </div>
         </section>
 
-        <section className="box tone-green">
+        <section className="box">
           <div className="box-head">
             <h2>
               <PinIcon /> Find us
@@ -67,13 +67,13 @@ export default async function WhatsOn() {
           </div>
           <div className="box-body">
             <p>
-              Basement of Endeavour, Deptford. Every Tuesday. £10.
-              <br />
-              <a
-                href="https://www.google.com/maps/search/?api=1&query=Endeavour+Deptford+London"
-                target="_blank"
-                rel="noreferrer"
-              >
+              {VENUE.lines.map((l) => (
+                <span key={l}>
+                  {l}
+                  <br />
+                </span>
+              ))}
+              <a href={VENUE.map} target="_blank" rel="noreferrer">
                 Map »
               </a>
             </p>

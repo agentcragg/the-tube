@@ -4,9 +4,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 
 const tabs = [
-  { href: "/", tone: "tone-blue", label: "What's on", match: (p: string) => p === "/" || p.startsWith("/films") },
-  { href: "/wall", tone: "tone-purple", label: "Suggest a video", match: (p: string) => p.startsWith("/wall") },
-  { href: "/about", tone: "tone-green", label: "About", match: (p: string) => p.startsWith("/about") },
+  { href: "/", label: "What's on", match: (p: string) => p === "/" || p.startsWith("/films") },
+  { href: "/wall", label: "Suggest a video", match: (p: string) => p.startsWith("/wall") },
+  { href: "/about", label: "About", match: (p: string) => p.startsWith("/about") },
 ];
 
 export default function Header() {
@@ -19,7 +19,7 @@ export default function Header() {
       </Link>
       <nav className="tabs">
         {tabs.map((t) => (
-          <Link key={t.href} href={t.href} className={`tab ${t.tone}${t.match(path) ? " tab-on" : ""}`}>
+          <Link key={t.href} href={t.href} className={t.match(path) ? "tab tab-on" : "tab"}>
             {t.label}
           </Link>
         ))}

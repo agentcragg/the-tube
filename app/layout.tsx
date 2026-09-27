@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import ColourLab from "@/components/ColourLab";
 import Header from "@/components/Header";
-import { films, formatDate } from "@/lib/films";
+import { films, formatDate, VENUE } from "@/lib/films";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -33,11 +32,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <section>
                 <h3>Visit</h3>
                 <p>
-                  Basement of Endeavour
-                  <br />
-                  Deptford, London
-                  <br />
-                  Every Tuesday · £10
+                  {VENUE.lines.map((l) => (
+                    <span key={l}>
+                      {l}
+                      <br />
+                    </span>
+                  ))}
                 </p>
               </section>
               <section>
@@ -57,7 +57,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </div>
           </footer>
         </div>
-        <ColourLab />
       </body>
     </html>
   );
