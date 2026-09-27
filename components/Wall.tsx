@@ -251,14 +251,23 @@ export default function Wall({ videos }: { videos: Video[] }) {
     if (videos.some((v) => v.id === id) || pending.some((p) => p.id === id)) {
       return setStatus({ kind: "error", msg: "Someone's already suggested that one." });
     }
-    setStatus({ kind: "busy", msg: "Looking it up…" });
-    const res = await fetch(`/api/oembed?id=${id}`);
+    setStatus({ kind: "busy", msg: "Sending…" });
+    let res: Response;
+    try {
+      res = await fetch("/api/suggest", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+    } catch {
+      return setStatus({ kind: "error", msg: "Couldn't send that. Check your connection and try again." });
+    }
     const data = await res.json();
     if (!res.ok) return setStatus({ kind: "error", msg: data.error });
 
-    pendingStore.set([{ id, title: data.title, author: data.author }, ...pending]);
+    pendingStore.set([{ id, title: data.title, author: data.channel }, ...pending]);
     setInput("");
-    setStatus({ kind: "ok", msg: `Got it: "${data.title}". It goes on the wall once it's been approved.` });
+    setStatus({ kind: "ok", msg: `Thanks: "${data.title}" has been sent. It goes on the wall once it's been approved.` });
   }
 
   const onHover = (on: boolean) => {

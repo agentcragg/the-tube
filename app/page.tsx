@@ -3,6 +3,7 @@ import ComingUp from "@/components/ComingUp";
 import { CalendarIcon, PinIcon, TvIcon } from "@/components/Icons";
 import { films, formatDate, isPast, VENUE } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
+import { approvedSuggestions } from "@/lib/suggestions";
 import { credit, seedVideos, thumb, withYouTubeDetails } from "@/lib/videos";
 
 const daysUntil = (iso: string) =>
@@ -10,7 +11,11 @@ const daysUntil = (iso: string) =>
 
 export default async function WhatsOn() {
   const next = films.find((f) => !isPast(f.date)) ?? films[films.length - 1];
-  const latest = (await withYouTubeDetails(seedVideos)).slice(-6).reverse();
+  const [seed, approved] = await Promise.all([withYouTubeDetails(seedVideos), approvedSuggestions()]);
+  // Newest approved suggestions first, then the most recently added of our own
+  const latest = [...approved.slice().reverse(), ...seed.slice().reverse()]
+    .filter((v, i, all) => all.findIndex((w) => w.id === v.id) === i)
+    .slice(0, 6);
 
   return (
     <div className="home">
