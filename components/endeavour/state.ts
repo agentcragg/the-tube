@@ -9,7 +9,7 @@ export type Scene = {
   state: State;
   tonight?: Film; // the film on today, if there is one: its colour lights the screen
   next?: Film; // today's or the next film: its colour goes in the poster case
-  eggVideo?: string; // YouTube ID for the 3:14am screen
+  eggVideo?: string; // YouTube ID for the 3am screen
 };
 
 // The states in the order a screening day goes, for the time switch
@@ -22,12 +22,12 @@ export const STATES: { state: State; label: string }[] = [
   { state: "screening", label: "Screening" },
   { state: "after", label: "After" },
   { state: "night", label: "Night" },
-  { state: "egg", label: "3:14am" },
+  { state: "egg", label: "3am" },
 ];
 
 const SCREENING_DAY: State[] = ["setup", "queue", "screening", "after"];
 
-// A different video from the wall each night, the same one all minute
+// A different video from the wall each night, the same one all hour
 function eggVideoFor(isoDate: string, wallIds: string[]) {
   const n = wallIds.length;
   return n ? wallIds[((daysBetween("2027-01-01", isoDate) % n) + n) % n] : undefined;
@@ -40,7 +40,7 @@ export function sceneAt(now: Date, films: Film[], wallIds: string[]): Scene {
   const next = films.find((f) => f.date >= isoDate);
 
   let state: State;
-  if (m < T.morning) state = m >= T.egg && m < T.egg + 1 ? "egg" : "night";
+  if (m < T.morning) state = m >= T.egg && m < T.eggEnd ? "egg" : "night";
   else if (m < T.day) state = "morning";
   else if (m < T.evening) state = "day";
   else if (!tonight) state = "evening";

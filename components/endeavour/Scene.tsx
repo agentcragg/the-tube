@@ -459,7 +459,7 @@ export default function Scene({ scene }: { scene: SceneT | null }) {
         {scene && <Layer key={scene.state} scene={scene} />}
       </g>
 
-      {/* 3:14am: the projector runs for an empty room, showing something off the wall.
+      {/* 3am to 4am: the projector runs for an empty room, showing something off the wall.
           The 4:3 "hq" thumbnail, drawn a little larger than the screen and cropped to it,
           fills the screen with no black bars whether the video is 4:3 or widescreen. */}
       {scene?.eggVideo && (
