@@ -34,12 +34,12 @@
 
 .en-strip[data-state="morning"],
 .en-strip[data-state="day"] {
-  --sky: #dcdcdc; --far: #c9c9c9; --nbr1: #b3b3b3; --nbr2: #bcbcbc; --end: #aaa;
-  --win: #d0d0d0; --lit: #d0d0d0; --bar: #c2c2c2; --pave: #bdbdbd;
+  --sky: #b2b2b2; --far: #a4a4a4; --nbr1: #959595; --nbr2: #9c9c9c; --end: #8e8e8e;
+  --win: #a8a8a8; --lit: #a8a8a8; --bar: #a0a0a0; --pave: #999;
   --room: #1f1f1f; --screen: #3a3a3a; --stair: #3a3a3a; --lamp: #8a8a8a;
-  --figure: #6e6e6e; --stack: #4a4a4a; --frame: #cbcbcb;
+  --figure: #5e5e5e; --stack: #4a4a4a; --frame: #aaa;
 }
-.en-strip[data-state="morning"] { --sky: #e6e6e6; --bar: #b3b3b3; --shutter: 1; }
+.en-strip[data-state="morning"] { --sky: #bababa; --bar: #969696; --shutter: 1; }
 
 .en-strip[data-state="evening"],
 .en-strip[data-state="setup"],
@@ -47,7 +47,7 @@
 .en-strip[data-state="screening"],
 .en-strip[data-state="after"] {
   --sky: #6d6d6d; --far: #5c5c5c; --nbr1: #545454; --nbr2: #5b5b5b; --end: #505050;
-  --win: #454545; --lit: #e6e6e6; --bar: #ededed; --pave: #555;
+  --win: #454545; --lit: #d4d4d4; --bar: #dadada; --pave: #555;
   --room: #1a1a1a; --screen: #333; --stair: #333; --lamp: #f5f5f5;
   --figure: #3a3a3a; --stack: #444; --frame: #626262;
 }
@@ -74,6 +74,15 @@
   --stack: #2e2e2e; --moon: 1; --shutter: 1; --frame: #3c3c3c;
 }
 .en-strip[data-state="egg"] { --screen: #0c0c0c; --lens: #e8e8e8; --room: #161616; }
+
+/* The time switch (only shown after visiting a page with ?time) */
+.en-time {
+  position: absolute; top: 28px; right: var(--gutter); z-index: 1;
+  display: flex; align-items: center; gap: 6px;
+  font: bold 11px var(--sans); color: #fff;
+  background: rgb(0 0 0 / 0.6); padding: 4px 4px 4px 8px; border-radius: 3px;
+}
+.en-time select { font: 12px var(--sans); }
 
 /* Shapes */
 .en-o { stroke: var(--line); stroke-width: 1.1; stroke-linejoin: round; }

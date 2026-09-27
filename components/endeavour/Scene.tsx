@@ -397,7 +397,7 @@ function Layer({ scene }: { scene: SceneT }) {
 
 export default function Scene({ scene }: { scene: SceneT | null }) {
   return (
-    <svg viewBox="0 0 2000 240" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" focusable="false">
+    <svg viewBox="0 0 2000 240" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
       <defs>
         {/* Wobbles every line a little, like a pencil drawing */}
         <filter id="en-wobble" x="-1%" y="-4%" width="102%" height="108%">
