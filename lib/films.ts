@@ -131,8 +131,8 @@ export const films: Film[] = [
     runtime: 72 * 60, // TMDB
     colour: "#2b44b0", // the blue of screen light
     stills: [
-      `${TMDB}/1ApEDkKQyfdnT4bkYcRBHv8S5IF.jpg`,
       `${TMDB}/usCNN9qedHzC0wpkUbHH5TgJFWO.jpg`,
+      `${TMDB}/1ApEDkKQyfdnT4bkYcRBHv8S5IF.jpg`,
       `${TMDB}/t3vmHBltEEZvf8EXldyd40cQ3NP.jpg`,
       `${TMDB}/gQkCv5PXlrk8SMdLww1p5PVx8Pj.jpg`,
     ],
@@ -140,25 +140,6 @@ export const films: Film[] = [
       { label: "Letterboxd", url: search("letterboxd", "A Self-Induced Hallucination") },
       { label: "Slender Man on Wikipedia", url: search("wiki", "Slender Man") },
       { label: "Search YouTube", url: search("youtube", "A Self-Induced Hallucination Jane Schoenbrun") },
-    ],
-  },
-  {
-    slug: "summer-wars",
-    title: "Summer Wars",
-    credit: "Mamoru Hosoda, 2009",
-    date: "2027-03-02",
-    runtime: 114 * 60, // TMDB
-    colour: "#5f9a3a", // green from the summer fields
-    stills: [
-      `${TMDB}/sle590EkpwG8O26aJE73pT5iT2q.jpg`,
-      `${TMDB}/i00fQQsMi05iMzbG8P6uI3rHwzL.jpg`,
-      `${TMDB}/v0AVNgZ0qy3cdzxpOfL1eukqARn.jpg`,
-      `${TMDB}/XSDflMt9fLzWs8Hym8T2GUJ3wm.jpg`,
-    ],
-    rabbitHole: [
-      { label: "Wikipedia", url: search("wiki", "Summer Wars") },
-      { label: "Letterboxd", url: search("letterboxd", "Summer Wars") },
-      { label: "Search YouTube", url: search("youtube", "Summer Wars Hosoda") },
     ],
   },
   {
