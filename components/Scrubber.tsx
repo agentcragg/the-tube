@@ -1,9 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // Hover across the image to scrub through frames, like old YouTube thumbnails.
-// With no real frames it shows generated placeholders.
+// Touch screens can't hover, so there the frames step through on their own
+// while the still is mostly on screen. With no real frames it shows
+// generated placeholders.
+
+const TOUCH_STEP_MS = 1400;
 
 const PLACEHOLDER_FRAMES = 6;
 
@@ -36,9 +40,30 @@ export default function Scrubber({
   const count = frames.length || PLACEHOLDER_FRAMES;
   const [i, setI] = useState(0);
   const [active, setActive] = useState(false);
+  const el = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!window.matchMedia("(hover: none)").matches || count < 2 || !el.current) return;
+    let timer: ReturnType<typeof setInterval> | undefined;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        clearInterval(timer);
+        if (entry.isIntersecting) {
+          timer = setInterval(() => setI((n) => (n + 1) % count), TOUCH_STEP_MS);
+        }
+      },
+      { threshold: 0.6 },
+    );
+    io.observe(el.current);
+    return () => {
+      io.disconnect();
+      clearInterval(timer);
+    };
+  }, [count]);
 
   return (
     <div
+      ref={el}
       className="scrub"
       onMouseMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect();
