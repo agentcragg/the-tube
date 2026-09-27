@@ -1,5 +1,10 @@
 import Link from "next/link";
 import ComingUp from "@/components/ComingUp";
+import Fun from "@/components/fun/Fun";
+import { HypeCardMini } from "@/components/fun/card";
+import { EndeavourMap } from "@/components/fun/endeavour";
+import { HandbillHome } from "@/components/fun/handbill";
+import { LiveBasement, SpotlightBox } from "@/components/fun/running";
 import { CalendarIcon, PinIcon, TvIcon } from "@/components/Icons";
 import { films, formatDate, isPast, VENUE } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
@@ -19,10 +24,16 @@ export default async function WhatsOn() {
 
   return (
     <div className="home">
+      <Fun id="running">
+        <LiveBasement films={films} />
+      </Fun>
+      <Fun id="handbill">
+        <HandbillHome film={next} />
+      </Fun>
       <ComingUp films={films} seats={SAMPLE_SEATS} />
 
       <aside className="side">
-        <section className="box" style={{ "--film": next.colour } as React.CSSProperties}>
+        <section className="box next-box" style={{ "--film": next.colour } as React.CSSProperties}>
           <div className="box-head">
             <h2>
               <CalendarIcon /> Next screening
@@ -34,8 +45,15 @@ export default async function WhatsOn() {
               <Link href={`/films/${next.slug}`}>{next.title}</Link>
             </p>
             <p className="next-count">In {daysUntil(next.date)} days · {SAMPLE_SEATS[next.slug]} seats left</p>
+            <Fun id="card">
+              <HypeCardMini film={next} />
+            </Fun>
           </div>
         </section>
+
+        <Fun id="running">
+          <SpotlightBox films={films} />
+        </Fun>
 
         <section className="box">
           <div className="box-head">
@@ -71,6 +89,9 @@ export default async function WhatsOn() {
             </h2>
           </div>
           <div className="box-body">
+            <Fun id="endeavour">
+              <EndeavourMap films={films} />
+            </Fun>
             <p>
               {VENUE.lines.map((l) => (
                 <span key={l}>

@@ -338,3 +338,26 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
   --foot-rule: color-mix(in srgb, var(--film) 40%, #444); --foot-link: color-mix(in srgb, var(--film) 35%, #fff);
   --foot-ink: color-mix(in srgb, var(--film) 15%, #ccc);
 }
+
+/* ================= Fun lab ================= */
+/* Each idea's slot is hidden until the idea is switched on (html.x-<id>) */
+.fun { display: none; }
+html.x-handbill .fun-handbill, html.x-running .fun-running, html.x-watch .fun-watch, html.x-card .fun-card,
+html.x-endeavour .fun-endeavour, html.x-trailer .fun-trailer, html.x-signature .fun-signature,
+html.x-laurels .fun-laurels { display: contents; }
+.film-still { position: relative; }
+
+.fun-lab {
+  position: fixed; right: 12px; bottom: 12px; z-index: 50; width: 260px;
+  background: #fff; border: 1px solid #888; border-radius: 5px; box-shadow: 0 4px 18px rgb(0 0 0 / 0.3);
+  font-size: 12px; color: #111;
+}
+.fun-lab-head {
+  all: unset; box-sizing: border-box; cursor: pointer; display: flex; justify-content: space-between; gap: 12px; width: 100%;
+  padding: 6px 10px; font-weight: bold; background: linear-gradient(#f6f6f6, #d8d8d8); border-radius: 5px;
+}
+.fun-lab-body { padding: 8px 10px 10px; display: grid; gap: 5px; border-top: 1px solid #bbb; }
+.fun-lab-body label { display: flex; gap: 6px; align-items: center; cursor: pointer; }
+.fun-lab-all { justify-self: start; margin-top: 4px; font: bold 11px var(--sans); padding: 3px 8px; cursor: pointer; background: linear-gradient(#fff, #ddd); border: 1px solid #999; border-radius: 3px; }
+.fun-lab-pretend { display: grid !important; gap: 3px !important; margin-top: 6px; padding-top: 6px; border-top: 1px dotted #bbb; font-weight: bold; }
+.fun-lab-pretend select { font: 12px var(--sans); max-width: 100%; }

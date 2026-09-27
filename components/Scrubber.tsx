@@ -29,11 +29,13 @@ export default function Scrubber({
   seed,
   alt,
   duration,
+  onFrame,
 }: {
   frames: string[];
   seed: string;
   alt: string;
   duration?: string; // e.g. "2:24:21"; badge hidden when not given
+  onFrame?: (i: number) => void; // told whenever the showing frame changes
 }) {
   const count = frames.length || PLACEHOLDER_FRAMES;
   const [i, setI] = useState(0);
@@ -42,6 +44,7 @@ export default function Scrubber({
 
   const show = (n: number) => {
     setI(n);
+    onFrame?.(n);
     const s = strip.current;
     if (s) s.scrollLeft = n * s.clientWidth;
   };
@@ -65,7 +68,9 @@ export default function Scrubber({
         className="scrub-strip"
         onScroll={(e) => {
           const s = e.currentTarget;
-          setI(Math.round(s.scrollLeft / s.clientWidth));
+          const n = Math.round(s.scrollLeft / s.clientWidth);
+          setI(n);
+          onFrame?.(n);
         }}
       >
         {Array.from({ length: count }, (_, n) =>
