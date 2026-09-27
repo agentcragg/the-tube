@@ -21,12 +21,17 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <section>
                 <h3>This season</h3>
                 <ul>
-                  {films.map((f) => (
+                  {films.slice(0, 6).map((f) => (
                     <li key={f.slug}>
                       <Link href={`/films/${f.slug}`}>{f.title}</Link>
                       <span>{formatDate(f.date)}</span>
                     </li>
                   ))}
+                  {films.length > 6 && (
+                    <li>
+                      <Link href="/">Full programme »</Link>
+                    </li>
+                  )}
                 </ul>
               </section>
               <section>

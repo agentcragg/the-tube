@@ -104,6 +104,138 @@ export const films: Film[] = [
       { label: "Search YouTube", url: search("youtube", "In the Dark 2000 Clifton Holmes") },
     ],
   },
+  {
+    slug: "trash-humpers",
+    title: "Trash Humpers",
+    credit: "Harmony Korine, 2009",
+    date: "2027-02-16",
+    runtime: 77 * 60, // TMDB
+    colour: "#b0607a", // dusty pink from the night footage
+    stills: [
+      `${TMDB}/AdDmk6rJaimVvSKJLbpiSFBYur5.jpg`,
+      `${TMDB}/tlR1zNcsT5BCPLxcWl1bCLIhcYC.jpg`,
+      `${TMDB}/agdMFeFu6JfzKgs8Sw84pbKtw5j.jpg`,
+      `${TMDB}/oZfBL31jabTW5XeIF2yFlhOePyu.jpg`,
+    ],
+    rabbitHole: [
+      { label: "Wikipedia", url: search("wiki", "Trash Humpers") },
+      { label: "Letterboxd", url: search("letterboxd", "Trash Humpers") },
+      { label: "Search YouTube", url: search("youtube", "Trash Humpers Harmony Korine") },
+    ],
+  },
+  {
+    slug: "a-self-induced-hallucination",
+    title: "A Self-Induced Hallucination",
+    credit: "Jane Schoenbrun, 2018",
+    date: "2027-02-23",
+    runtime: 72 * 60, // TMDB
+    colour: "#2b44b0", // the blue of screen light
+    stills: [
+      `${TMDB}/1ApEDkKQyfdnT4bkYcRBHv8S5IF.jpg`,
+      `${TMDB}/usCNN9qedHzC0wpkUbHH5TgJFWO.jpg`,
+      `${TMDB}/t3vmHBltEEZvf8EXldyd40cQ3NP.jpg`,
+      `${TMDB}/gQkCv5PXlrk8SMdLww1p5PVx8Pj.jpg`,
+    ],
+    rabbitHole: [
+      { label: "Letterboxd", url: search("letterboxd", "A Self-Induced Hallucination") },
+      { label: "Slender Man on Wikipedia", url: search("wiki", "Slender Man") },
+      { label: "Search YouTube", url: search("youtube", "A Self-Induced Hallucination Jane Schoenbrun") },
+    ],
+  },
+  {
+    slug: "summer-wars",
+    title: "Summer Wars",
+    credit: "Mamoru Hosoda, 2009",
+    date: "2027-03-02",
+    runtime: 114 * 60, // TMDB
+    colour: "#5f9a3a", // green from the summer fields
+    stills: [
+      `${TMDB}/sle590EkpwG8O26aJE73pT5iT2q.jpg`,
+      `${TMDB}/i00fQQsMi05iMzbG8P6uI3rHwzL.jpg`,
+      `${TMDB}/v0AVNgZ0qy3cdzxpOfL1eukqARn.jpg`,
+      `${TMDB}/XSDflMt9fLzWs8Hym8T2GUJ3wm.jpg`,
+    ],
+    rabbitHole: [
+      { label: "Wikipedia", url: search("wiki", "Summer Wars") },
+      { label: "Letterboxd", url: search("letterboxd", "Summer Wars") },
+      { label: "Search YouTube", url: search("youtube", "Summer Wars Hosoda") },
+    ],
+  },
+  {
+    slug: "reflections-of-evil",
+    title: "Reflections of Evil",
+    credit: "Damon Packard, 2002",
+    date: "2027-03-09",
+    runtime: 138 * 60, // TMDB
+    colour: "#8a3a3a", // oxblood from its red-maroon cast
+    stills: [
+      `${TMDB}/x4sJOw6I9Kyvxhte1zdRCjGTlOn.jpg`,
+      `${TMDB}/wXEfm5iipWddgXXNa7H4eejvTv5.jpg`,
+      `${TMDB}/fLuzgGCuLEi0Xv7af0YR1rD9mXK.jpg`,
+    ],
+    rabbitHole: [
+      { label: "Wikipedia", url: search("wiki", "Reflections of Evil") },
+      { label: "Letterboxd", url: search("letterboxd", "Reflections of Evil") },
+      { label: "Search YouTube", url: search("youtube", "Reflections of Evil Damon Packard") },
+    ],
+  },
+  {
+    slug: "skinamarink",
+    title: "Skinamarink",
+    credit: "Kyle Edward Ball, 2022",
+    date: "2027-03-16",
+    runtime: 100 * 60, // TMDB
+    colour: "#0b7480", // teal from the TV glow
+    stills: [
+      `${TMDB}/rryI5WchAXVJKazxnZeGalvSllc.jpg`,
+      `${TMDB}/cTG4dJZQNxWGxDKfdaWe0ZfNZEQ.jpg`,
+      `${TMDB}/tjPpoTWBZOSUudnDyCYAqGcXBAS.jpg`,
+      `${TMDB}/1lgMBTgxlJ0rJ7zke9SVuTkyG1Z.jpg`,
+    ],
+    rabbitHole: [
+      { label: "Wikipedia", url: search("wiki", "Skinamarink") },
+      { label: "Letterboxd", url: search("letterboxd", "Skinamarink") },
+      { label: "Search YouTube", url: search("youtube", "Kyle Edward Ball Bitesized Nightmares") },
+    ],
+  },
+  {
+    slug: "crank",
+    title: "Crank",
+    credit: "Mark Neveldine, Brian Taylor, 2006",
+    date: "2027-03-23",
+    runtime: 88 * 60, // TMDB
+    colour: "#d0661e", // hot orange
+    stills: [
+      `${TMDB}/xCB02ebMOe2xaAPffVemQPzSgbY.jpg`,
+      `${TMDB}/iF7Ay1Q0D0IbEq1rjSetrRKed1N.jpg`,
+      `${TMDB}/dbXhv4agJ0c2NNCHr2K2OKolpYy.jpg`,
+      `${TMDB}/kSTvteM3ekuoeO7u7GJtZQkZuom.jpg`,
+    ],
+    rabbitHole: [
+      { label: "Wikipedia", url: search("wiki", "Crank (film)") },
+      { label: "Letterboxd", url: search("letterboxd", "Crank 2006") },
+      { label: "Search YouTube", url: search("youtube", "Crank 2006 Neveldine Taylor") },
+    ],
+  },
+  {
+    slug: "the-color-wheel",
+    title: "The Color Wheel",
+    credit: "Alex Ross Perry, 2011",
+    date: "2027-05-11",
+    runtime: 83 * 60, // TMDB
+    colour: "#6e6a64", // warm grey; the film is black and white
+    stills: [
+      `${TMDB}/x2bZXdIFD7XrwWmfi9VMHXTUvaJ.jpg`,
+      `${TMDB}/a2J3jc9l7hSN0AkJeSiLNV7FV6p.jpg`,
+      `${TMDB}/qgYF2uqtsNzhfBc8S943c6qPet9.jpg`,
+      `${TMDB}/ekweWfq5ZXS1DmTDWeGJ7FVq4AZ.jpg`,
+    ],
+    rabbitHole: [
+      { label: "Wikipedia", url: search("wiki", "The Color Wheel (film)") },
+      { label: "Letterboxd", url: search("letterboxd", "The Color Wheel") },
+      { label: "Search YouTube", url: search("youtube", "The Color Wheel Alex Ross Perry") },
+    ],
+  },
 ];
 
 export const getFilm = (slug: string) => films.find((f) => f.slug === slug);

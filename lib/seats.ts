@@ -5,4 +5,11 @@ export const SAMPLE_SEATS: Record<string, number> = {
   wax: 18,
   "a-family-finds-entertainment": 24,
   "in-the-dark": 29,
+  "trash-humpers": 22,
+  "a-self-induced-hallucination": 26,
+  "summer-wars": 19,
+  "reflections-of-evil": 27,
+  "skinamarink": 12,
+  "crank": 16,
+  "the-color-wheel": 30,
 };
