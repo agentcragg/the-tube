@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Scrubber from "@/components/Scrubber";
-import LightboxStill from "@/components/LightboxStill";
 import Notes from "@/components/Notes";
 import { CalendarIcon, PinIcon, TicketIcon } from "@/components/Icons";
 import { bookingUrl, films, formatDate, getFilm } from "@/lib/films";
@@ -45,7 +44,9 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
   return (
     <div className="watch">
       <article>
-        <LightboxStill frames={film.stills} seed={film.slug} title={film.title} />
+        <div className="still-frame">
+          <Scrubber frames={film.stills} seed={film.slug} alt={film.title} />
+        </div>
 
         <h1>{film.title}</h1>
         <p className="credit">{film.credit}</p>

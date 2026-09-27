@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Header from "@/components/Header";
-import StyleLab from "@/components/StyleLab";
 import { films, formatDate } from "@/lib/films";
 import "./globals.css";
 
@@ -18,12 +17,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Header />
           <main>{children}</main>
           <footer className="site-footer">
-            <nav className="footer-thin">
-              <Link href="/">What&apos;s on</Link>
-              <Link href="/wall">Suggest a video</Link>
-              <Link href="/about">About</Link>
-            </nav>
-            {/* Fat footer: only shown when that Style lab idea is on */}
             <div className="footer-fat">
               <section>
                 <h3>This season</h3>
@@ -63,7 +56,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </div>
           </footer>
         </div>
-        <StyleLab />
       </body>
     </html>
   );
