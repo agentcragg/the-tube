@@ -1,6 +1,5 @@
 import Link from "next/link";
 import ComingUp from "@/components/ComingUp";
-import { EndeavourMap } from "@/components/endeavour";
 import { CalendarIcon, PinIcon, TvIcon } from "@/components/Icons";
 import { films, formatDate, isPast, VENUE } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
@@ -72,7 +71,6 @@ export default async function WhatsOn() {
             </h2>
           </div>
           <div className="box-body">
-            <EndeavourMap films={films} />
             <p>
               {VENUE.lines.map((l) => (
                 <span key={l}>

@@ -1,10 +1,10 @@
 "use client";
 
 // Endeavour, drawn: the cutaway strip at the top of the fat footer. It
-// follows London time. On a screening night
-// the basement screen glows in that night's film colour; the poster case by
-// the door always shows the next film's colour (on a film page, that film's,
-// since the page sets --film on :root). There's no interaction and no seat
+// follows London time. On a screening night the basement screen glows in
+// that night's film colour; the poster in the window always shows the next
+// film's colour (on a film page, that film's, since the page sets --film on
+// :root). There's no interaction and no seat
 // data, on purpose: it's something to look at, not a meter.
 
 import type { CSSProperties } from "react";

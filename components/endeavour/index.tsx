@@ -1,5 +1,2 @@
-// Endeavour, drawn: the footer strip and the Find us map.
-//   EndeavourStrip: every page with the footer, top of the fat footer, full width (client: follows London time)
-//   EndeavourMap: front page, inside the Find us box body, before the address (server)
+// Endeavour, drawn: the strip at the top of the fat footer, on every page (client: follows London time).
 export { EndeavourStrip } from "./Strip";
-export { EndeavourMap } from "./FindUsMap";

@@ -1,16 +1,19 @@
-/* Endeavour, drawn: the footer strip and the Find us map */
+/* Endeavour, drawn: the strip at the top of the fat footer */
 
-/* ============ Footer strip: a stand-in sketch of Endeavour, cut away ============ */
-/* Colours are set per state (data-state, from London time). Everything grey
-   except the poster case (next film, or this page's film) and, during a
-   screening, the screen, beam and the light on the heads (tonight's film). */
+/* Colours are set per state (data-state, from London time). The street is
+   drawn in daylight colours; --dark darkens it at dusk and night, and
+   --bar-lit / --street-lit bring up what's lit on top. The poster in the
+   window is the next film's colour (or this page's film); during a
+   screening the screen, beam and the light on the heads take tonight's. */
 .en-strip {
-  --sky: #a4a4a4; --far: #979797; --nbr1: #8e8e8e; --nbr2: #969696; --end: #8b8b8b;
-  --win: #7c7c7c; --lit: #7c7c7c; --bar: #7c7c7c; --pave: #8a8a8a; --fascia: #3a3a3a;
-  --room: #2c2c2c; --screen: #3c3c3c; --stair: #3a3a3a; --lamp: #707070; --lens: #3a3a3a;
-  --figure: #444; --chair: #555; --stack: #5a5a5a; --moon: 0; --shutter: 0;
-  --line: #262626;
-  --earth: color-mix(in srgb, var(--foot-1) 70%, #5e5e5e);
+  /* Sky, top band to bottom band */
+  --sky1: #5f97d8; --sky2: #82b1e4; --sky3: #a9ccef; --sky4: #d3e6f8;
+  --far: #9fb0c4;
+  --dark: 0; --bar-lit: 0; --street-lit: 0; --moon: 0; --shutter: 0;
+  --bulb: #e8b85a;
+  --earth1: #3a3430; --earth2: #2e2926;
+  --room: #2c2c2c; --screen: #3c3c3c; --stair: #3a3a3a; --lens: #3a3a3a;
+  --figure: #1d1d1d; --chair: #555; --stack: #5a5a5a;
   --poster: var(--film, var(--en-next, #8c8c8c));
 
   position: relative;
@@ -27,36 +30,40 @@
 }
 .en-strip svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
-/* Phones: taller, so the drawing crops to Endeavour itself, top to bottom,
-   and the heads stay a readable size */
+/* Phones: taller, so the drawing crops to Endeavour itself, top to bottom */
 @media (max-width: 720px) {
   .en-strip { aspect-ratio: auto; height: clamp(180px, 54vw, 250px); min-height: 0; max-height: none; }
 }
 
-.en-strip[data-state="morning"],
-.en-strip[data-state="day"] {
-  --sky: #dcdcdc; --far: #c9c9c9; --nbr1: #b3b3b3; --nbr2: #bcbcbc; --end: #aaa;
-  --win: #d0d0d0; --lit: #d0d0d0; --bar: #c2c2c2; --pave: #bdbdbd;
-  --room: #1f1f1f; --screen: #3a3a3a; --stair: #3a3a3a; --lamp: #8a8a8a;
-  --figure: #6e6e6e; --stack: #4a4a4a;
+.en-strip[data-state="morning"] {
+  --sky1: #7fa9dc; --sky2: #a7c6e8; --sky3: #d3e0ec; --sky4: #f3e6c8; --shutter: 1;
 }
-.en-strip[data-state="morning"] { --sky: #e6e6e6; --bar: #b3b3b3; --shutter: 1; }
 
+/* Dusk: a 2008 sunset in four bands */
 .en-strip[data-state="evening"],
 .en-strip[data-state="setup"],
 .en-strip[data-state="queue"],
 .en-strip[data-state="screening"],
 .en-strip[data-state="after"] {
-  --sky: #6d6d6d; --far: #5c5c5c; --nbr1: #545454; --nbr2: #5b5b5b; --end: #505050;
-  --win: #454545; --lit: #e6e6e6; --bar: #ededed; --pave: #555;
-  --room: #1a1a1a; --screen: #333; --stair: #333; --lamp: #f5f5f5;
-  --figure: #3a3a3a; --stack: #444;
+  --sky1: #3b3f9a; --sky2: #7a4fa6; --sky3: #d3648a; --sky4: #ffa860;
+  --far: #7c6a9a;
+  --dark: 0.42; --bar-lit: 1; --street-lit: 1; --bulb: #ffd27a;
 }
+
+.en-strip[data-state="night"],
+.en-strip[data-state="egg"] {
+  --sky1: #0b1235; --sky2: #16215a; --sky3: #22307a; --sky4: #34469a;
+  --far: #2a3558;
+  --dark: 0.62; --street-lit: 1; --moon: 1; --shutter: 1; --bulb: #6b5a3a;
+  --room: #121212; --screen: #222; --stair: #222;
+}
+.en-strip[data-state="egg"] { --screen: #0c0c0c; --lens: #e8e8e8; --room: #161616; }
+
 /* Screening day, lights on downstairs */
 .en-strip[data-state="setup"],
 .en-strip[data-state="queue"],
 .en-strip[data-state="after"] {
-  --room: #8e8e8e; --screen: #c6c6c6; --stair: #707070; --chair: #5a5a5a; --stack: #4a4a4a; --figure: #383838;
+  --room: #8e8e8e; --screen: #d6d6d6; --stair: #707070; --chair: #4a4a4a; --stack: #4a4a4a;
 }
 /* Lights down: the screen, beam and heads take tonight's film colour */
 .en-strip[data-state="screening"] {
@@ -65,65 +72,94 @@
   --stair: color-mix(in srgb, var(--glow) 10%, #1c1c1c);
   --lens: color-mix(in srgb, var(--glow) 40%, white);
   --rim: color-mix(in srgb, var(--glow) 55%, white);
+  --figure: #0d0d0d;
 }
 
-.en-strip[data-state="night"],
-.en-strip[data-state="egg"] {
-  --sky: #2f2f2f; --far: #262626; --nbr1: #303030; --nbr2: #343434; --end: #2e2e2e;
-  --win: #262626; --lit: #262626; --bar: #222; --pave: #3a3a3a;
-  --room: #121212; --screen: #222; --stair: #222; --lamp: #f5f5f5;
-  --stack: #2e2e2e; --moon: 1; --shutter: 1;
-}
-.en-strip[data-state="egg"] { --screen: #0c0c0c; --lens: #e8e8e8; --room: #161616; }
-
-/* Shapes */
-.en-o { stroke: var(--line); stroke-width: 1.1; stroke-linejoin: round; }
-.en-sky { fill: var(--sky); }
+/* Sky and street */
+.en-sky1 { fill: var(--sky1); }
+.en-sky2 { fill: var(--sky2); }
+.en-sky3 { fill: var(--sky3); }
+.en-sky4 { fill: var(--sky4); }
 .en-far { fill: var(--far); }
-.en-nbr1 { fill: var(--nbr1); }
-.en-nbr2 { fill: var(--nbr2); }
-.en-end { fill: var(--end); }
-.en-win { fill: var(--win); }
-.en-lit { fill: var(--lit); }
-.en-bar { fill: var(--bar); }
-.en-bar-line { stroke: var(--line); stroke-width: 1.1; }
-.en-fascia { fill: var(--fascia); }
-.en-sign { font: bold 8px var(--sans); letter-spacing: 2.5px; fill: #d2d2d2; }
-.en-door { fill: #3a3a3a; }
-.en-case { fill: #2e2e2e; }
-.en-poster { fill: var(--poster); }
+.en-stock { fill: #b9a987; }
+.en-redbrick { fill: #97503b; }
+.en-render { fill: #ddd6c6; }
+.en-mortar { fill: #000; fill-opacity: 0.16; }
+.en-coping { fill: #cfc8b6; }
+.en-frame { fill: #dcdcd4; }
+.en-glass { fill: #3d4e60; }
+.en-glass-dark { fill: #1c2530; }
+.en-bars rect { fill: #dcdcd4; }
+.en-sign-bars rect { fill: #fff; fill-opacity: 0.85; }
 .en-shutter { opacity: var(--shutter); }
-.en-shutter rect { fill: #6a6a6a; }
-.en-strip[data-state="night"] .en-shutter rect,
-.en-strip[data-state="egg"] .en-shutter rect { fill: #3a3a3a; }
-.en-shutter line { stroke: var(--line); stroke-width: 0.8; opacity: 0.6; }
-.en-post { fill: none; stroke: #333; stroke-width: 2; }
-.en-lamp { fill: var(--lamp); }
-.en-pool { fill: #fff; opacity: 0.05; }
+.en-shutter > rect:first-child { fill: #8a8f96; }
+.en-shutter-line { fill: #000; fill-opacity: 0.22; }
+.en-post { fill: #1e1e1e; }
+.en-lamp-head { fill: #2b2b2b; }
+.en-pave { fill: #9a968e; }
+.en-kerb { fill: #6f6b64; }
+.en-dark { fill: #0a0d2a; opacity: var(--dark); }
 .en-night-sky { opacity: var(--moon); }
-.en-moon { fill: #d6d6d6; }
-.en-star { fill: #bdbdbd; }
-.en-pave { fill: var(--pave); }
-.en-earth { fill: var(--earth); }
-.en-hatch { stroke: #fff; stroke-opacity: 0.07; stroke-width: 1; fill: none; }
-.en-pencil { stroke: #000; stroke-opacity: 0.06; stroke-width: 1; fill: none; }
-.en-pebble { fill: #fff; opacity: 0.05; }
-.en-cellar { fill: #000; fill-opacity: 0.12; stroke: #fff; stroke-opacity: 0.08; stroke-width: 1; stroke-dasharray: 4 3; }
+.en-moon { fill: #f4f1dc; }
+.en-star { fill: #fff; }
+
+/* Endeavour */
+.en-fascia { fill: #0e0e0e; }
+.en-sign { font: 22px Georgia, "Times New Roman", serif; fill: #c9a650; }
+.en-sign-lit { fill: #f1d27c; opacity: var(--bar-lit); }
+.en-timber { fill: #b58c55; }
+.en-brass { fill: #c9a349; }
+.en-wood { fill: #a57c4f; }
+.en-wood-panel { fill: #8f6a41; }
+.en-number { fill: #f1ead8; }
+.en-number-text { font: bold 4px var(--sans); fill: #222; }
+.en-bar-door { fill: #141414; }
+.en-pillar { fill: #6b5a44; }
+.en-stool rect { fill: #151515; }
+.en-poster-edge { fill: #f4f4f4; }
+.en-poster { fill: var(--poster); }
+.en-vent { fill: #c9ccd0; }
+.en-vent-grille rect { fill: #555; }
+.en-vent-sq { fill: #6b6b6b; }
+.en-aboard-frame { fill: #9a7547; }
+.en-aboard { fill: #1d2320; }
+.en-chalk rect { fill: #e9e9e2; }
+.en-street-sign-edge { fill: #fff; }
+.en-street-sign { fill: #2456a6; }
+.en-street-sign-text { font: bold 6.2px Georgia, "Times New Roman", serif; fill: #fff; }
+
+/* Lights */
+.en-street-lit { opacity: var(--street-lit); }
+.en-bar-lit { opacity: var(--bar-lit); }
+.en-window-glow { fill: #ffd98a; }
+.en-pool { fill: #ffe7a8; opacity: 0.12; }
+.en-lamp-lit { fill: #fff3c4; }
+.en-bar-glow { fill: #ffb95a; opacity: 0.38; }
+.en-sign-glow { fill: #ffe3a0; opacity: 0.16; }
+.en-cord { fill: #111; }
+.en-bulb { fill: var(--bulb); }
+
+/* Underground */
+.en-earth1 { fill: #3a3430; }
+.en-earth2 { fill: #2e2926; }
+.en-cellar { fill: #000; fill-opacity: 0.22; }
 .en-wall { fill: #474747; }
 .en-room { fill: var(--room); }
+.en-screen-edge { fill: #111; }
 .en-screen { fill: var(--screen); }
 .en-stair { fill: var(--stair); }
-.en-rail { fill: none; stroke: var(--line); stroke-width: 1.1; }
+.en-rail-poly { fill: #222; }
+.en-stand { fill: #222; }
 .en-projector { fill: #262626; }
 .en-lens { fill: var(--lens); }
-.en-keg { fill: #8c8c8c; }
-.en-crate { fill: #a0a0a0; }
+.en-keg { fill: #a9adb2; }
+.en-keg-band { fill: #6d7278; }
+.en-crate { fill: #c24a2c; }
 .en-figure { fill: var(--figure); }
-.en-body { fill: var(--figure); }
-.en-audience .en-body { fill: #0d0d0d; }
+.en-body { fill: #0d0d0d; }
 .en-rim { fill: var(--rim); }
 .en-chair { fill: var(--chair); }
-.en-stack { fill: none; stroke: var(--stack); stroke-width: 1.4; stroke-linecap: round; }
+.en-stack rect { fill: var(--stack); }
 .en-beam { fill: var(--glow); opacity: 0.45; mix-blend-mode: screen; }
 .en-beam-egg { fill: #e0e0e0; opacity: 0.22; }
 .en-egg { opacity: 0.85; mix-blend-mode: screen; }
@@ -136,29 +172,3 @@
   .en-strip svg * { transition: none; }
   .en-layer { animation: none; }
 }
-
-/* ============ Find us map: ink on white, one spot colour (the next film's) ============ */
-.en-find { margin-bottom: 10px; }
-.en-map { margin: 0 0 8px; }
-.en-map svg { display: block; width: 100%; height: auto; }
-.en-map figcaption { font: italic bold 12px var(--sans); margin-top: 6px; }
-.en-directions { margin: 0 0 6px; font-size: 12px; line-height: 1.45; }
-
-.en-map .en-ink { fill: none; stroke: #222; stroke-width: 1.3; stroke-linejoin: round; stroke-linecap: round; }
-.en-map .en-ink-thin { fill: none; stroke: #222; stroke-width: 0.9; stroke-linecap: round; }
-.en-map .en-ink-fill { fill: #222; }
-.en-map .en-paper { fill: #fff; }
-.en-map .en-spot { fill: var(--film, #777); }
-.en-map .en-road-edge { fill: none; stroke: #222; }
-.en-map .en-road { fill: none; stroke: #fff; }
-.en-map .en-ties { fill: none; stroke: #222; stroke-width: 5; stroke-dasharray: 1 4; }
-.en-map .en-route { fill: none; stroke: var(--film, #777); stroke-width: 1.8; stroke-dasharray: 3 2.5; stroke-linecap: round; }
-.en-map .en-arrow { fill: none; stroke: var(--film, #777); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.en-map .en-beam-map { opacity: 0.28; }
-.en-map .en-dotted { stroke-dasharray: 1.5 2.5; }
-.en-map .en-hatch-line { fill: none; stroke: #222; stroke-width: 0.7; }
-.en-map .en-label { font-family: var(--sans); font-size: 8px; fill: #222; }
-.en-map .en-small { font-size: 7.2px; }
-.en-map .en-tiny { font-size: 6px; font-weight: bold; }
-.en-map .en-bold { font-size: 8.5px; font-weight: bold; }
-.en-map .en-italic { font-style: italic; }

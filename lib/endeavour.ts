@@ -1,6 +1,4 @@
-// Endeavour, drawn: timings and copy for the footer strip
-// and the Find us map (components/endeavour). The drawings themselves are
-// a grey stand-in until a commissioned illustration replaces them.
+// Endeavour, drawn: when the footer strip changes (components/endeavour).
 
 // When the strip changes, in minutes after midnight, London time.
 // DRAFT: the queue and screening times are guesses until each night has a
@@ -14,15 +12,3 @@ export const STRIP_TIMES = {
   screening: 20 * 60, // screening days: lights down, screen on
   after: 22 * 60 + 45, // screening days: chairs stacked
 };
-
-// Find us box. DRAFT
-export const MAP_CAPTION = "Endeavour · just upstairs from this cinema";
-
-// DRAFT. Routes and walking times are worked out from OpenStreetMap
-// (Deptford Bridge DLR is about 150 m east of the door; Deptford station
-// about 550 m on foot). Matt to confirm the stairs, and walk it.
-export const DIRECTIONS = [
-  "From Deptford Bridge DLR: west along Deptford Broadway, over the river. Endeavour is on the left, two minutes on.",
-  "From Deptford station: down the High Street, across the Broadway, then left.",
-  "The cinema is downstairs, through the bar.",
-];
