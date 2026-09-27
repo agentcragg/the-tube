@@ -413,6 +413,9 @@ export default function Scene({ scene }: { scene: SceneT | null }) {
         <clipPath id="en-room">
           <rect x={834} y={G + 2} width={332} height={78} />
         </clipPath>
+        <clipPath id="en-screen-clip">
+          <rect x={872} y={147} width={128} height={44} />
+        </clipPath>
         <clipPath id="en-windows">
           <rect x={WINDOW.x} y={WINDOW.y} width={WINDOW.w} height={WINDOW.h} />
         </clipPath>
@@ -456,17 +459,20 @@ export default function Scene({ scene }: { scene: SceneT | null }) {
         {scene && <Layer key={scene.state} scene={scene} />}
       </g>
 
-      {/* 3:14am: the projector runs for an empty room, showing something off the wall */}
+      {/* 3:14am: the projector runs for an empty room, showing something off the wall.
+          The 4:3 "hq" thumbnail, drawn a little larger than the screen and cropped to it,
+          fills the screen with no black bars whether the video is 4:3 or widescreen. */}
       {scene?.eggVideo && (
         <image
           key={scene.eggVideo}
           className="en-layer en-egg"
-          href={thumb(scene.eggVideo, "mq")}
-          x={872}
-          y={147}
-          width={128}
-          height={44}
+          href={thumb(scene.eggVideo, "hq")}
+          x={864}
+          y={143}
+          width={144}
+          height={52}
           preserveAspectRatio="xMidYMid slice"
+          clipPath="url(#en-screen-clip)"
         />
       )}
     </svg>
