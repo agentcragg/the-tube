@@ -55,3 +55,38 @@ export const TvIcon = ({ className }: P) => (
     <circle cx="12.7" cy="10" r=".8" fill="#333" />
   </svg>
 );
+
+export const RssIcon = ({ className }: P) => (
+  <svg {...base} className={className}>
+    <rect x="1" y="1" width="14" height="14" rx="3" fill="#f68a1f" stroke="#c4630b" />
+    <circle cx="5" cy="11" r="1.4" fill="#fff" />
+    <path d="M4 7.5a4.5 4.5 0 0 1 4.5 4.5M4 4.3A7.7 7.7 0 0 1 11.7 12" stroke="#fff" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+  </svg>
+);
+
+export const StarIcon = ({ className, filled }: P & { filled?: boolean }) => (
+  <svg {...base} className={className}>
+    <path
+      d="M8 1.5l2 4.2 4.6.6-3.4 3.2.9 4.5L8 11.8 3.9 14l.9-4.5L1.4 6.3 6 5.7z"
+      fill={filled ? "#ffc933" : "rgb(255 255 255 / 0.85)"}
+      stroke={filled ? "#c98a00" : "#555"}
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const DiceIcon = ({ className }: P) => (
+  <svg {...base} className={className}>
+    <rect x="1.5" y="1.5" width="13" height="13" rx="3" fill="#fff" stroke="#6b7c93" />
+    <circle cx="5" cy="5" r="1.2" fill="#d9483b" />
+    <circle cx="8" cy="8" r="1.2" fill="#d9483b" />
+    <circle cx="11" cy="11" r="1.2" fill="#d9483b" />
+  </svg>
+);
+
+export const TagIcon = ({ className }: P) => (
+  <svg {...base} className={className}>
+    <path d="M1.5 2.5v5l7 7 6-6-7-7h-5z" fill="#f7d774" stroke="#b8902a" strokeLinejoin="round" />
+    <circle cx="4.5" cy="5" r="1.2" fill="#fff" stroke="#b8902a" />
+  </svg>
+);

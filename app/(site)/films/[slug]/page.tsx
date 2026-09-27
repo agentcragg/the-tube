@@ -2,7 +2,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Scrubber from "@/components/Scrubber";
 import Notes from "@/components/Notes";
-import { CalendarIcon, PinIcon, ShareIcon, TicketIcon } from "@/components/Icons";
+import { CalendarIcon, PinIcon, TagIcon, TicketIcon } from "@/components/Icons";
+import SharePanel from "@/components/SharePanel";
+import { tagHref } from "@/lib/tags";
 import { bookingUrl, films, formatDate, getFilm } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
 
@@ -67,9 +69,6 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           <a className="action" href={icsLink(film.title, film.date)} download={`${film.slug}.ics`}>
             <CalendarIcon /> Add to calendar
           </a>
-          <a className="action" href="#share">
-            <ShareIcon /> Share
-          </a>
           <a
             className="action"
             href="https://www.google.com/maps/search/?api=1&query=Endeavour+Deptford+London"
@@ -78,7 +77,20 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           >
             <PinIcon /> Map
           </a>
+          <SharePanel title={film.title} path={`/films/${film.slug}`} />
         </div>
+
+        {film.tags && (
+          <p className="tag-line">
+            <TagIcon /> Tags:{" "}
+            {film.tags.map((t, n) => (
+              <span key={t}>
+                {n > 0 && ", "}
+                <Link href={tagHref(t)}>{t}</Link>
+              </span>
+            ))}
+          </p>
+        )}
 
         <section className="box">
           <div className="box-head">

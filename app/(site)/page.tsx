@@ -1,12 +1,10 @@
 import Link from "next/link";
 import ComingUp from "@/components/ComingUp";
-import { CalendarIcon, PinIcon, TvIcon } from "@/components/Icons";
-import { films, formatDate } from "@/lib/films";
+import { CalendarIcon, PinIcon, TagIcon, TvIcon } from "@/components/Icons";
+import { daysUntil, films, formatDate } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
+import { tagCloud, tagHref } from "@/lib/tags";
 import { credit, seedVideos, thumb, withYouTubeDetails } from "@/lib/videos";
-
-const daysUntil = (iso: string) =>
-  Math.ceil((new Date(iso + "T00:00:00").getTime() - Date.now()) / 86_400_000);
 
 export default async function WhatsOn() {
   const next = films[0];
@@ -55,6 +53,23 @@ export default async function WhatsOn() {
             </ul>
             <p className="box-more">
               <Link href="/wall">Suggest a video »</Link>
+            </p>
+          </div>
+        </section>
+
+        <section className="box">
+          <div className="box-head">
+            <h2>
+              <TagIcon /> Tags
+            </h2>
+          </div>
+          <div className="box-body">
+            <p className="tag-cloud">
+              {tagCloud().map(({ tag, count, size }) => (
+                <Link key={tag} href={tagHref(tag)} className={`tag-size-${size}`} title={`${count} tagged`}>
+                  {tag}
+                </Link>
+              ))}
             </p>
           </div>
         </section>
