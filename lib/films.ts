@@ -25,7 +25,6 @@ const search = (site: "wiki" | "letterboxd" | "youtube", q: string) => {
 };
 
 const TMDB = "https://image.tmdb.org/t/p/w780";
-const YT = "https://i.ytimg.com/vi";
 
 export const films: Film[] = [
   {
@@ -68,22 +67,23 @@ export const films: Film[] = [
     ],
   },
   {
-    slug: "a-family-finds-entertainment",
-    title: "A Family Finds Entertainment",
-    credit: "Ryan Trecartin, 2004",
+    slug: "ryan-trecartin-double-bill",
+    title: "Ryan Trecartin Double Bill: A Family Finds Entertainment & Center Jenny",
+    credit: "Ryan Trecartin, 2004 & 2013",
     date: "2027-02-02",
-    runtime: 42 * 60, // TMDB
+    runtime: (42 + 54) * 60, // TMDB: A Family Finds Entertainment 42m + Center Jenny 54m
     colour: "#a39a1b", // acid mustard from the face paint in the first still (#cfc54b), deepened for legibility
     stills: [
-      `${TMDB}/qgvSsvpaSswgM6av75xHIbpdYf5.jpg`,
-      `${TMDB}/syvkd78a169rKQBSGoClWPH2hiD.jpg`,
-      `${YT}/ObcDCDDJN8k/hq2.jpg`,
-      `${YT}/ObcDCDDJN8k/hq3.jpg`,
+      `${TMDB}/qgvSsvpaSswgM6av75xHIbpdYf5.jpg`, // A Family Finds Entertainment
+      `${TMDB}/pLTZpfPJSK4A05WrXQz1oWuMmZy.jpg`, // Center Jenny
+      `${TMDB}/syvkd78a169rKQBSGoClWPH2hiD.jpg`, // A Family Finds Entertainment
+      `${TMDB}/uHw0cDA9aTrOMR1uV23cxtFU6Qf.jpg`, // Center Jenny
     ],
     rabbitHole: [
       { label: "Ryan Trecartin on Wikipedia", url: search("wiki", "Ryan Trecartin") },
-      { label: "Letterboxd", url: search("letterboxd", "A Family Finds Entertainment") },
-      { label: "Search YouTube", url: search("youtube", "Ryan Trecartin A Family Finds Entertainment") },
+      { label: "A Family Finds Entertainment on Letterboxd", url: search("letterboxd", "A Family Finds Entertainment") },
+      { label: "Center Jenny on Letterboxd", url: search("letterboxd", "Center Jenny") },
+      { label: "Search YouTube", url: search("youtube", "Ryan Trecartin") },
     ],
   },
   {
