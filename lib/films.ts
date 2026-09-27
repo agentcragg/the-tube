@@ -13,6 +13,7 @@ export type Film = {
   ticketUrl?: string; // Ticket Tailor event link, once on sale
   notes?: string; // programme notes
   pairedWith?: string;
+  extra?: string; // something extra on the night, e.g. a Q&A
   colour: string; // taken from the film's own stills
   rabbitHole: { label: string; url: string }[];
 };
@@ -139,6 +140,27 @@ export const films: Film[] = [
       { label: "Letterboxd", url: search("letterboxd", "A Self-Induced Hallucination") },
       { label: "Slender Man on Wikipedia", url: search("wiki", "Slender Man") },
       { label: "Search YouTube", url: search("youtube", "A Self-Induced Hallucination Jane Schoenbrun") },
+    ],
+  },
+  {
+    slug: "nebraska-city-special",
+    title: "Nebraska City Special",
+    credit: "Nick Varvaro, 2022–2026",
+    date: "2027-03-02",
+    runtime: 2648, // episodes 1–7 and 9–11 back to back, from YouTube (44m 8s); Q&A not included
+    runtimeExact: true,
+    extra: "Followed by a Q&A with the director",
+    colour: "#5b8f2a", // grass green from the outdoor scenes
+    stills: [
+      "https://i.ytimg.com/vi/KWuYp3u52UI/maxresdefault.jpg", // episode 11
+      "https://i.ytimg.com/vi/mkRpQU2xVCo/hqdefault.jpg", // episode 1
+      "https://i.ytimg.com/vi/srgrYYqRk5g/maxresdefault.jpg", // episode 10
+      "https://i.ytimg.com/vi/SLLIXxxLcdU/maxresdefault.jpg", // episode 9
+    ],
+    rabbitHole: [
+      { label: "Nebraska City on YouTube", url: "https://www.youtube.com/channel/UCpw4Vb5gOQBvdE4Zh5nfrXw" },
+      { label: "Episode 1: Promises", url: "https://www.youtube.com/watch?v=mkRpQU2xVCo" },
+      { label: "The bloopers", url: "https://www.youtube.com/watch?v=vFHSW-uzpms" },
     ],
   },
   {

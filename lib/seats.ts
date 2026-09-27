@@ -7,6 +7,7 @@ export const SAMPLE_SEATS: Record<string, number> = {
   "in-the-dark": 29,
   "trash-humpers": 22,
   "a-self-induced-hallucination": 26,
+  "nebraska-city-special": 9,
   "reflections-of-evil": 27,
   "skinamarink": 12,
   "crank": 16,

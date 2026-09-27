@@ -49,3 +49,10 @@ export const TvIcon = ({ className }: P) => (
     <circle cx="12.7" cy="10" r=".8" fill="#333" />
   </svg>
 );
+
+export const MicIcon = ({ className }: P) => (
+  <svg {...base} className={className}>
+    <rect x="5.5" y="1.5" width="5" height="8" rx="2.5" fill="#b8c2cf" stroke="#4d525c" />
+    <path d="M3.5 7.5a4.5 4.5 0 0 0 9 0M8 12v2.5M5.5 14.5h5" stroke="#4d525c" strokeWidth="1.2" fill="none" strokeLinecap="round" />
+  </svg>
+);

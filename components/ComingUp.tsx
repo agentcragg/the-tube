@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import Scrubber from "@/components/Scrubber";
-import { CalendarIcon, TicketIcon } from "@/components/Icons";
+import { CalendarIcon, MicIcon, TicketIcon } from "@/components/Icons";
 import { badgeTime, bookingUrl, formatDate, isPast, type Film } from "@/lib/films";
 
 // The "Coming up" box: everything still to come, a tab for nights that have
@@ -72,6 +72,11 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
                   <Link href={`/films/${f.slug}`}>{f.title}</Link>
                 </h3>
                 <p className="credit">{f.credit}</p>
+                {f.extra && (
+                  <p className="extra">
+                    <MicIcon /> {f.extra}
+                  </p>
+                )}
                 <ul className="meta">
                   <li>
                     <CalendarIcon /> {formatDate(f.date)}

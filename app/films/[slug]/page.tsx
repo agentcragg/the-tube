@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Scrubber from "@/components/Scrubber";
 import Notes from "@/components/Notes";
-import { CalendarIcon, PinIcon, TicketIcon } from "@/components/Icons";
+import { CalendarIcon, MicIcon, PinIcon, TicketIcon } from "@/components/Icons";
 import { bookingUrl, films, formatDate, getFilm, VENUE } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
 
@@ -52,6 +52,11 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
 
         <h1>{film.title}</h1>
         <p className="credit">{film.credit}</p>
+        {film.extra && (
+          <p className="extra extra-big">
+            <MicIcon /> {film.extra}
+          </p>
+        )}
 
         <ul className="meta meta-big">
           <li>
