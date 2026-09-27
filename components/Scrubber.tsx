@@ -1,15 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
-// Hover across the image to scrub through frames, like old YouTube thumbnails.
-// Touch screens can't hover, so there the frames step through on their own
-// while the still is mostly on screen. With no real frames it shows
-// generated placeholders.
+// A film's stills in a row, one showing at a time.
+// Mouse: move across the image to scrub through them, like old YouTube thumbnails.
+// Touch: swipe sideways to flick through them, with dots showing where you are.
+// With no real frames it shows generated placeholders.
 
-const TOUCH_STEP_MS = 1400;
-
-const PLACEHOLDER_FRAMES = 6;
+const PLACEHOLDER_FRAMES = 4;
 
 function hash(s: string) {
   let h = 2166136261;
@@ -26,72 +24,73 @@ function placeholder(seed: string, i: number) {
     linear-gradient(${h % 180}deg, hsl(${(hue + 40) % 360} 35% 22%), hsl(${(hue + 200) % 360} 30% 8%))`;
 }
 
-export default function Scrubber({
-  frames,
-  seed,
-  alt,
-  duration,
-}: {
-  frames: string[];
-  seed: string;
-  alt: string;
-  duration?: string; // e.g. "1:52:00"; badge hidden when unknown
-}) {
+export default function Scrubber({ frames, seed, alt }: { frames: string[]; seed: string; alt: string }) {
   const count = frames.length || PLACEHOLDER_FRAMES;
   const [i, setI] = useState(0);
   const [active, setActive] = useState(false);
-  const el = useRef<HTMLDivElement>(null);
+  const strip = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    if (!window.matchMedia("(hover: none)").matches || count < 2 || !el.current) return;
-    let timer: ReturnType<typeof setInterval> | undefined;
-    const io = new IntersectionObserver(
-      ([entry]) => {
-        clearInterval(timer);
-        if (entry.isIntersecting) {
-          timer = setInterval(() => setI((n) => (n + 1) % count), TOUCH_STEP_MS);
-        }
-      },
-      { threshold: 0.6 },
-    );
-    io.observe(el.current);
-    return () => {
-      io.disconnect();
-      clearInterval(timer);
-    };
-  }, [count]);
+  const show = (n: number) => {
+    setI(n);
+    const s = strip.current;
+    if (s) s.scrollLeft = n * s.clientWidth;
+  };
 
   return (
     <div
-      ref={el}
       className="scrub"
       onMouseMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect();
-        setI(Math.min(count - 1, Math.floor(((e.clientX - r.left) / r.width) * count)));
+        const n = Math.min(count - 1, Math.floor(((e.clientX - r.left) / r.width) * count));
+        if (n !== i) show(n);
       }}
       onMouseEnter={() => setActive(true)}
       onMouseLeave={() => {
         setActive(false);
-        setI(0);
+        show(0);
       }}
     >
-      {frames.length ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={frames[i]} alt={alt} />
-      ) : (
-        <div
-          className="scrub-placeholder"
-          style={{ background: placeholder(seed, i) }}
-          role="img"
-          aria-label={`${alt} (placeholder still)`}
-        >
-          <span>still {i + 1}/{count}</span>
-        </div>
-      )}
-      <div className="scrub-bar" aria-hidden>
-        <div style={{ width: active ? `${((i + 1) / count) * 100}%` : 0 }} />
+      <div
+        ref={strip}
+        className="scrub-strip"
+        onScroll={(e) => {
+          const s = e.currentTarget;
+          setI(Math.round(s.scrollLeft / s.clientWidth));
+        }}
+      >
+        {Array.from({ length: count }, (_, n) =>
+          frames.length ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
+              key={n}
+              src={frames[n]}
+              alt={n === 0 ? alt : ""}
+              loading={n === 0 ? "eager" : "lazy"}
+              draggable={false}
+            />
+          ) : (
+            <div
+              key={n}
+              className="scrub-placeholder"
+              style={{ background: placeholder(seed, n) }}
+              role={n === 0 ? "img" : undefined}
+              aria-label={n === 0 ? `${alt} (placeholder still)` : undefined}
+            />
+          ),
+        )}
       </div>
-      {duration && <span className="scrub-time">{duration}</span>}
+      {count > 1 && (
+        <>
+          <div className="scrub-bar" aria-hidden>
+            <div style={{ width: active ? `${((i + 1) / count) * 100}%` : 0 }} />
+          </div>
+          <div className="scrub-dots" aria-hidden>
+            {Array.from({ length: count }, (_, n) => (
+              <span key={n} className={n === i ? "on" : undefined} />
+            ))}
+          </div>
+        </>
+      )}
     </div>
   );
 }

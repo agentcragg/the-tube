@@ -2,8 +2,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Scrubber from "@/components/Scrubber";
 import Notes from "@/components/Notes";
-import { CalendarIcon, ClockIcon, PinIcon, PlayIcon, ShareIcon, TicketIcon } from "@/components/Icons";
-import { bookingUrl, films, formatDate, getFilm, playerTime, runningTime } from "@/lib/films";
+import { CalendarIcon, PinIcon, ShareIcon, TicketIcon } from "@/components/Icons";
+import { bookingUrl, films, formatDate, getFilm } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
 
 export function generateStaticParams() {
@@ -44,15 +44,8 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
   return (
     <div className="watch">
       <article>
-        <div className="player">
+        <div className="still-frame">
           <Scrubber frames={film.stills} seed={film.slug} alt={film.title} />
-          <div className="player-bar" aria-hidden>
-            <PlayIcon />
-            <div className="player-track">
-              <div />
-            </div>
-            <span>0:00 / {playerTime(film.minutes) ?? "--:--"}</span>
-          </div>
         </div>
 
         <h1>{film.title}</h1>
@@ -62,11 +55,6 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           <li>
             <CalendarIcon /> {formatDate(film.date)}
           </li>
-          {film.minutes && (
-            <li>
-              <ClockIcon /> {runningTime(film.minutes)}
-            </li>
-          )}
           <li>
             <TicketIcon /> {SAMPLE_SEATS[film.slug] ?? 30} of 30 seats left · £10
           </li>
@@ -112,7 +100,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
               {others.map((f) => (
                 <li key={f.slug}>
                   <Link href={`/films/${f.slug}`}>
-                    <Scrubber frames={f.stills} seed={f.slug} alt={f.title} duration={playerTime(f.minutes)} />
+                    <Scrubber frames={f.stills} seed={f.slug} alt={f.title} />
                     <span>
                       <strong>{f.title}</strong>
                       <em>{f.credit}</em>

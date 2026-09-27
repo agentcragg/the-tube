@@ -7,7 +7,8 @@ export type Film = {
   title: string;
   credit: string; // director/artist and year, as it should appear on the page
   date: string; // ISO date of the screening
-  minutes?: number; // running time
+  runtime?: number; // running time in seconds
+  runtimeExact?: boolean; // true when known to the second (e.g. from the BBFC)
   stills: string[];
   ticketUrl?: string; // Ticket Tailor event link, once on sale
   notes?: string; // programme notes
@@ -31,7 +32,8 @@ export const films: Film[] = [
     title: "Southland Tales",
     credit: "Richard Kelly, 2006",
     date: "2027-01-19",
-    minutes: 145,
+    runtime: 8661, // 2h 24m 21s, BBFC, UK cinema version (the 2020 Arrow cut is 2h 38m)
+    runtimeExact: true,
     stills: [
       `${TMDB}/eQdZzDUubjxEDNmH8ucAtt8fTer.jpg`,
       `${TMDB}/ekFUbytCbZrc9rPizJl4Gweiinj.jpg`,
@@ -49,7 +51,7 @@ export const films: Film[] = [
     title: "Wax, or the Discovery of Television Among the Bees",
     credit: "David Blair, 1991",
     date: "2027-01-26",
-    minutes: 85,
+    runtime: 85 * 60, // TMDB
     stills: [
       `${TMDB}/h62Aotz1fAV3n8c0DDQBcs0wkdH.jpg`,
       `${TMDB}/A8QbpEFB1dKvvbdZN4o8tLulZVk.jpg`,
@@ -67,7 +69,7 @@ export const films: Film[] = [
     title: "A Family Finds Entertainment",
     credit: "Ryan Trecartin, 2004",
     date: "2027-02-02",
-    minutes: 42,
+    runtime: 42 * 60, // TMDB
     stills: [
       `${TMDB}/syvkd78a169rKQBSGoClWPH2hiD.jpg`,
       `${TMDB}/qgvSsvpaSswgM6av75xHIbpdYf5.jpg`,
@@ -85,7 +87,7 @@ export const films: Film[] = [
     title: "In the Dark",
     credit: "Clifton Holmes, 2000",
     date: "2027-02-09",
-    minutes: 106,
+    runtime: 106 * 60, // TMDB
     stills: [
       `${TMDB}/Ah5ELScm7dyiC1f3jFx32FPRVql.jpg`,
       `${TMDB}/gJj9n7gA8L46d6x1dl6AT2hLswy.jpg`,
@@ -112,10 +114,11 @@ export const formatDate = (iso: string) =>
 // Until each night has a Ticket Tailor event, Book buttons point here.
 export const bookingUrl = (f: Film) => f.ticketUrl ?? "#book";
 
-// "2:25:00", as on a video player
-export const playerTime = (minutes?: number) =>
-  minutes ? `${Math.floor(minutes / 60)}:${String(minutes % 60).padStart(2, "0")}:00` : undefined;
-
-// "2h 25m"
-export const runningTime = (minutes?: number) =>
-  minutes ? [Math.floor(minutes / 60) && `${Math.floor(minutes / 60)}h`, minutes % 60 && `${minutes % 60}m`].filter(Boolean).join(" ") : undefined;
+// "2h 24m 21s" when known to the second, otherwise "1h 25m"
+export function runningTime(f: Film) {
+  if (!f.runtime) return undefined;
+  const h = Math.floor(f.runtime / 3600);
+  const m = Math.floor((f.runtime % 3600) / 60);
+  const sec = f.runtime % 60;
+  return [h && `${h}h`, m && `${m}m`, f.runtimeExact && sec && `${sec}s`].filter(Boolean).join(" ");
+}

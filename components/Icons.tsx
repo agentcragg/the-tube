@@ -55,9 +55,3 @@ export const TvIcon = ({ className }: P) => (
     <circle cx="12.7" cy="10" r=".8" fill="#333" />
   </svg>
 );
-
-export const PlayIcon = ({ className }: P) => (
-  <svg {...base} className={className}>
-    <path d="M4.5 3v10l8-5z" fill="#fff" />
-  </svg>
-);
