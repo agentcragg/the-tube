@@ -1,5 +1,6 @@
 import Link from "next/link";
 import ComingUp from "@/components/ComingUp";
+import Coverflow from "@/components/Coverflow";
 import { CalendarIcon, PinIcon, TvIcon } from "@/components/Icons";
 import { films, formatDate } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
@@ -13,6 +14,8 @@ export default async function WhatsOn() {
   const latest = (await withYouTubeDetails(seedVideos)).slice(-6).reverse();
 
   return (
+    <>
+    <Coverflow films={films} />
     <div className="home">
       <ComingUp films={films} seats={SAMPLE_SEATS} />
 
@@ -81,5 +84,6 @@ export default async function WhatsOn() {
         </section>
       </aside>
     </div>
+    </>
   );
 }

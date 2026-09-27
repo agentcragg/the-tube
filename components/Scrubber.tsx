@@ -4,7 +4,7 @@ import { useRef, useState } from "react";
 
 // A film's stills in a row, one showing at a time.
 // Mouse: move across the image to scrub through them, like old YouTube thumbnails.
-// Touch: swipe sideways to flick through them, with dots showing where you are.
+// Touch: swipe sideways to flick through them.
 // With no real frames it shows generated placeholders.
 
 const PLACEHOLDER_FRAMES = 4;
@@ -91,16 +91,9 @@ export default function Scrubber({
       </div>
       {duration && <span className="scrub-time">{duration}</span>}
       {count > 1 && (
-        <>
-          <div className="scrub-bar" aria-hidden>
-            <div style={{ width: active ? `${((i + 1) / count) * 100}%` : 0 }} />
-          </div>
-          <div className="scrub-dots" aria-hidden>
-            {Array.from({ length: count }, (_, n) => (
-              <span key={n} className={n === i ? "on" : undefined} />
-            ))}
-          </div>
-        </>
+        <div className="scrub-bar" aria-hidden>
+          <div style={{ width: active ? `${((i + 1) / count) * 100}%` : 0 }} />
+        </div>
       )}
     </div>
   );

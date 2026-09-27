@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useState } from "react";
 import Scrubber from "@/components/Scrubber";
-import { CalendarIcon, ClockIcon, TicketIcon } from "@/components/Icons";
-import { badgeTime, bookingUrl, formatDate, runningTime, type Film } from "@/lib/films";
+import { CalendarIcon, TicketIcon } from "@/components/Icons";
+import { badgeTime, bookingUrl, formatDate, type Film } from "@/lib/films";
 
 // The "Coming up" box: YouTube-style sort tabs plus a search field that
 // filters the grid as you type.
@@ -14,6 +14,17 @@ const TABS = [
   { id: "all", label: "All season" },
   { id: "past", label: "Past nights" },
 ] as const;
+
+function CalendarPage({ iso }: { iso: string }) {
+  const d = new Date(iso + "T00:00:00");
+  return (
+    <span className="cal-page" aria-hidden>
+      <span className="cal-month">{d.toLocaleDateString("en-GB", { month: "short" })}</span>
+      <span className="cal-day">{d.getDate()}</span>
+      <span className="cal-weekday">{d.toLocaleDateString("en-GB", { weekday: "short" })}</span>
+    </span>
+  );
+}
 
 export default function ComingUp({ films, seats }: { films: Film[]; seats: Record<string, number> }) {
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("next");
@@ -70,24 +81,34 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
           <ul className="film-grid">
             {shown.map((f) => (
               <li key={f.slug}>
-                <Link href={`/films/${f.slug}`}>
-                  <Scrubber frames={f.stills} seed={f.slug} alt={f.title} duration={badgeTime(f)} />
-                </Link>
+                <div className="card-still">
+                  <Link href={`/films/${f.slug}`}>
+                    <Scrubber frames={f.stills} seed={f.slug} alt={f.title} duration={badgeTime(f)} />
+                  </Link>
+                  {/* Starbursts: only shown when that Style lab idea is on */}
+                  {f.slug === films[0].slug && <span className="sticker sticker-next">Next up!</span>}
+                  {(seats[f.slug] ?? 30) <= 10 && (
+                    <span className="sticker sticker-seats">
+                      Only {seats[f.slug]} seats left!
+                    </span>
+                  )}
+                </div>
+                {/* Calendar page: only shown when that Style lab idea is on */}
+                <CalendarPage iso={f.date} />
                 <h3>
                   <Link href={`/films/${f.slug}`}>{f.title}</Link>
                 </h3>
                 <p className="credit">{f.credit}</p>
                 <ul className="meta">
-                  <li>
+                  <li className="meta-date">
                     <CalendarIcon /> {formatDate(f.date)}
                   </li>
-                  {f.runtime && (
-                    <li>
-                      <ClockIcon /> {runningTime(f)}
-                    </li>
-                  )}
-                  <li>
+                  <li className="meta-seats">
                     <TicketIcon /> {seats[f.slug] ?? 30} of 30 seats left
+                  </li>
+                  <li className="seat-meter" aria-hidden>
+                    <span style={{ width: `${((30 - (seats[f.slug] ?? 30)) / 30) * 100}%` }} />
+                    <em>{seats[f.slug] ?? 30} of 30 seats left</em>
                   </li>
                 </ul>
                 <a className="book book-small" href={bookingUrl(f)}>
