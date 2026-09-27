@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import Scrubber from "@/components/Scrubber";
-import { CalendarIcon, ClockIcon, RssIcon, TicketIcon } from "@/components/Icons";
+import { CalendarIcon, ClockIcon, TicketIcon } from "@/components/Icons";
 import { badgeTime, bookingUrl, formatDate, runningTime, type Film } from "@/lib/films";
 
 // The "Coming up" box: YouTube-style sort tabs plus a search field that
@@ -34,12 +34,7 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
   return (
     <section className="box">
       <div className="box-head">
-        <h2>
-          Coming up at The Tube
-          <a href="/rss.xml" className="rss-link" title="Subscribe to upcoming screenings (RSS)">
-            <RssIcon />
-          </a>
-        </h2>
+        <h2>Coming up at The Tube</h2>
         <form className="box-search" role="search" onSubmit={(e) => e.preventDefault()}>
           <input
             type="search"

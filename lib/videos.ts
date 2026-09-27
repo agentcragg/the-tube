@@ -11,46 +11,45 @@ export type Video = {
   channel?: string; // YouTube channel, filled in from YouTube
   suggestedBy?: string;
   suggestedOn?: string; // ISO date
-  tags?: string[];
 };
 
 export const seedVideos: Video[] = [
   // Shorts-led nights
-  { id: "mkRpQU2xVCo", title: "Nebraska City, episode 1: Promises", maker: "Nick Varvaro", tags: ["sketch comedy"] },
-  { id: "wompmqzTWi0", title: "Nebraska City, episode 5: Pregnant", maker: "Nick Varvaro", tags: ["sketch comedy"] },
-  { id: "ObcDCDDJN8k", title: "A Family Finds Entertainment (part 4)", maker: "Ryan Trecartin", year: "2004", tags: ["video art"] },
-  { id: "IbpUzWGFGnM", title: "Center Jenny", maker: "Ryan Trecartin", year: "2013", tags: ["video art"] },
-  { id: "i8Dt_8JSRb4", title: "Trash Talkin", maker: "Paper Rad", year: "2006", tags: ["video art", "animation"] },
-  { id: "er-OWkFeeV8", title: "Welcome to My Homeypage", maker: "Paper Rad", year: "2002", tags: ["video art", "animation"] },
-  { id: "S9DFdQvGn-w", title: "Feed Me", maker: "Rachel Maclean", year: "2015", tags: ["video art"] },
+  { id: "mkRpQU2xVCo", title: "Nebraska City, episode 1: Promises", maker: "Nick Varvaro" },
+  { id: "wompmqzTWi0", title: "Nebraska City, episode 5: Pregnant", maker: "Nick Varvaro" },
+  { id: "ObcDCDDJN8k", title: "A Family Finds Entertainment (part 4)", maker: "Ryan Trecartin", year: "2004" },
+  { id: "IbpUzWGFGnM", title: "Center Jenny", maker: "Ryan Trecartin", year: "2013" },
+  { id: "i8Dt_8JSRb4", title: "Trash Talkin", maker: "Paper Rad", year: "2006" },
+  { id: "er-OWkFeeV8", title: "Welcome to My Homeypage", maker: "Paper Rad", year: "2002" },
+  { id: "S9DFdQvGn-w", title: "Feed Me", maker: "Rachel Maclean", year: "2015" },
   // Paired with features
-  { id: "6e6RK8o1fcs", title: "Petscop", maker: "Anonymous", year: "2017", tags: ["ARG", "gaming"] },
-  { id: "iGOJmdxdjeA", title: "BEN.wmv (Ben Drowned)", maker: "Alex Hall", year: "2010", tags: ["ARG", "creepypasta", "gaming"] },
-  { id: "3c66w6fVqOI", title: "Local 58: Contingency", maker: "Kris Straub", year: "2015", tags: ["analogue horror"] },
-  { id: "M75VLQuFPrY", title: "Local 58: Weather Service", maker: "Kris Straub", year: "2017", tags: ["analogue horror"] },
+  { id: "6e6RK8o1fcs", title: "Petscop", maker: "Anonymous", year: "2017" },
+  { id: "iGOJmdxdjeA", title: "BEN.wmv (Ben Drowned)", maker: "Alex Hall", year: "2010" },
+  { id: "3c66w6fVqOI", title: "Local 58: Contingency", maker: "Kris Straub", year: "2015" },
+  { id: "M75VLQuFPrY", title: "Local 58: Weather Service", maker: "Kris Straub", year: "2017" },
   // MODERN WARFARE trilogy
-  { id: "CBM-NZdWyk4", title: "FaZe 1 Million Subscribers Teamtage", maker: "FaZe MinK", tags: ["gaming", "montage"] },
-  { id: "wk49clE9wuQ", title: "Genocide V2 (CoD4 montage)", maker: "iBLaCKOuTz", tags: ["gaming", "montage"] },
+  { id: "CBM-NZdWyk4", title: "FaZe 1 Million Subscribers Teamtage", maker: "FaZe MinK" },
+  { id: "wk49clE9wuQ", title: "Genocide V2 (CoD4 montage)", maker: "iBLaCKOuTz" },
   // Machinima night
-  { id: "BY5TBKfEIWQ", title: "Rehearsals for Retirement", maker: "Phil Solomon", year: "2007", tags: ["machinima", "experimental"] },
-  { id: "eoSI9_I3sO8", title: "Last Days in a Lonely Place", maker: "Phil Solomon", year: "2007", tags: ["machinima", "experimental"] },
-  { id: "u0Km5yvfDXY", title: "Still Raining, Still Dreaming", maker: "Phil Solomon", tags: ["experimental"] },
-  { id: "gldQKJfmizQ", title: "Crossroad", maker: "Phil Solomon, Mark LaPore", year: "2005", tags: ["experimental"] },
-  { id: "mq4Ks4Z_NGY", title: "Diary of a Camper", maker: "United Ranger Films", year: "1996", tags: ["machinima"] },
-  { id: "mLyOj_QD4a4", title: "Leeroy Jenkins", year: "2005", tags: ["machinima", "gaming"] },
-  { id: "jHgZh4GV9G0", title: "Meet the Heavy", maker: "Valve", year: "2007", tags: ["machinima"] },
-  { id: "OR4N5OhcY9s", title: "Meet the Spy", maker: "Valve", tags: ["machinima"] },
-  { id: "9BAM9fgV-ts", title: "Red vs. Blue, episode 1: Why Are We Here?", maker: "Rooster Teeth", year: "2003", tags: ["machinima"] },
-  { id: "5SQhfkpX9bc", title: "Freeman's Mind, episode 1", maker: "Ross Scott", year: "2007", tags: ["machinima"] },
-  { id: "nGQIQljaAc0", title: "Warthog jump", tags: ["gaming"] },
-  { id: "FxD9Rw_DXOk", title: "Hardly Workin'", maker: "ILL Clan", year: "2000", tags: ["machinima"] },
-  { id: "eEUR-Um21jY", title: "Skibidi Toilet, part 1", maker: "DaFuq!?Boom!", year: "2023", tags: ["animation"] },
+  { id: "BY5TBKfEIWQ", title: "Rehearsals for Retirement", maker: "Phil Solomon", year: "2007" },
+  { id: "eoSI9_I3sO8", title: "Last Days in a Lonely Place", maker: "Phil Solomon", year: "2007" },
+  { id: "u0Km5yvfDXY", title: "Still Raining, Still Dreaming", maker: "Phil Solomon" },
+  { id: "gldQKJfmizQ", title: "Crossroad", maker: "Phil Solomon, Mark LaPore", year: "2005" },
+  { id: "mq4Ks4Z_NGY", title: "Diary of a Camper", maker: "United Ranger Films", year: "1996" },
+  { id: "mLyOj_QD4a4", title: "Leeroy Jenkins", year: "2005" },
+  { id: "jHgZh4GV9G0", title: "Meet the Heavy", maker: "Valve", year: "2007" },
+  { id: "OR4N5OhcY9s", title: "Meet the Spy", maker: "Valve" },
+  { id: "9BAM9fgV-ts", title: "Red vs. Blue, episode 1: Why Are We Here?", maker: "Rooster Teeth", year: "2003" },
+  { id: "5SQhfkpX9bc", title: "Freeman's Mind, episode 1", maker: "Ross Scott", year: "2007" },
+  { id: "nGQIQljaAc0", title: "Warthog jump" },
+  { id: "FxD9Rw_DXOk", title: "Hardly Workin'", maker: "ILL Clan", year: "2000" },
+  { id: "eEUR-Um21jY", title: "Skibidi Toilet, part 1", maker: "DaFuq!?Boom!", year: "2023" },
   // Other one-offs
-  { id: "dKnwhokvgxE", title: "Max Headroom broadcast intrusion (WGN news)", year: "1987", tags: ["broadcast intrusion", "found footage"] },
-  { id: "klqi_h9FElc", title: "Webdriver Torso", year: "2013", tags: ["internet mystery"] },
-  { id: "Bn59FJ4HrmU", title: "Marble Hornets, entry 1", year: "2009", tags: ["ARG", "found footage"] },
+  { id: "dKnwhokvgxE", title: "Max Headroom broadcast intrusion (WGN news)", year: "1987" },
+  { id: "klqi_h9FElc", title: "Webdriver Torso", year: "2013" },
+  { id: "Bn59FJ4HrmU", title: "Marble Hornets, entry 1", year: "2009" },
   // Pre-show library
-  { id: "E3-vsKwQ0Cg", title: "Dots", maker: "Norman McLaren", year: "1940", tags: ["animation", "experimental"] },
+  { id: "E3-vsKwQ0Cg", title: "Dots", maker: "Norman McLaren", year: "1940" },
 ];
 
 // Fills in channel names from YouTube. Our own titles are kept, since

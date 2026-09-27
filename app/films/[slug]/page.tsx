@@ -2,9 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Scrubber from "@/components/Scrubber";
 import Notes from "@/components/Notes";
-import { CalendarIcon, PinIcon, TagIcon, TicketIcon } from "@/components/Icons";
-import SharePanel from "@/components/SharePanel";
-import { tagHref } from "@/lib/tags";
+import { CalendarIcon, PinIcon, TicketIcon } from "@/components/Icons";
 import { bookingUrl, films, formatDate, getFilm } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
 
@@ -77,20 +75,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           >
             <PinIcon /> Map
           </a>
-          <SharePanel title={film.title} path={`/films/${film.slug}`} />
         </div>
-
-        {film.tags && (
-          <p className="tag-line">
-            <TagIcon /> Tags:{" "}
-            {film.tags.map((t, n) => (
-              <span key={t}>
-                {n > 0 && ", "}
-                <Link href={tagHref(t)}>{t}</Link>
-              </span>
-            ))}
-          </p>
-        )}
 
         <section className="box">
           <div className="box-head">

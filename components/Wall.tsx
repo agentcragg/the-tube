@@ -1,9 +1,6 @@
 "use client";
 
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
-import { DiceIcon, StarIcon } from "@/components/Icons";
 import { credit, parseYouTubeId, thumb, type Video } from "@/lib/videos";
 
 // An endless grid of thumbnails. Drag to move it; a hard flick keeps gliding
@@ -27,41 +24,35 @@ const DRAG_THRESHOLD = 4; // px before a press counts as a drag rather than a cl
 const MAX_FLING = 45; // px per frame cap, so a violent flick doesn't fly off for miles
 
 type Pending = { id: string; title: string; author?: string };
+const STORAGE_KEY = "tube-pending";
 
-// Small per-browser lists (your pending suggestions, your favourites), kept in
-// localStorage until there's a database behind the wall.
-function localList<T>(key: string) {
-  let cache: T[] | null = null;
-  const listeners = new Set<() => void>();
-  return {
-    get(): T[] {
-      if (cache) return cache;
-      try {
-        cache = JSON.parse(localStorage.getItem(key) ?? "[]");
-      } catch {
-        cache = [];
-      }
-      return cache!;
-    },
-    set(next: T[]) {
-      cache = next;
-      try {
-        localStorage.setItem(key, JSON.stringify(next));
-      } catch {}
-      listeners.forEach((l) => l());
-    },
-    subscribe(l: () => void) {
-      listeners.add(l);
-      return () => listeners.delete(l);
-    },
-  };
-}
-const pendingStore = localList<Pending>("tube-pending");
-const favStore = localList<string>("tube-favourites");
-const NO_PENDING: Pending[] = [];
-const NO_FAVS: string[] = [];
-
-const pickRandom = <T,>(items: T[]) => items[Math.floor(Math.random() * items.length)];
+// The submitter's own pending suggestions, kept in their browser until
+// there's a database behind the wall.
+const EMPTY: Pending[] = [];
+let cache: Pending[] | null = null;
+const listeners = new Set<() => void>();
+const pendingStore = {
+  get(): Pending[] {
+    if (cache) return cache;
+    try {
+      cache = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
+    } catch {
+      cache = [];
+    }
+    return cache!;
+  },
+  set(next: Pending[]) {
+    cache = next;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    } catch {}
+    listeners.forEach((l) => l());
+  },
+  subscribe(l: () => void) {
+    listeners.add(l);
+    return () => listeners.delete(l);
+  },
+};
 
 // A fixed lattice step keeps nearby cells on different videos
 const videoIndex = (cx: number, cy: number, count: number) => (((cx * 5 + cy * 7) % count) + count) % count;
@@ -74,66 +65,39 @@ function Tile({
   style,
   onOpen,
   onHover,
-  starred,
-  onStar,
 }: {
   video: Video;
   style: React.CSSProperties;
   onOpen: () => void;
   onHover: (on: boolean) => void;
-  starred: boolean;
-  onStar: () => void;
 }) {
   return (
-    <div className="tile" style={style} onMouseEnter={() => onHover(true)} onMouseLeave={() => onHover(false)}>
-      <button className="tile-open" onClick={onOpen}>
-        {/* hqdefault is 4:3 with the video letterboxed inside; cropping it to 16:9
-            cuts the bars off both widescreen and 4:3 videos */}
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src={thumb(video.id, "hq")} alt="" draggable={false} />
-        <span className="tile-info">
-          <strong>{video.title}</strong>
-          {credit(video) && <span>{credit(video)}</span>}
-          {video.suggestedBy && (
-            <span>
-              Suggested by {video.suggestedBy}
-              {video.suggestedOn && `, ${formatDay(video.suggestedOn)}`}
-            </span>
-          )}
-        </span>
-      </button>
-      <button
-        className={starred ? "tile-star tile-star-on" : "tile-star"}
-        onClick={onStar}
-        aria-pressed={starred}
-        aria-label={starred ? `Remove ${video.title} from favourites` : `Add ${video.title} to favourites`}
-        title={starred ? "Remove from favourites" : "Add to favourites"}
-      >
-        <StarIcon filled={starred} />
-      </button>
-    </div>
+    <button
+      className="tile"
+      style={style}
+      onClick={onOpen}
+      onMouseEnter={() => onHover(true)}
+      onMouseLeave={() => onHover(false)}
+    >
+      {/* hqdefault is 4:3 with the video letterboxed inside; cropping it to 16:9
+          cuts the bars off both widescreen and 4:3 videos */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={thumb(video.id, "hq")} alt="" draggable={false} />
+      <span className="tile-info">
+        <strong>{video.title}</strong>
+        {credit(video) && <span>{credit(video)}</span>}
+        {video.suggestedBy && (
+          <span>
+            Suggested by {video.suggestedBy}
+            {video.suggestedOn && `, ${formatDay(video.suggestedOn)}`}
+          </span>
+        )}
+      </span>
+    </button>
   );
 }
 
-type FilmTag = { slug: string; title: string; tags?: string[] };
-
-export default function Wall({ videos: all, films }: { videos: Video[]; films: FilmTag[] }) {
-  const params = useSearchParams();
-  const tag = params.get("tag");
-  const showFavs = params.get("show") === "favourites";
-  const favs = useSyncExternalStore(favStore.subscribe, favStore.get, () => NO_FAVS);
-  const videos = all.filter(
-    (v) => (!tag || v.tags?.includes(tag)) && (!showFavs || favs.includes(v.id)),
-  );
-  const wallTags = [...new Set(all.flatMap((v) => v.tags ?? []))].sort();
-  const filmsWithTag = tag ? films.filter((f) => f.tags?.includes(tag)) : [];
-  const toggleFav = (id: string) =>
-    favStore.set(favs.includes(id) ? favs.filter((f) => f !== id) : [...favs, id]);
-  const surprise = () => {
-    const pool = videos.length ? videos : all;
-    setOpen(pickRandom(pool));
-  };
-
+export default function Wall({ videos }: { videos: Video[] }) {
   const viewport = useRef<HTMLDivElement>(null);
   const layer = useRef<HTMLDivElement>(null);
   const offset = useRef({ x: 0, y: 0 });
@@ -148,7 +112,7 @@ export default function Wall({ videos: all, films }: { videos: Video[]; films: F
   const [open, setOpen] = useState<Video | null>(null);
   const [input, setInput] = useState("");
   const [status, setStatus] = useState<{ kind: "error" | "ok" | "busy"; msg: string } | null>(null);
-  const pending = useSyncExternalStore(pendingStore.subscribe, pendingStore.get, () => NO_PENDING);
+  const pending = useSyncExternalStore(pendingStore.subscribe, pendingStore.get, () => EMPTY);
 
   useEffect(() => {
     playing.current = !!open;
@@ -284,7 +248,7 @@ export default function Wall({ videos: all, films }: { videos: Video[]; films: F
     e.preventDefault();
     const id = parseYouTubeId(input);
     if (!id) return setStatus({ kind: "error", msg: "That doesn't look like a YouTube link." });
-    if (all.some((v) => v.id === id) || pending.some((p) => p.id === id)) {
+    if (videos.some((v) => v.id === id) || pending.some((p) => p.id === id)) {
       return setStatus({ kind: "error", msg: "Someone's already suggested that one." });
     }
     setStatus({ kind: "busy", msg: "Looking it up…" });
@@ -302,7 +266,7 @@ export default function Wall({ videos: all, films }: { videos: Video[]; films: F
   };
 
   const tiles = [];
-  for (let cy = view.cy; videos.length && cy < view.cy + view.rows; cy++) {
+  for (let cy = view.cy; cy < view.cy + view.rows; cy++) {
     for (let cx = view.cx; cx < view.cx + view.cols; cx++) {
       const video = videos[videoIndex(cx, cy, videos.length)];
       tiles.push(
@@ -311,8 +275,6 @@ export default function Wall({ videos: all, films }: { videos: Video[]; films: F
           video={video}
           onOpen={() => setOpen(video)}
           onHover={onHover}
-          starred={favs.includes(video.id)}
-          onStar={() => toggleFav(video.id)}
           style={{ left: cx * CELL_W, top: cy * CELL_H, width: TILE_W, height: TILE_H }}
         />,
       );
@@ -346,28 +308,6 @@ export default function Wall({ videos: all, films }: { videos: Video[]; films: F
           )}
           {pending.length > 0 && <span className="pending-count"> · {pending.length} of yours waiting for approval</span>}
         </p>
-        <nav className="wall-filters" aria-label="Filter the wall">
-          <Link href="/wall" scroll={false} className={!tag && !showFavs ? "on" : undefined}>
-            All ({all.length})
-          </Link>
-          <Link href="/wall?show=favourites" scroll={false} className={showFavs ? "on" : undefined}>
-            <StarIcon filled /> My favourites ({favs.length})
-          </Link>
-          <span className="wall-filters-sep" />
-          {wallTags.map((t) => (
-            <Link
-              key={t}
-              href={`/wall?tag=${encodeURIComponent(t)}`}
-              scroll={false}
-              className={t === tag ? "tag-chip on" : "tag-chip"}
-            >
-              {t}
-            </Link>
-          ))}
-          <button type="button" className="surprise" onClick={surprise}>
-            <DiceIcon /> Surprise me
-          </button>
-        </nav>
       </div>
 
       <div
@@ -390,31 +330,6 @@ export default function Wall({ videos: all, films }: { videos: Video[]; films: F
         <div ref={layer} className="wall-layer">
           {tiles}
         </div>
-        {!videos.length && (
-          <div className="wall-empty">
-            {showFavs ? (
-              <p>No favourites yet. Click the star on any video to keep it here.</p>
-            ) : (
-              <>
-                <p>Nothing on the wall is tagged &ldquo;{tag}&rdquo; yet.</p>
-                {filmsWithTag.length > 0 && (
-                  <p>
-                    Films tagged &ldquo;{tag}&rdquo;:{" "}
-                    {filmsWithTag.map((f, n) => (
-                      <span key={f.slug}>
-                        {n > 0 && ", "}
-                        <Link href={`/films/${f.slug}`}>{f.title}</Link>
-                      </span>
-                    ))}
-                  </p>
-                )}
-              </>
-            )}
-            <p>
-              <Link href="/wall">Show everything</Link>
-            </p>
-          </div>
-        )}
       </div>
 
       {open && (

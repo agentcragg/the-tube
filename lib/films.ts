@@ -13,7 +13,6 @@ export type Film = {
   ticketUrl?: string; // Ticket Tailor event link, once on sale
   notes?: string; // programme notes
   pairedWith?: string;
-  tags?: string[];
   rabbitHole: { label: string; url: string }[];
 };
 
@@ -35,7 +34,6 @@ export const films: Film[] = [
     date: "2027-01-19",
     runtime: 8661, // 2h 24m 21s, BBFC, UK cinema version (the 2020 Arrow cut is 2h 38m)
     runtimeExact: true,
-    tags: ["cult", "satire", "apocalypse"],
     stills: [
       `${TMDB}/eQdZzDUubjxEDNmH8ucAtt8fTer.jpg`,
       `${TMDB}/ekFUbytCbZrc9rPizJl4Gweiinj.jpg`,
@@ -54,7 +52,6 @@ export const films: Film[] = [
     credit: "David Blair, 1991",
     date: "2027-01-26",
     runtime: 85 * 60, // TMDB
-    tags: ["video art", "early internet", "bees"],
     stills: [
       `${TMDB}/h62Aotz1fAV3n8c0DDQBcs0wkdH.jpg`,
       `${TMDB}/A8QbpEFB1dKvvbdZN4o8tLulZVk.jpg`,
@@ -73,7 +70,6 @@ export const films: Film[] = [
     credit: "Ryan Trecartin, 2004",
     date: "2027-02-02",
     runtime: 42 * 60, // TMDB
-    tags: ["video art"],
     stills: [
       `${TMDB}/syvkd78a169rKQBSGoClWPH2hiD.jpg`,
       `${TMDB}/qgvSsvpaSswgM6av75xHIbpdYf5.jpg`,
@@ -136,7 +132,3 @@ export function badgeTime(f: Film) {
   const pad = (n: number) => String(n).padStart(2, "0");
   return h ? `${h}:${pad(m)}:${pad(sec)}` : `${m}:${pad(sec)}`;
 }
-
-// Whole days from now until an ISO date
-export const daysUntil = (iso: string) =>
-  Math.ceil((new Date(iso + "T00:00:00").getTime() - Date.now()) / 86_400_000);

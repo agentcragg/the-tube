@@ -13,15 +13,10 @@ export default function Header() {
   const path = usePathname();
   return (
     <header className="site-header">
-      <div className="logo-row">
-        {/* Placeholder until the real logo is designed */}
-        <Link href="/" className="logo">
-          THE TUBE
-        </Link>
-        <span className="beta" title="Everything was in beta in 2007">
-          BETA
-        </span>
-      </div>
+      {/* Placeholder until the real logo is designed */}
+      <Link href="/" className="logo">
+        THE TUBE
+      </Link>
       <nav className="tabs">
         {tabs.map((t) => (
           <Link key={t.href} href={t.href} className={t.match(path) ? "tab tab-on" : "tab"}>
