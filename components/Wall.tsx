@@ -1,8 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
-import Fun from "@/components/fun/Fun";
-import { Laurel } from "@/components/fun/laurels";
+import { Laurel } from "@/components/laurels";
 import { credit, parseYouTubeId, thumb, type Video } from "@/lib/videos";
 
 // An endless grid of thumbnails. Drag to move it; a hard flick keeps gliding
@@ -85,9 +84,7 @@ function Tile({
           cuts the bars off both widescreen and 4:3 videos */}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img src={thumb(video.id, "hq")} alt="" draggable={false} />
-      <Fun id="laurels">
-        <Laurel videoId={video.id} />
-      </Fun>
+      <Laurel videoId={video.id} />
       <span className="tile-info">
         <strong>{video.title}</strong>
         {credit(video) && <span>{credit(video)}</span>}

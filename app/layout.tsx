@@ -1,20 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import FunLab from "@/components/FunLab";
-import Fun from "@/components/fun/Fun";
-import { EndeavourStrip } from "@/components/fun/endeavour";
+import { EndeavourStrip } from "@/components/endeavour";
 import Header from "@/components/Header";
 import { films, formatDate, isPast, VENUE } from "@/lib/films";
 import "./globals.css";
-// One stylesheet per Fun lab idea
-import "./fun/handbill.css";
-import "./fun/running.css";
-import "./fun/watch.css";
-import "./fun/card.css";
-import "./fun/endeavour.css";
-import "./fun/trailer.css";
-import "./fun/signature.css";
-import "./fun/laurels.css";
+import "./watch.css";
+import "./endeavour.css";
+import "./laurels.css";
 
 export const metadata: Metadata = {
   title: "The Tube",
@@ -29,9 +21,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <Header />
           <main>{children}</main>
           <footer className="site-footer">
-            <Fun id="endeavour">
-              <EndeavourStrip films={films} />
-            </Fun>
+            <EndeavourStrip films={films} />
             <div className="footer-fat">
               <section>
                 <h3>Coming up</h3>
@@ -77,7 +67,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </div>
           </footer>
         </div>
-        <FunLab />
       </body>
     </html>
   );

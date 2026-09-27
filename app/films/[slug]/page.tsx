@@ -1,16 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import FilmStill from "@/components/FilmStill";
-import Fun from "@/components/fun/Fun";
-import { HypeCard } from "@/components/fun/card";
-import { HandbillFilm } from "@/components/fun/handbill";
-import { RunningOrder } from "@/components/fun/running";
-import { TrailerButton } from "@/components/fun/trailer";
-import { WatchPanels } from "@/components/fun/watch";
 import Scrubber from "@/components/Scrubber";
+import { WatchPanels } from "@/components/watch";
 import Notes from "@/components/Notes";
 import { CalendarIcon, MicIcon, PinIcon, TicketIcon } from "@/components/Icons";
 import { bookingUrl, films, formatDate, getFilm, VENUE } from "@/lib/films";
+import { watchFor } from "@/lib/watch";
 import { SAMPLE_SEATS } from "@/lib/seats";
 
 export function generateStaticParams() {
@@ -49,11 +44,13 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
   const others = films.filter((f) => f.slug !== film.slug);
 
   return (
-    <div className="watch" data-film={film.slug} style={{ "--film": film.colour } as React.CSSProperties}>
+    <div className="watch" style={{ "--film": film.colour } as React.CSSProperties}>
       {/* Lets the header, tabs and footer pick up this film's colour too */}
       <style>{`:root { --film: ${film.colour}; }`}</style>
       <article>
-        <FilmStill film={film} />
+        <div className="still-frame">
+          <Scrubber frames={film.stills} seed={film.slug} alt={film.title} />
+        </div>
 
         <h1>{film.title}</h1>
         <p className="credit">{film.credit}</p>
@@ -87,30 +84,16 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           >
             <PinIcon /> Map
           </a>
-          <Fun id="trailer">
-            <TrailerButton film={film} />
-          </Fun>
         </div>
 
-        <Fun id="handbill">
-          <HandbillFilm film={film} />
-        </Fun>
-
-        <section className="box notes-section">
+        <section className="box">
           <div className="box-head">
             <h2>Programme notes</h2>
           </div>
           <div className="box-body">
-            <Fun id="card">
-              <HypeCard film={film} />
-            </Fun>
             <Notes text={film.notes ?? PLACEHOLDER_NOTES} />
           </div>
         </section>
-
-        <Fun id="running">
-          <RunningOrder film={film} />
-        </Fun>
       </article>
 
       <aside className="side">
@@ -136,26 +119,26 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           </div>
         </section>
 
-        <Fun id="watch">
+        {watchFor(film.slug) ? (
           <WatchPanels film={film} />
-        </Fun>
-
-        <section className="box rabbit-box">
-          <div className="box-head">
-            <h2>Rabbit hole</h2>
-          </div>
-          <div className="box-body">
-            <ul className="links">
-              {film.rabbitHole.map((l) => (
-                <li key={l.url}>
-                  <a href={l.url} target="_blank" rel="noreferrer">
-                    {l.label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
+        ) : (
+          <section className="box">
+            <div className="box-head">
+              <h2>Rabbit hole</h2>
+            </div>
+            <div className="box-body">
+              <ul className="links">
+                {film.rabbitHole.map((l) => (
+                  <li key={l.url}>
+                    <a href={l.url} target="_blank" rel="noreferrer">
+                      {l.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
+        )}
       </aside>
     </div>
   );

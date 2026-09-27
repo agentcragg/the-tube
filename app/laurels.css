@@ -1,0 +1,78 @@
+/* Laurels on the wall */
+
+/* The laurel, top left of a wall tile. White line art with a soft dark halo
+   so it reads on any thumbnail. */
+.laurel {
+  position: absolute; left: 6px; top: 6px;
+  width: 72px; height: auto;
+  pointer-events: none;
+  filter: drop-shadow(0 0 0.6px rgb(0 0 0 / 0.9)) drop-shadow(0 0 2px rgb(0 0 0 / 0.55));
+  transition: opacity 120ms;
+}
+
+/* With a mouse, the tile's info takes over on hover and can reach the top of
+   the tile, so the laurel steps aside and the words say the same thing */
+@media (hover: hover) {
+  .tile:hover .laurel, .tile:focus-visible .laurel { opacity: 0; }
+}
+
+/* Smaller on phones and wherever the info is always showing. At that size
+   "DEPTFORD" would be a smudge, so the laurel drops it and sets the other two
+   lines larger, closed up around the middle. (Inside the SVG, px are the
+   drawing's own units.) */
+@media (max-width: 720px), (hover: none) {
+  .laurel { width: 56px; }
+  .laurel-place { display: none; }
+  .laurel-top { font-size: 8px; transform: translateY(3.5px); }
+  .laurel-year { font-size: 7.2px; transform: translateY(-2.9px); }
+}
+
+/* The words, added to the tile's info (.tile-info in Wall.tsx) in a light
+   tint of that night's film colour:
+     Shown before Southland Tales
+     Tue 19 Jan 2027
+   They live outside the slot, so they're gated here. The <em> steps out of
+   the way (display: contents) so each line is a line of the info's own
+   column. Each is one line at most; a long film title ends in an ellipsis. */
+.tile-info .laurel-note {
+  display: contents;
+  font-size: 11px;
+  color: color-mix(in srgb, var(--film) 45%, #fff);
+}
+.tile-info .laurel-what,
+.tile-info .laurel-when {
+  display: block; width: 100%;
+  font-size: 11px; line-height: 1.3; color: inherit;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+.laurel-note cite { font-style: normal; }
+
+/* The info column is 88px tall (108 less padding) and anchored to the
+   bottom, so anything that doesn't fit is lost off the top, title first.
+   In a tile with a laurel:
+   - the title stops at two lines, and the maker and "Suggested by" lines
+     at one each, so title, maker, suggester and "Shown before…" always fit
+     (at most 85px);
+   - the date comes last and only shows if there's room for it. The column
+     wraps, so a date that doesn't fit starts a second column, which begins
+     past the tile's right edge and is clipped with it. Screen readers still
+     read it, and the laurel carries the year. */
+.tile-info:has(.laurel-note) {
+  flex-wrap: wrap;
+  column-gap: 24px;
+}
+.tile-info:has(.laurel-note) > strong {
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2;
+  overflow: hidden; flex-shrink: 0;
+}
+/* The width stops a long unbroken line setting the column's width */
+.tile-info:has(.laurel-note) > span {
+  width: 100%;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .laurel { transition: none; }
+}

@@ -29,15 +29,13 @@ export default function Scrubber({
   seed,
   alt,
   duration,
-  onFrame,
   lazy,
 }: {
   frames: string[];
   seed: string;
   alt: string;
   duration?: string; // e.g. "2:24:21"; badge hidden when not given
-  onFrame?: (i: number) => void; // told whenever the showing frame changes
-  lazy?: boolean; // don't load even the first frame until it's on screen (hidden Fun lab pieces)
+  lazy?: boolean; // don't load even the first frame until it's on screen (e.g. inside a closed panel)
 }) {
   const count = frames.length || PLACEHOLDER_FRAMES;
   const [i, setI] = useState(0);
@@ -46,7 +44,6 @@ export default function Scrubber({
 
   const show = (n: number) => {
     setI(n);
-    onFrame?.(n);
     const s = strip.current;
     if (s) s.scrollLeft = n * s.clientWidth;
   };
@@ -70,9 +67,7 @@ export default function Scrubber({
         className="scrub-strip"
         onScroll={(e) => {
           const s = e.currentTarget;
-          const n = Math.round(s.scrollLeft / s.clientWidth);
-          setI(n);
-          onFrame?.(n);
+          setI(Math.round(s.scrollLeft / s.clientWidth));
         }}
       >
         {Array.from({ length: count }, (_, n) =>
