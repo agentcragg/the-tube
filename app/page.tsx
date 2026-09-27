@@ -3,7 +3,7 @@ import ComingUp from "@/components/ComingUp";
 import { CalendarIcon, PinIcon, TvIcon } from "@/components/Icons";
 import { films, formatDate } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
-import { seedVideos, thumb, withYouTubeDetails } from "@/lib/videos";
+import { credit, seedVideos, thumb, withYouTubeDetails } from "@/lib/videos";
 
 const daysUntil = (iso: string) =>
   Math.ceil((new Date(iso + "T00:00:00").getTime() - Date.now()) / 86_400_000);
@@ -47,7 +47,7 @@ export default async function WhatsOn() {
                     <img src={thumb(v.id, "hq")} alt="" />
                     <span>
                       <strong>{v.title}</strong>
-                      {v.channel && <em>{v.channel}</em>}
+                      {credit(v) && <em>{credit(v)}</em>}
                     </span>
                   </Link>
                 </li>

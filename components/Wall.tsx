@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
-import { parseYouTubeId, thumb, type Video } from "@/lib/videos";
+import { credit, parseYouTubeId, thumb, type Video } from "@/lib/videos";
 
 // An endless grid of thumbnails. Drag to move it; a hard flick keeps gliding
 // and eases to a stop. Left alone, it drifts slowly, and the drift pauses
@@ -85,7 +85,7 @@ function Tile({
       <img src={thumb(video.id, "hq")} alt="" draggable={false} />
       <span className="tile-info">
         <strong>{video.title}</strong>
-        {video.channel && <span>{video.channel}</span>}
+        {credit(video) && <span>{credit(video)}</span>}
         {video.suggestedBy && (
           <span>
             Suggested by {video.suggestedBy}
