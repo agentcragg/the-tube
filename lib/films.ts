@@ -13,6 +13,7 @@ export type Film = {
   ticketUrl?: string; // Ticket Tailor event link, once on sale
   notes?: string; // programme notes
   pairedWith?: string;
+  colour: string; // taken from the film's own stills
   rabbitHole: { label: string; url: string }[];
 };
 
@@ -34,6 +35,7 @@ export const films: Film[] = [
     date: "2027-01-19",
     runtime: 8661, // 2h 24m 21s, BBFC, UK cinema version (the 2020 Arrow cut is 2h 38m)
     runtimeExact: true,
+    colour: "#126994", // steel blue from the flag and sky
     stills: [
       `${TMDB}/eQdZzDUubjxEDNmH8ucAtt8fTer.jpg`,
       `${TMDB}/ekFUbytCbZrc9rPizJl4Gweiinj.jpg`,
@@ -52,6 +54,7 @@ export const films: Film[] = [
     credit: "David Blair, 1991",
     date: "2027-01-26",
     runtime: 85 * 60, // TMDB
+    colour: "#b8893a", // honey gold
     stills: [
       `${TMDB}/h62Aotz1fAV3n8c0DDQBcs0wkdH.jpg`,
       `${TMDB}/A8QbpEFB1dKvvbdZN4o8tLulZVk.jpg`,
@@ -70,6 +73,7 @@ export const films: Film[] = [
     credit: "Ryan Trecartin, 2004",
     date: "2027-02-02",
     runtime: 42 * 60, // TMDB
+    colour: "#ad502c", // burnt orange from the wigs and plaid
     stills: [
       `${TMDB}/syvkd78a169rKQBSGoClWPH2hiD.jpg`,
       `${TMDB}/qgvSsvpaSswgM6av75xHIbpdYf5.jpg`,
@@ -88,6 +92,7 @@ export const films: Film[] = [
     credit: "Clifton Holmes, 2000",
     date: "2027-02-09",
     runtime: 106 * 60, // TMDB
+    colour: "#4a4f55", // graphite; the film is black and white
     stills: [
       `${TMDB}/Ah5ELScm7dyiC1f3jFx32FPRVql.jpg`,
       `${TMDB}/gJj9n7gA8L46d6x1dl6AT2hLswy.jpg`,

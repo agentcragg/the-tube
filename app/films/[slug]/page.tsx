@@ -42,7 +42,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
   const others = films.filter((f) => f.slug !== film.slug);
 
   return (
-    <div className="watch">
+    <div className="watch" style={{ "--film": film.colour } as React.CSSProperties}>
       <article>
         <div className="still-frame">
           <Scrubber frames={film.stills} seed={film.slug} alt={film.title} />
@@ -77,7 +77,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           </a>
         </div>
 
-        <section className="box">
+        <section className="box tone-teal">
           <div className="box-head">
             <h2>Programme notes</h2>
           </div>
@@ -88,14 +88,14 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
       </article>
 
       <aside className="side">
-        <section className="box">
+        <section className="box tone-pink">
           <div className="box-head">
             <h2>Also showing</h2>
           </div>
           <div className="box-body">
             <ul className="related-list">
               {others.map((f) => (
-                <li key={f.slug}>
+                <li key={f.slug} style={{ "--film": f.colour } as React.CSSProperties}>
                   <Link href={`/films/${f.slug}`}>
                     <Scrubber frames={f.stills} seed={f.slug} alt={f.title} />
                     <span>
@@ -110,7 +110,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           </div>
         </section>
 
-        <section className="box">
+        <section className="box tone-yellow">
           <div className="box-head">
             <h2>Rabbit hole</h2>
           </div>

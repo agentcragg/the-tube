@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import ColourLab from "@/components/ColourLab";
 import Header from "@/components/Header";
 import { films, formatDate } from "@/lib/films";
 import "./globals.css";
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </div>
           </footer>
         </div>
+        <ColourLab />
       </body>
     </html>
   );

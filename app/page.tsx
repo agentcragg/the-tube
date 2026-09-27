@@ -17,7 +17,7 @@ export default async function WhatsOn() {
       <ComingUp films={films} seats={SAMPLE_SEATS} />
 
       <aside className="side">
-        <section className="box">
+        <section className="box tone-orange" style={{ "--film": next.colour } as React.CSSProperties}>
           <div className="box-head">
             <h2>
               <CalendarIcon /> Next screening
@@ -32,7 +32,7 @@ export default async function WhatsOn() {
           </div>
         </section>
 
-        <section className="box">
+        <section className="box tone-purple">
           <div className="box-head">
             <h2>
               <TvIcon /> Just suggested
@@ -59,7 +59,7 @@ export default async function WhatsOn() {
           </div>
         </section>
 
-        <section className="box">
+        <section className="box tone-green">
           <div className="box-head">
             <h2>
               <PinIcon /> Find us

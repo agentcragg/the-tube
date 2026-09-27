@@ -32,7 +32,7 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
     .filter((f) => !q || `${f.title} ${f.credit}`.toLowerCase().includes(q.toLowerCase()));
 
   return (
-    <section className="box">
+    <section className="box tone-blue">
       <div className="box-head">
         <h2>Coming up at The Tube</h2>
         <form className="box-search" role="search" onSubmit={(e) => e.preventDefault()}>
@@ -69,7 +69,7 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
         ) : (
           <ul className="film-grid">
             {shown.map((f) => (
-              <li key={f.slug}>
+              <li key={f.slug} style={{ "--film": f.colour } as React.CSSProperties}>
                 <Link href={`/films/${f.slug}`}>
                   <Scrubber frames={f.stills} seed={f.slug} alt={f.title} duration={badgeTime(f)} />
                 </Link>
