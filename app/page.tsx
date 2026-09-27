@@ -1,69 +1,85 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Link from "next/link";
+import ComingUp from "@/components/ComingUp";
+import { CalendarIcon, PinIcon, TvIcon } from "@/components/Icons";
+import { films, formatDate } from "@/lib/films";
+import { SAMPLE_SEATS } from "@/lib/seats";
+import { seedVideos, thumb, withYouTubeDetails } from "@/lib/videos";
 
-export default function Home() {
+const daysUntil = (iso: string) =>
+  Math.ceil((new Date(iso + "T00:00:00").getTime() - Date.now()) / 86_400_000);
+
+export default async function WhatsOn() {
+  const next = films[0];
+  const latest = (await withYouTubeDetails(seedVideos)).slice(-6).reverse();
+
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className={styles.intro}>
-          <h1>
-            To get started, edit the{" "}
-            <code className={styles.code}>page.tsx</code> file.
-          </h1>
-          <p>
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className={styles.secondary}
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
-      </main>
+    <div className="home">
+      <ComingUp films={films} seats={SAMPLE_SEATS} />
+
+      <aside className="side">
+        <section className="box">
+          <div className="box-head">
+            <h2>
+              <CalendarIcon /> Next screening
+            </h2>
+          </div>
+          <div className="box-body next-up">
+            <p className="next-when">{formatDate(next.date)}</p>
+            <p className="next-title">
+              <Link href={`/films/${next.slug}`}>{next.title}</Link>
+            </p>
+            <p className="next-count">In {daysUntil(next.date)} days · {SAMPLE_SEATS[next.slug]} seats left</p>
+          </div>
+        </section>
+
+        <section className="box">
+          <div className="box-head">
+            <h2>
+              <TvIcon /> Just suggested
+            </h2>
+          </div>
+          <div className="box-body">
+            <ul className="mini-list">
+              {latest.map((v) => (
+                <li key={v.id}>
+                  <Link href="/wall">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={thumb(v.id, "hq")} alt="" />
+                    <span>
+                      <strong>{v.title}</strong>
+                      {v.channel && <em>{v.channel}</em>}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className="box-more">
+              <Link href="/wall">Suggest a video »</Link>
+            </p>
+          </div>
+        </section>
+
+        <section className="box">
+          <div className="box-head">
+            <h2>
+              <PinIcon /> Find us
+            </h2>
+          </div>
+          <div className="box-body">
+            <p>
+              Basement of Endeavour, Deptford. Every Tuesday. £10.
+              <br />
+              <a
+                href="https://www.google.com/maps/search/?api=1&query=Endeavour+Deptford+London"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Map »
+              </a>
+            </p>
+          </div>
+        </section>
+      </aside>
     </div>
   );
 }
