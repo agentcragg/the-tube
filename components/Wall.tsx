@@ -304,7 +304,7 @@ export default function Wall({ videos }: { videos: Video[] }) {
             <>
               Every screening at THE TUBE is preceded by a curated selection of oddities scavenged
               from the many corners of the internet. Send us videos that you think deserve the big
-              screen treatment. Everything on this wall was suggested by someone.
+              screen treatment, you great big dogs. Everything on this wall was suggested by someone.
             </>
           )}
           {pending.length > 0 && <span className="pending-count"> · {pending.length} of yours waiting for approval</span>}

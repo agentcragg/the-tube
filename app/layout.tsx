@@ -21,13 +21,13 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <section>
                 <h3>Coming up</h3>
                 <ul>
-                  {films.filter((f) => !isPast(f.date)).slice(0, 6).map((f) => (
+                  {films.filter((f) => !isPast(f.date)).slice(0, 2).map((f) => (
                     <li key={f.slug}>
                       <Link href={`/films/${f.slug}`}>{f.title}</Link>
                       <span>{formatDate(f.date)}</span>
                     </li>
                   ))}
-                  {films.length > 6 && (
+                  {films.filter((f) => !isPast(f.date)).length > 2 && (
                     <li>
                       <Link href="/">Full programme »</Link>
                     </li>
