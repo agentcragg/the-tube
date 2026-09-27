@@ -1,5 +1,6 @@
-// Videos on the suggestion wall. For now this is the shorts longlist
-// (Desktop/tube-shorts.md); nothing on it is cleared for screening yet.
+// Videos on the suggestion wall. For now these are the shorts lists
+// (Desktop/tube-shorts.md and Desktop/files/tube-shorts-v2.md); nothing on
+// them is cleared for screening yet.
 // Makers and years come from that list and still need checking. Later the
 // wall will come from the database, showing approved public suggestions.
 
@@ -50,6 +51,14 @@ export const seedVideos: Video[] = [
   { id: "Bn59FJ4HrmU", title: "Marble Hornets, entry 1", year: "2009" },
   // Pre-show library
   { id: "E3-vsKwQ0Cg", title: "Dots", maker: "Norman McLaren", year: "1940" },
+  // Shorts list v2 (Desktop/files/tube-shorts-v2.md)
+  { id: "eRvfxWRi6qQ", title: "Rubber Johnny", maker: "Chris Cunningham", year: "2005" },
+  { id: "iLJNSD3H5sg", title: "Possibly in Michigan", maker: "Cecelia Condit", year: "1983" },
+  { id: "4AfAGE1r4Ew", title: "Hufflepuff", maker: "burnermunde" },
+  { id: "kpk2tdsPh0A", title: "Watch for Rolling Rocks – 0.5x A Presses", maker: "pannenkoek2012" },
+  { id: "6NSXbHWS5S0", title: "Avengers: Endgame audience reaction", year: "2019" },
+  { id: "8xqVeG9UiKs", title: "Southern nights", maker: "Wesley Crider" },
+  { id: "q4lb0gXOq4I", title: "Mike Oldfield on Blue Peter", maker: "BBC", year: "1979" },
 ];
 
 // Fills in channel names from YouTube. Our own titles are kept, since
