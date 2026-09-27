@@ -132,7 +132,6 @@ export const films: Film[] = [
     colour: "#2b44b0", // the blue of screen light
     stills: [
       `${TMDB}/usCNN9qedHzC0wpkUbHH5TgJFWO.jpg`,
-      `${TMDB}/1ApEDkKQyfdnT4bkYcRBHv8S5IF.jpg`,
       `${TMDB}/t3vmHBltEEZvf8EXldyd40cQ3NP.jpg`,
       `${TMDB}/gQkCv5PXlrk8SMdLww1p5PVx8Pj.jpg`,
     ],
