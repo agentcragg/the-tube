@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Header from "@/components/Header";
-import { films, formatDate, VENUE } from "@/lib/films";
+import { films, formatDate, isPast, VENUE } from "@/lib/films";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -19,9 +19,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           <footer className="site-footer">
             <div className="footer-fat">
               <section>
-                <h3>This season</h3>
+                <h3>Coming up</h3>
                 <ul>
-                  {films.slice(0, 6).map((f) => (
+                  {films.filter((f) => !isPast(f.date)).slice(0, 6).map((f) => (
                     <li key={f.slug}>
                       <Link href={`/films/${f.slug}`}>{f.title}</Link>
                       <span>{formatDate(f.date)}</span>

@@ -277,3 +277,6 @@ export const VENUE = {
   oneLine: "Endeavour, 39 Deptford Broadway, London SE8 4PQ",
   map: "https://www.google.com/maps/search/?api=1&query=Endeavour%2C+39+Deptford+Broadway%2C+London+SE8+4PQ",
 };
+
+// A night counts as past once its date is over
+export const isPast = (iso: string) => new Date(iso + "T23:59:59").getTime() < Date.now();

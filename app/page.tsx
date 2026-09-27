@@ -1,7 +1,7 @@
 import Link from "next/link";
 import ComingUp from "@/components/ComingUp";
 import { CalendarIcon, PinIcon, TvIcon } from "@/components/Icons";
-import { films, formatDate, VENUE } from "@/lib/films";
+import { films, formatDate, isPast, VENUE } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
 import { credit, seedVideos, thumb, withYouTubeDetails } from "@/lib/videos";
 
@@ -9,7 +9,7 @@ const daysUntil = (iso: string) =>
   Math.ceil((new Date(iso + "T00:00:00").getTime() - Date.now()) / 86_400_000);
 
 export default async function WhatsOn() {
-  const next = films[0];
+  const next = films.find((f) => !isPast(f.date)) ?? films[films.length - 1];
   const latest = (await withYouTubeDetails(seedVideos)).slice(-6).reverse();
 
   return (

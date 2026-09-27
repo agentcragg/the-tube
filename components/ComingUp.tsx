@@ -4,32 +4,25 @@ import Link from "next/link";
 import { useState } from "react";
 import Scrubber from "@/components/Scrubber";
 import { CalendarIcon, TicketIcon } from "@/components/Icons";
-import { badgeTime, bookingUrl, formatDate, type Film } from "@/lib/films";
+import { badgeTime, bookingUrl, formatDate, isPast, type Film } from "@/lib/films";
 
-// The "Coming up" box: YouTube-style sort tabs plus a search field that
-// filters the grid as you type.
+// The "Coming up" box: everything still to come, a tab for nights that have
+// already happened, and a search field that filters as you type.
 
 const TABS = [
-  { id: "next", label: "Next four weeks" },
-  { id: "all", label: "All season" },
+  { id: "upcoming", label: "Coming up" },
   { id: "past", label: "Past nights" },
 ] as const;
 
 export default function ComingUp({ films, seats }: { films: Film[]; seats: Record<string, number> }) {
-  const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("next");
+  const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("upcoming");
   const [q, setQ] = useState("");
 
-  const first = new Date(films[0].date + "T00:00:00");
-  const cutoff = new Date(first);
-  cutoff.setDate(cutoff.getDate() + 28);
-
-  const shown = films
-    .filter((f) => {
-      if (tab === "past") return false; // nothing has screened yet
-      if (tab === "next") return new Date(f.date + "T00:00:00") < cutoff;
-      return true;
-    })
-    .filter((f) => !q || `${f.title} ${f.credit}`.toLowerCase().includes(q.toLowerCase()));
+  const upcoming = films.filter((f) => !isPast(f.date));
+  const past = films.filter((f) => isPast(f.date)).reverse(); // most recent first
+  const shown = (tab === "past" ? past : upcoming).filter(
+    (f) => !q || `${f.title} ${f.credit}`.toLowerCase().includes(q.toLowerCase()),
+  );
 
   return (
     <section className="box">
@@ -63,7 +56,9 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
         {shown.length === 0 ? (
           <p className="box-empty">
             {tab === "past"
-              ? `No past nights yet. The first is on ${formatDate(films[0].date)}.`
+              ? upcoming.length
+                ? `No past nights yet. The first is on ${formatDate(upcoming[0].date)}.`
+                : "No past nights yet."
               : "Nothing matches that."}
           </p>
         ) : (
