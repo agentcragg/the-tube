@@ -306,13 +306,12 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 .footer-fat a { color: var(--foot-link); }
 
 
-/* Film colours: each film takes a colour from its own stills (--film, set per film) */
+/* Film colours: each film takes a colour from its own stills (--film, set per film).
+   Used for text and buttons only; frames stay neutral. */
 .film-grid > li,
 .watch,
 .next-up,
 .related-list li { --accent: var(--film); }
-.film-grid a:has(.scrub),
-.still-frame { border: 3px solid var(--film); padding: 0; }
 .film-grid h3 a,
 .next-title a,
 .related-list strong { color: color-mix(in srgb, var(--film) 85%, black); }
@@ -321,12 +320,19 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
   background: linear-gradient(color-mix(in srgb, var(--film) 55%, white), var(--film) 55%, color-mix(in srgb, var(--film) 80%, black));
   border-color: color-mix(in srgb, var(--film) 60%, black);
 }
-.watch h1 { border-bottom: 4px solid var(--film); padding-bottom: 6px; }
-.watch article .box { border-color: color-mix(in srgb, var(--film) 45%, white); }
-.watch article .box-head {
-  background: linear-gradient(color-mix(in srgb, var(--film) 10%, white), color-mix(in srgb, var(--film) 30%, white));
-  border-bottom-color: color-mix(in srgb, var(--film) 45%, white);
-}
-.related-list li a { border-left: 4px solid var(--film); padding-left: 6px; }
-.next-up { border-left: 6px solid var(--film); }
 
+/* On a film page the whole site takes a light wash of that film's colour:
+   page background, header, tabs, box headers and footer. The film page sets
+   --film on :root. White boxes and stills stay clean. */
+:root:has(.watch) {
+  --bg: color-mix(in srgb, var(--film) 6%, #fff);
+  --head-bg: linear-gradient(color-mix(in srgb, var(--film) 3%, #fff) 50%, color-mix(in srgb, var(--film) 16%, #fff));
+  --head-edge: color-mix(in srgb, var(--film) 40%, #999);
+  --tab-1: color-mix(in srgb, var(--film) 3%, #fff); --tab-2: color-mix(in srgb, var(--film) 20%, #ddd);
+  --tab-edge: color-mix(in srgb, var(--film) 40%, #999);
+  --box-1: color-mix(in srgb, var(--film) 7%, #fff); --box-2: color-mix(in srgb, var(--film) 22%, #fff);
+  --box-edge: color-mix(in srgb, var(--film) 30%, #bbb);
+  --foot-1: color-mix(in srgb, var(--film) 40%, #1a1a1a); --foot-2: color-mix(in srgb, var(--film) 22%, #080808);
+  --foot-rule: color-mix(in srgb, var(--film) 40%, #444); --foot-link: color-mix(in srgb, var(--film) 35%, #fff);
+  --foot-ink: color-mix(in srgb, var(--film) 15%, #ccc);
+}

@@ -43,6 +43,8 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
 
   return (
     <div className="watch" style={{ "--film": film.colour } as React.CSSProperties}>
+      {/* Lets the header, tabs and footer pick up this film's colour too */}
+      <style>{`:root { --film: ${film.colour}; }`}</style>
       <article>
         <div className="still-frame">
           <Scrubber frames={film.stills} seed={film.slug} alt={film.title} />
