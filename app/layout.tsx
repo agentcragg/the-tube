@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { EndeavourStrip } from "@/components/endeavour";
+import { EndeavourStrip, PLAIN_COLOURS_KEY } from "@/components/endeavour";
 import Header from "@/components/Header";
 import { films, formatDate, isPast, VENUE } from "@/lib/films";
 import "./globals.css";
@@ -15,7 +15,15 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en-GB">
+    // The script puts back the "Film colours" off switch before anything shows (see EndeavourStrip)
+    <html lang="en-GB" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{if(localStorage.getItem("${PLAIN_COLOURS_KEY}"))document.documentElement.classList.add("plain-colours")}catch(e){}`,
+          }}
+        />
+      </head>
       <body>
         <div className="page">
           <Header />

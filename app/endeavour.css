@@ -79,11 +79,13 @@
 /* The time switch (only shown after visiting a page with ?time) */
 .en-time {
   position: absolute; top: 28px; right: var(--gutter); z-index: 1;
-  display: flex; align-items: center; gap: 6px;
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: flex-end;
   font: bold 11px var(--sans); color: #fff;
   background: rgb(0 0 0 / 0.6); padding: 4px 4px 4px 8px; border-radius: 3px;
 }
 .en-time select { font: 12px var(--sans); }
+.en-time label { display: flex; align-items: center; gap: 5px; }
+.en-time input { margin: 0; }
 
 /* Shapes */
 .en-o { stroke: var(--line); stroke-width: 1.1; stroke-linejoin: round; }

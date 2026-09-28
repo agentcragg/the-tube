@@ -230,6 +230,7 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 .film-grid h3 a { color: var(--link); }
 .credit { color: var(--muted); margin: 0 0 6px; font-size: 12px; }
 .extra { display: flex; align-items: center; gap: 5px; margin: -2px 0 6px; font: bold 12px var(--sans); color: color-mix(in srgb, var(--film, var(--accent)) 85%, black); }
+html.plain-colours .extra { color: color-mix(in srgb, var(--accent) 85%, black); }
 .extra-big { font-size: 14px; margin: 4px 0 2px; }
 .meta { list-style: none; margin: 0 0 8px; padding: 0; font-size: 12px; color: #444; }
 .meta li { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; }
@@ -312,16 +313,13 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 
 
 /* Film colours: each film takes a colour from its own stills (--film, set per film).
-   Used for text and buttons only; frames stay neutral. */
-.film-grid > li,
-.watch,
-.next-up,
-.related-list li { --accent: var(--film); }
-.film-grid h3 a,
-.next-title a,
-.related-list strong { color: color-mix(in srgb, var(--film) 85%, black); }
-.film-grid .book,
-.watch .book {
+   Used for text and buttons only; frames stay neutral. html.plain-colours (the
+   "Film colours" switch that ?time shows) turns all of it off: red buttons only. */
+html:not(.plain-colours) :is(.film-grid > li, .watch, .next-up, .related-list li) { --accent: var(--film); }
+html:not(.plain-colours) :is(.film-grid h3 a, .next-title a, .related-list strong) {
+  color: color-mix(in srgb, var(--film) 85%, black);
+}
+html:not(.plain-colours) :is(.film-grid .book, .watch .book) {
   background: linear-gradient(color-mix(in srgb, var(--film) 55%, white), var(--film) 55%, color-mix(in srgb, var(--film) 80%, black));
   border-color: color-mix(in srgb, var(--film) 60%, black);
 }
@@ -329,7 +327,7 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 /* On a film page the whole site takes a light wash of that film's colour:
    page background, header, tabs, box headers and footer. The film page sets
    --film on :root. White boxes and stills stay clean. */
-:root:has(.watch) {
+:root:not(.plain-colours):has(.watch) {
   --bg: color-mix(in srgb, var(--film) 6%, #fff);
   --head-bg: linear-gradient(color-mix(in srgb, var(--film) 3%, #fff) 50%, color-mix(in srgb, var(--film) 16%, #fff));
   --head-edge: color-mix(in srgb, var(--film) 40%, #999);
