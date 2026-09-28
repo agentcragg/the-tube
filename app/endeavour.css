@@ -123,6 +123,16 @@
 .en-brick { fill: color-mix(in srgb, var(--nbr1) 80%, #000); }
 .en-awning { fill: color-mix(in srgb, var(--nbr2) 55%, #000); }
 .en-pubfront { fill: #333; }
+.en-aerial { fill: none; stroke: #333; stroke-width: 1; stroke-linecap: round; }
+.en-awning-stripes { fill: none; stroke: #000; stroke-opacity: 0.22; stroke-width: 4; }
+.en-tag { fill: none; stroke: #1e1e1e; stroke-opacity: 0.75; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+.en-cabinet { fill: #7c7c7c; }
+.en-bag { fill: #2c2c2c; }
+.en-roundel { fill: #ececec; stroke: #333; stroke-width: 1.8; }
+.en-roundel-text { font: bold 5.6px var(--sans); fill: #222; }
+.en-bird { fill: #4d4d4d; }
+.en-fox { fill: #8f8f8f; }
+.en-fox-tip { fill: #dcdcdc; }
 .en-post { fill: none; stroke: #333; stroke-width: 2; }
 .en-post-thin { stroke-width: 1.2; }
 .en-lamp { fill: var(--lamp); }

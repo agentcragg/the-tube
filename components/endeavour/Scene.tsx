@@ -42,7 +42,7 @@ const FAR_SKYLINE = (() => {
 // Street lamps: where the post stands, and how high its head is
 const LAMPS = [
   { x: 250, top: 50 },
-  { x: 1156, top: 46 }, // in front of Endeavour, with the Deptford Broadway sign on it
+  { x: 1156, top: 28 }, // in front of Endeavour, with the Deptford Broadway sign on it
 ];
 
 // Stones in the soil, and the neighbours' cellars, for the ant-farm look
@@ -154,6 +154,7 @@ function Neighbours() {
       <path className="en-far" d="M40 130 V16 L135 2 L230 16 V130 Z" />
 
       {/* The corner pub: red brick, slate mansard roof, arched windows, painted front */}
+      <path className="en-aerial" d="M64 12 V1 M56 3 H72 M58 6.5 H70" />
       <path className="en-o en-roof" d="M-6 26 L6 12 H356 L368 26 Z" />
       <rect className="en-o en-brick" x={0} y={26} width={370} height={G - 26} />
       <rect fill="url(#en-pencil)" x={0} y={26} width={370} height={54} />
@@ -169,6 +170,10 @@ function Neighbours() {
       {[30, 118, 206, 294].map((x, i) => (
         <Arched key={x} x={x} y={90} w={36} h={G - 90} lit={i === 1 || i === 2} sill={false} />
       ))}
+      {/* Its hanging sign */}
+      <path className="en-post en-post-thin" d="M334 63 H354 M338 63 V66 M350 63 V66" />
+      <rect className="en-o en-case" x={336} y={66} width={16} height={14} />
+      <circle className="en-o en-nbr1" cx={344} cy={73} r={3.4} />
 
       {/* Narrow cream house: one window a floor; the tandoori's shutter is down for good */}
       <rect className="en-o en-nbr2" x={382} y={6} width={12} height={14} />
@@ -179,6 +184,7 @@ function Neighbours() {
       <Sash x={445} y={54} w={20} h={18} lit />
       <rect className="en-o en-fascia" x={374} y={82} width={162} height={10} />
       <Shutter x={378} y={94} w={110} h={G - 94} always />
+      <path className="en-tag" d="M404 100 Q390 104 394 116 Q398 125 410 120 M418 104 q6 -3 8 3 q2 6 -5 8 q8 1 7 8 M436 108 l6 -4 l-2 14 m6 -8 q8 -3 10 4 M392 125 H470" />
       <rect className="en-o en-frame" x={496} y={97} width={20} height={G - 97} />
 
       {/* Tall cream building, four storeys, two windows a floor; shop with an awning */}
@@ -193,9 +199,15 @@ function Neighbours() {
       ))}
       <rect className="en-o en-fascia" x={544} y={82} width={282} height={10} />
       <path className="en-o en-awning" d="M546 92 H824 L830 101 H540 Z" />
+      <path className="en-awning-stripes" d={Array.from({ length: 23 }, (_, i) => `M${556 + i * 12} 92.5 L${554 + i * 12.3} 100.5`).join(" ")} />
       <rect className="en-o en-win" x={552} y={101} width={200} height={G - 101} />
       <rect className="en-o en-door" x={764} y={101} width={22} height={G - 101} />
       <Shutter x={546} y={101} w={278} h={G - 101} />
+      {/* On the pavement: a street cabinet, tagged, and the bin bags */}
+      <rect className="en-o en-cabinet" x={690} y={111} width={22} height={19} rx={1} />
+      <path className="en-tag" d="M694 118 q4 -4 7 0 q3 4 7 -1 M695 124 H708" />
+      <path className="en-o en-bag" d="M716 130 Q713 121 720 119 L719 116 L723 118 Q730 120 728 130 Z" />
+      <path className="en-o en-bag" d="M727 130 Q726 124 731 122 L731 119.5 L734 122 Q739 124 737 130 Z" />
 
       {/* Autocolour: low brick shop with a hipped roof, one window upstairs */}
       <path className="en-o en-roof" d="M1162 53 L1186 36 H1439 L1463 53 Z" />
@@ -209,9 +221,21 @@ function Neighbours() {
       <rect className="en-o en-door" x={1413} y={96} width={30} height={G - 96} />
       <Shutter x={1176} y={93} w={273} h={G - 93} />
 
-      {/* Harton Street goes off between here and the next building */}
+      {/* Harton Street goes off between here and the next building: 20mph */}
+      <path className="en-post en-post-thin" d={`M1497 ${G} V98`} />
+      <circle className="en-roundel" cx={1497} cy={92} r={6.5} />
+      <text className="en-roundel-text" x={1497} y={94} textAnchor="middle">
+        20
+      </text>
 
       {/* The big Victorian corner building: yellow brick, two floors of arched windows */}
+      {[1596, 1896].map((x) => (
+        <g key={x}>
+          <rect className="en-o en-nbr1" x={x} y={-2} width={20} height={10} />
+          <rect className="en-o en-nbr2" x={x + 3} y={-6} width={5} height={5} />
+          <rect className="en-o en-nbr2" x={x + 12} y={-6} width={5} height={5} />
+        </g>
+      ))}
       <rect className="en-o en-nbr2" x={1540} y={8} width={470} height={G - 8} />
       <rect fill="url(#en-pencil)" x={1540} y={8} width={470} height={72} />
       <rect className="en-o en-nbr1" x={1534} y={4} width={480} height={5} />
@@ -332,8 +356,8 @@ function StreetFurniture() {
       <path className="en-o en-aboard-frame" d="M1128 112 H1146 L1149.5 130 H1124.5 Z" />
       <path className="en-o en-aboard" d="M1130 114.5 H1144 L1146.5 127.5 H1127.5 Z" />
       <path className="en-chalk" d="M1131.5 118 H1140 M1131 121.5 H1142.5 M1130.5 125 H1138" />
-      <rect className="en-o en-street-sign" x={1124} y={98} width={64} height={12} rx={1} />
-      <text className="en-street-sign-text" x={1156} y={106.6} textAnchor="middle">
+      <rect className="en-o en-street-sign" x={1124} y={37} width={64} height={12} rx={1} />
+      <text className="en-street-sign-text" x={1156} y={45.6} textAnchor="middle">
         Deptford Broadway
       </text>
     </g>
@@ -367,6 +391,30 @@ function Head({ x, y, r, rim }: { x: number; y: number; r: number; rim?: boolean
   );
 }
 
+// A pigeon sitting on a ledge whose top is at y
+function Pigeon({ x, y }: { x: number; y: number }) {
+  return (
+    <g className="en-bird">
+      <ellipse cx={x} cy={y - 2.2} rx={3.4} ry={2.2} />
+      <circle cx={x - 3} cy={y - 4} r={1.4} />
+      <path d={`M${x + 3} ${y - 2.6} L${x + 6.5} ${y - 1.4} L${x + 3} ${y - 0.8} Z`} />
+    </g>
+  );
+}
+
+// An urban fox on the pavement, facing left, nose at x - 12
+function Fox({ x }: { x: number }) {
+  return (
+    <g>
+      <path className="en-o en-fox" d={`M${x + 6} ${G - 7} Q${x + 15} ${G - 11} ${x + 17} ${G - 5} Q${x + 12} ${G - 3} ${x + 6} ${G - 5} Z`} />
+      <path className="en-fox-tip" d={`M${x + 14} ${G - 8.5} Q${x + 17} ${G - 8} ${x + 17} ${G - 5} Q${x + 15} ${G - 4.5} ${x + 14} ${G - 5} Z`} />
+      <path className="en-rail" d={`M${x - 4} ${G - 5} V${G} M${x - 1} ${G - 5} V${G} M${x + 3} ${G - 5} V${G} M${x + 6} ${G - 5} V${G}`} />
+      <ellipse className="en-o en-fox" cx={x} cy={G - 7} rx={7.5} ry={3.6} />
+      <path className="en-o en-fox" d={`M${x - 5} ${G - 9} L${x - 12} ${G - 8} L${x - 8.5} ${G - 12} L${x - 8} ${G - 15} L${x - 6.3} ${G - 12.5} L${x - 5} ${G - 15} L${x - 4.2} ${G - 11} Z`} />
+    </g>
+  );
+}
+
 function StandingFigure({ x, y }: { x: number; y: number }) {
   return (
     <g>
@@ -390,6 +438,19 @@ function Layer({ scene }: { scene: SceneT }) {
         LAMPS.map(({ x, top }) => (
           <path key={x} className="en-pool" d={`M${x + 6} ${top + 4.5} H${x + 13} L${x + 32} ${G} H${x - 13} Z`} />
         ))}
+
+      {/* Pigeons on the ledges by day */}
+      {(state === "morning" || state === "day") &&
+        [
+          [150, 24],
+          [161, 24],
+          [1318, 36],
+          [1712, 40],
+          [1726, 40],
+        ].map(([x, y]) => <Pigeon key={x} x={x} y={y} />)}
+
+      {/* A fox under the lamp by the pub, after dark */}
+      {(state === "night" || state === "egg") && <Fox x={266} />}
 
       {/* People at the ledge in the big window */}
       <g clipPath="url(#en-windows)">
