@@ -1,11 +1,13 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useCallback, useRef, useState } from "react";
+import { canMeasure, measureBars, zoomPastBars } from "@/lib/letterbox";
 
 // A film's stills in a row, one showing at a time.
 // Mouse: move across the image to scrub through them, like old YouTube thumbnails.
 // Touch: swipe sideways to flick through them.
 // With no real frames it shows generated placeholders.
+// A still with black bars baked in is zoomed just past them (lib/letterbox.ts).
 
 const PLACEHOLDER_FRAMES = 4;
 
@@ -22,6 +24,37 @@ function placeholder(seed: string, i: number) {
   const y = (h >> 16) % 100;
   return `radial-gradient(circle at ${x}% ${y}%, hsl(${hue} 70% 60%) 0, transparent 45%),
     linear-gradient(${h % 180}deg, hsl(${(hue + 40) % 360} 35% 22%), hsl(${(hue + 200) % 360} 30% 8%))`;
+}
+
+// One still, in its own clipping box. Once it has loaded, it checks itself for
+// black bars and, if it has any, zooms in past them inside that box (so the
+// strip's scrolling and swiping don't see the zoom).
+function Still({ src, alt, eager }: { src: string; alt: string; eager: boolean }) {
+  const [zoom, setZoom] = useState(1);
+  const check = useCallback((img: HTMLImageElement) => {
+    if (!canMeasure(img.currentSrc || img.src) || !img.naturalWidth) return;
+    const frame = img.clientWidth && img.clientHeight ? img.clientWidth / img.clientHeight : 16 / 9;
+    setZoom(zoomPastBars(measureBars(img), img.naturalWidth / img.naturalHeight, frame));
+  }, []);
+  // A picture that finished loading before the page came to life never fires onLoad
+  const ref = useCallback((img: HTMLImageElement | null) => {
+    if (img?.complete) check(img);
+  }, [check]);
+  return (
+    <span className="scrub-frame">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        ref={ref}
+        src={src}
+        alt={alt}
+        loading={eager ? "eager" : "lazy"}
+        crossOrigin={canMeasure(src) ? "anonymous" : undefined}
+        draggable={false}
+        onLoad={(e) => check(e.currentTarget)}
+        style={zoom > 1 ? { transform: `scale(${zoom})` } : undefined}
+      />
+    </span>
+  );
 }
 
 export default function Scrubber({
@@ -72,14 +105,7 @@ export default function Scrubber({
       >
         {Array.from({ length: count }, (_, n) =>
           frames.length ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img
-              key={n}
-              src={frames[n]}
-              alt={n === 0 ? alt : ""}
-              loading={n === 0 && !lazy ? "eager" : "lazy"}
-              draggable={false}
-            />
+            <Still key={n} src={frames[n]} alt={n === 0 ? alt : ""} eager={n === 0 && !lazy} />
           ) : (
             <div
               key={n}
