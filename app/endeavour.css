@@ -21,8 +21,9 @@
   max-height: max(230px, 12vw);
   overflow: hidden;
   /* The basement floor fades into the footer */
-  -webkit-mask-image: linear-gradient(#000 86%, transparent);
-  mask-image: linear-gradient(#000 86%, transparent);
+  --deep: color-mix(in srgb, var(--foot-1) 65%, var(--foot-2));
+  -webkit-mask-image: linear-gradient(#000 84%, rgb(0 0 0 / 0.55) 93%, transparent);
+  mask-image: linear-gradient(#000 84%, rgb(0 0 0 / 0.55) 93%, transparent);
 }
 .en-strip svg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 
@@ -126,6 +127,9 @@
 .en-star { fill: #bdbdbd; }
 .en-pave { fill: var(--pave); }
 .en-earth { fill: var(--earth); }
+.en-deep-0 { stop-color: var(--deep); stop-opacity: 0; }
+.en-deep-1 { stop-color: var(--deep); stop-opacity: 0.3; }
+.en-deep-2 { stop-color: var(--deep); stop-opacity: 0.95; }
 .en-hatch { stroke: #fff; stroke-opacity: 0.07; stroke-width: 1; fill: none; }
 .en-pencil { stroke: #000; stroke-opacity: 0.06; stroke-width: 1; fill: none; }
 .en-pebble { fill: #fff; opacity: 0.05; }

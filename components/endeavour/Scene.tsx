@@ -410,6 +410,12 @@ export default function Scene({ scene }: { scene: SceneT | null }) {
         <pattern id="en-pencil" width={9} height={9} patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
           <path d="M0 4.5 H6" className="en-pencil" />
         </pattern>
+        {/* The soil darkens with depth until it meets the footer */}
+        <linearGradient id="en-deep" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" className="en-deep-0" />
+          <stop offset="0.45" className="en-deep-1" />
+          <stop offset="1" className="en-deep-2" />
+        </linearGradient>
         <clipPath id="en-room">
           <rect x={834} y={G + 2} width={332} height={78} />
         </clipPath>
@@ -455,6 +461,7 @@ export default function Scene({ scene }: { scene: SceneT | null }) {
         {CELLARS.map((c) => (
           <rect key={c.x} className="en-cellar" x={c.x} y={G + 5} width={c.w} height={c.h} />
         ))}
+        <rect fill="url(#en-deep)" x={0} y={G + 5} width={2000} height={240 - G - 5} />
         <Basement />
         {scene && <Layer key={scene.state} scene={scene} />}
       </g>

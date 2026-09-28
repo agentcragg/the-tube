@@ -10,7 +10,9 @@ const tabs = [
 ];
 
 export default function Header() {
-  const path = usePathname();
+  // When Vercel regenerates the front page it renders it as "/index", not "/"
+  const raw = usePathname();
+  const path = raw === "/index" ? "/" : raw;
   return (
     <header className="site-header">
       {/* Placeholder until the real logo is designed */}
