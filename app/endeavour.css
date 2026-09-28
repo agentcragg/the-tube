@@ -10,7 +10,7 @@
   --figure: #444; --chair: #555; --stack: #5a5a5a; --moon: 0; --shutter: 0;
   --line: #262626; --frame: #9e9e9e;
   --earth: color-mix(in srgb, var(--foot-1) 70%, #5e5e5e);
-  --poster: var(--film, var(--en-next, #8c8c8c));
+  --poster: var(--en-next, #8c8c8c);
 
   position: relative;
   /* Full bleed across the top of the footer, flush with its top edge */
@@ -85,7 +85,6 @@
 }
 .en-time select { font: 12px var(--sans); }
 .en-time label { display: flex; align-items: center; gap: 5px; }
-.en-time input { margin: 0; }
 
 /* Shapes */
 .en-o { stroke: var(--line); stroke-width: 1.1; stroke-linejoin: round; }

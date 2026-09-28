@@ -44,9 +44,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
   const others = films.filter((f) => f.slug !== film.slug);
 
   return (
-    <div className="watch" style={{ "--film": film.colour } as React.CSSProperties}>
-      {/* Lets the header, tabs and footer pick up this film's colour too */}
-      <style>{`:root { --film: ${film.colour}; }`}</style>
+    <div className="watch">
       <article>
         <div className="still-frame">
           <Scrubber frames={film.stills} seed={film.slug} alt={film.title} />
@@ -104,7 +102,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           <div className="box-body">
             <ul className="related-list">
               {others.map((f) => (
-                <li key={f.slug} style={{ "--film": f.colour } as React.CSSProperties}>
+                <li key={f.slug}>
                   <Link href={`/films/${f.slug}`}>
                     <Scrubber frames={f.stills} seed={f.slug} alt={f.title} />
                     <span>

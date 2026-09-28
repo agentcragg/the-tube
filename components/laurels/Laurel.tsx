@@ -34,7 +34,7 @@ function Screened({ videoId }: { videoId: string }) {
       <LaurelMark ref={findInfo} lines={laurelLines(screening.date.slice(0, 4))} label={LAUREL_LABEL} />
       {info &&
         createPortal(
-          <em className="laurel-note" style={{ "--film": screening.colour } as React.CSSProperties}>
+          <em className="laurel-note">
             <span className="laurel-what">
               {SHOWN_BEFORE} <cite>{screening.film}</cite>
             </span>

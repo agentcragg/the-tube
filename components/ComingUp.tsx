@@ -64,7 +64,7 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
         ) : (
           <ul className="film-grid">
             {shown.map((f) => (
-              <li key={f.slug} style={{ "--film": f.colour } as React.CSSProperties}>
+              <li key={f.slug}>
                 <Link href={`/films/${f.slug}`}>
                   <Scrubber frames={f.stills} seed={f.slug} alt={f.title} duration={badgeTime(f)} />
                 </Link>

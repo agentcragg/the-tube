@@ -37,7 +37,7 @@
 .tile-info .laurel-note {
   display: contents;
   font-size: 11px;
-  color: color-mix(in srgb, var(--film) 45%, #fff);
+  color: #ddd;
 }
 .tile-info .laurel-what,
 .tile-info .laurel-when {

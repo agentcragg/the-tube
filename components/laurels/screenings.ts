@@ -10,7 +10,6 @@ import { EXTRA_MINUTES, NIGHTS, type Night } from "@/lib/nights";
 export type Screening = {
   slug: string;
   film: string; // the feature it was shown before
-  colour: string; // that film's colour
   date: string; // ISO date of the night
   over: number; // minutes after midnight on `date` (London) when the night is over
 };
@@ -35,7 +34,7 @@ const SCREENINGS = new Map<string, Screening[]>();
 for (const [slug, night] of Object.entries(NIGHTS)) {
   const film = getFilm(slug);
   if (!film) continue;
-  const screening = { slug, film: film.title, colour: film.colour, date: film.date, over: overAt(night, film.runtime) };
+  const screening = { slug, film: film.title, date: film.date, over: overAt(night, film.runtime) };
   for (const short of night.shorts?.items ?? []) {
     SCREENINGS.set(short.id, [...(SCREENINGS.get(short.id) ?? []), screening]);
   }

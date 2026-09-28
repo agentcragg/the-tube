@@ -14,7 +14,7 @@ export type Film = {
   notes?: string; // programme notes
   pairedWith?: string;
   extra?: string; // something extra on the night, e.g. a Q&A
-  colour: string; // taken from the film's own stills
+  colour: string; // taken from the film's own stills; only the Endeavour drawing uses it (the lit screen and the poster in the window)
   rabbitHole: { label: string; url: string }[];
 };
 

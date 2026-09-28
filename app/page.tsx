@@ -22,7 +22,7 @@ export default async function WhatsOn() {
       <ComingUp films={films} seats={SAMPLE_SEATS} />
 
       <aside className="side">
-        <section className="box" style={{ "--film": next.colour } as React.CSSProperties}>
+        <section className="box">
           <div className="box-head">
             <h2>
               <CalendarIcon /> Next screening
