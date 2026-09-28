@@ -2,7 +2,7 @@
 // cinema cut away underneath. A pencil line drawing in greys: the only
 // colour is the film's.
 //
-// One wide drawing (2000 x 240). The strip crops it with "slice": a wide
+// One wide drawing (2000 x 284, with 44 units of sky above the rooftops). The strip crops it with "slice": a wide
 // screen sees the whole street, a phone sees just Endeavour, top to bottom.
 // Colours come from CSS variables that change with data-state on the
 // wrapper (app/endeavour.css); things that come and go per state are in
@@ -522,7 +522,7 @@ function Layer({ scene }: { scene: SceneT }) {
 
 export default function Scene({ scene }: { scene: SceneT | null }) {
   return (
-    <svg viewBox="0 0 2000 240" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
+    <svg viewBox="0 -44 2000 284" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
       <defs>
         {/* Wobbles every line a little, like a pencil drawing */}
         <filter id="en-wobble" x="-1%" y="-4%" width="102%" height="108%">
@@ -553,17 +553,26 @@ export default function Scene({ scene }: { scene: SceneT | null }) {
       </defs>
 
       <g filter="url(#en-wobble)">
-        <rect className="en-sky" x={0} y={0} width={2000} height={G} />
+        <rect className="en-sky" x={0} y={-44} width={2000} height={G + 44} />
         <g className="en-night-sky">
-          <circle cx={872} cy={9} r={6} className="en-moon" />
+          <circle cx={1108} cy={-24} r={7} className="en-moon" />
           {[
-            [700, 18],
-            [818, 8],
-            [900, 12],
-            [1040, 9],
-            [1184, 25],
-            [1262, 13],
-            [1400, 9],
+            [240, -30],
+            [420, -14],
+            [610, -36],
+            [700, -8],
+            [818, -26],
+            [900, -38],
+            [1040, -12],
+            [1184, -34],
+            [1262, -4],
+            [1400, -28],
+            [1480, -10],
+            [1620, -32],
+            [1760, -18],
+            [1900, -36],
+            [560, -24],
+            [990, -20],
           ].map(([x, y]) => (
             <circle key={x} cx={x} cy={y} r={0.9} className="en-star" />
           ))}

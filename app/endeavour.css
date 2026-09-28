@@ -15,10 +15,10 @@
   position: relative;
   /* Full bleed across the top of the footer, flush with its top edge */
   margin: -22px calc(-1 * var(--gutter)) 18px;
-  aspect-ratio: 1200 / 180;
-  min-height: 130px;
+  aspect-ratio: 1200 / 215;
+  min-height: 150px;
   /* Capped, but never so short that a very wide screen crops the rooftops */
-  max-height: max(230px, 12vw);
+  max-height: max(270px, 14vw);
   overflow: hidden;
   /* The basement floor fades into the footer */
   --deep: color-mix(in srgb, var(--foot-1) 65%, var(--foot-2));
@@ -30,7 +30,7 @@
 /* Phones: taller, so the drawing crops to Endeavour itself, top to bottom,
    and the heads stay a readable size */
 @media (max-width: 720px) {
-  .en-strip { aspect-ratio: auto; height: clamp(180px, 54vw, 250px); min-height: 0; max-height: none; }
+  .en-strip { aspect-ratio: auto; height: clamp(210px, 62vw, 290px); min-height: 0; max-height: none; }
 }
 
 .en-strip[data-state="morning"],
@@ -69,10 +69,12 @@
 
 .en-strip[data-state="night"],
 .en-strip[data-state="egg"] {
-  --sky: #2f2f2f; --far: #262626; --nbr1: #303030; --nbr2: #343434; --end: #2e2e2e;
-  --win: #262626; --lit: #262626; --bar: #222; --pave: #3a3a3a;
-  --room: #121212; --screen: #222; --stair: #222; --lamp: #f5f5f5;
-  --stack: #2e2e2e; --moon: 1; --shutter: 1; --frame: #3c3c3c;
+  /* Buildings a step lighter than the sky, glass darker than the walls and
+     near-black lines, so the street still reads after dark */
+  --sky: #141414; --far: #1f1f1f; --nbr1: #414141; --nbr2: #474747; --end: #3d3d3d;
+  --win: #181818; --lit: #9d9a90; --bar: #151515; --pave: #4d4d4d; --fascia: #1a1a1a;
+  --room: #121212; --screen: #222; --stair: #222; --lamp: #f5f5f5; --figure: #111;
+  --stack: #2e2e2e; --moon: 1; --shutter: 1; --frame: #585858; --line: #080808;
 }
 .en-strip[data-state="egg"] { --screen: #0c0c0c; --lens: #e8e8e8; --room: #161616; }
 
