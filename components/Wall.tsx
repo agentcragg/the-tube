@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Laurel } from "@/components/laurels";
 import { credit, parseYouTubeId, thumb, type Video } from "@/lib/videos";
+import { markWatched, useWatched } from "@/lib/watched";
 
 // An endless grid of thumbnails. Drag to move it; a hard flick keeps gliding
 // and eases to a stop. Left alone, it drifts slowly, and the drift pauses
@@ -64,11 +65,13 @@ const formatDay = (iso: string) =>
 function Tile({
   video,
   style,
+  watched,
   onOpen,
   onHover,
 }: {
   video: Video;
   style: React.CSSProperties;
+  watched: boolean; // opened in this browser before: a red line along the bottom
   onOpen: () => void;
   onHover: (on: boolean) => void;
 }) {
@@ -95,6 +98,12 @@ function Tile({
           </span>
         )}
       </span>
+      {/* DRAFT: "Watched" is for screen readers only */}
+      {watched && (
+        <span className="tile-watched">
+          <span className="sr-only">Watched</span>
+        </span>
+      )}
     </button>
   );
 }
@@ -115,6 +124,7 @@ export default function Wall({ videos }: { videos: Video[] }) {
   const [input, setInput] = useState("");
   const [status, setStatus] = useState<{ kind: "error" | "ok" | "busy"; msg: string } | null>(null);
   const pending = useSyncExternalStore(pendingStore.subscribe, pendingStore.get, () => EMPTY);
+  const watched = useWatched();
 
   useEffect(() => {
     playing.current = !!open;
@@ -284,7 +294,11 @@ export default function Wall({ videos }: { videos: Video[] }) {
         <Tile
           key={`${cx},${cy}`}
           video={video}
-          onOpen={() => setOpen(video)}
+          watched={watched.has(video.id)}
+          onOpen={() => {
+            markWatched(video.id);
+            setOpen(video);
+          }}
           onHover={onHover}
           style={{ left: cx * CELL_W, top: cy * CELL_H, width: TILE_W, height: TILE_H }}
         />,

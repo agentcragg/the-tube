@@ -1,6 +1,107 @@
-/* The Rabbit hole as a 2008 YouTube watch-page sidebar. Stacked
-   grey-headed panels (native <details>) with small disclosure triangles in
-   the film colour. */
+/* The Rabbit hole on a film page, as a 2008 YouTube channel and watch page:
+   shelves of clips in the main column, a Start here box at the top of the
+   sidebar, and stacked grey-headed panels (native <details>) under it. */
+
+/* ---------- Shelves ---------- */
+
+.rh .box-body { container-type: inline-size; }
+.rh-depth { font-size: 12px; color: #666; }
+
+.rh-shelf { scroll-margin-top: 8px; }
+.rh-shelf:focus { outline: none; } /* focus lands here from Start here's links */
+.rh-shelf + .rh-shelf { margin-top: 16px; padding-top: 12px; border-top: 1px solid #ddd; }
+.rh-shelf h3 { margin: 0 0 10px; font: bold 13px/1.3 var(--sans); color: var(--ink); }
+
+/* 4 across in the full column, 3 at about 640px, 2 below 560px. Short
+   shelves keep their empty columns, so they sit left. */
+.rh-grid {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 16px 14px; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+}
+
+/* A card: framed thumbnail, blue title, grey uploader, then the note.
+   The padding is pulled back by the margin, so the yellow "now playing"
+   background doesn't move anything. */
+.rh-card {
+  display: block; margin: -4px; padding: 4px; border-radius: 3px;
+  text-decoration: none; color: var(--ink);
+}
+.rh-card[aria-current="true"] { background: #ffc; }
+.rh-thumb { display: block; margin-bottom: 5px; border: 1px solid var(--frame); padding: 2px; background: #fff; }
+.rh-card strong {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  font: bold 13px/1.25 var(--sans); color: var(--link);
+  overflow-wrap: anywhere;
+}
+.rh-card:hover strong, .rh-card:focus-visible strong { text-decoration: underline; }
+.rh-card em { display: block; margin-top: 2px; font: 11px/1.35 var(--sans); font-style: normal; color: #666; }
+.rh-out { color: #999; }
+.rh-note {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  margin-top: 3px; font: 12px/1.35 var(--sans); color: #555;
+}
+
+/* The player opens above its shelf's cards, full width, bar like the wall's */
+.rh-player { margin-bottom: 14px; border: 1px solid var(--box-edge); background: #000; scroll-margin: 8px; }
+.rh-bar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 4px 4px 4px 8px; background: #eee; border-bottom: 1px solid var(--box-edge);
+  font: 13px/1.3 var(--sans);
+}
+.rh-bar-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rh-bar a { flex: none; font: bold 12px var(--sans); }
+.rh-narrow { display: none; }
+.rh-bar button { all: unset; flex: none; cursor: pointer; padding: 0 4px; font-size: 22px; line-height: 1; color: #333; }
+.rh-bar button:hover { color: var(--accent); }
+.rh-bar button:focus-visible { outline: 2px solid var(--link); }
+.rh-player iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
+
+/* From the archive: the films' old websites, each in a flat grey browser
+   window with its old address. 3 across in the full column, 1 on a phone. */
+.rh-sites {
+  list-style: none; margin: 0; padding: 0;
+  display: grid; gap: 16px 14px; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
+}
+.rh-site { display: block; text-decoration: none; color: var(--ink); }
+.rh-site figure { margin: 0; }
+.rh-frame { border: 1px solid var(--box-edge); background: #fff; }
+.rh-window {
+  display: flex; align-items: center; gap: 8px; height: 20px; padding: 0 5px 0 7px;
+  background: linear-gradient(var(--tab-1), var(--tab-2));
+  font: bold 11px/1 var(--sans); color: #333;
+}
+.rh-window-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rh-window-buttons { flex: none; display: flex; gap: 3px; }
+.rh-window-buttons i { width: 7px; height: 7px; border: 1px solid #999; background: #eee; }
+.rh-address { padding: 3px 5px; background: #eee; border-top: 1px solid var(--box-edge); border-bottom: 1px solid var(--box-edge); }
+.rh-address span {
+  display: block; padding: 1px 4px; background: #fff; border: 1px solid #aaa;
+  font: 11px/1.3 var(--sans); color: #333;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.rh-site img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; object-position: top; }
+.rh-site figcaption { margin-top: 5px; }
+.rh-site strong {
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  font: bold 13px/1.25 var(--sans); color: var(--link);
+  overflow-wrap: anywhere;
+}
+.rh-site:hover strong, .rh-site:focus-visible strong { text-decoration: underline; }
+.rh-site em { display: block; margin-top: 2px; font: 11px/1.35 var(--sans); font-style: normal; color: #666; }
+
+/* Elsewhere: the links without a screenshot, as a plain list */
+.rh-links a { overflow-wrap: anywhere; }
+.rh-year { font-size: 11px; color: #666; }
+
+/* ---------- Start here (sidebar, desktop only) ---------- */
+
+.rh-start .rh-card { margin: 0; padding: 0; }
+.rh-start .rh-start-label { margin-bottom: 6px; font: bold 12px var(--sans); }
+.rh-start .rh-further { margin: 12px 0 2px; font: bold 12px var(--sans); }
+.rh-further-list { list-style: none; margin: 0; padding: 0; font-size: 12px; line-height: 1.6; }
+.rh-start .rh-start-depth { margin-top: 6px; font-size: 11px; color: #666; }
+
+/* ---------- Sidebar panels ---------- */
 
 .wp-group { margin-bottom: 16px; }
 
@@ -30,26 +131,6 @@
 }
 .wp[open] > summary::before { transform: rotate(90deg); }
 
-/* Clip rows: 120x90 thumbnail, blue title, grey uploader and year */
-.wp-clips { list-style: none; margin: 0; padding: 3px 0; }
-.wp-clip {
-  display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 8px; align-items: start;
-  padding: 5px 10px; text-decoration: none; color: var(--ink);
-}
-.wp .scrub { aspect-ratio: 4 / 3; }
-.wp .scrub-time { right: 2px; bottom: 6px; padding: 0 3px; font-size: 10px; line-height: 14px; }
-.wp .scrub-bar { height: 3px; }
-.wp-clip strong {
-  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
-  font: bold 12px/1.25 var(--sans); color: var(--link);
-  overflow-wrap: anywhere;
-}
-.wp-clip:hover strong, .wp-clip:focus-visible strong { text-decoration: underline; }
-.wp-clip em { display: block; margin-top: 3px; font: 11px/1.3 var(--sans); font-style: normal; color: #666; }
-.wp-scroll { max-height: 300px; overflow-y: auto; }
-
-.wp-foot { margin: 0; padding: 2px 10px 8px; text-align: right; font: bold 11px var(--sans); }
-
 /* Statistics & Data */
 .wp-body { padding: 8px 10px 10px; }
 .wp-stats h4 { margin: 0 0 3px; font: bold 11px/1.4 var(--sans); color: var(--ink); }
@@ -63,25 +144,46 @@
 /* Message boards */
 .wp-threads { margin: 0; padding: 0 0 0 16px; font-size: 12px; line-height: 1.4; }
 .wp-threads li + li { margin-top: 3px; }
+.wp-user { font-size: 11px; color: #666; }
 
-@media (hover: none) {
-  .wp .scrub-time { bottom: 2px; }
-}
+/* ---------- Phones and touch ---------- */
 
-/* Phones and touch: 44px tap targets, and no scroll box inside the page */
+/* 44px tap targets */
 @media (max-width: 720px), (pointer: coarse) {
+  .rh-bar { min-height: 44px; padding: 0 0 0 10px; box-sizing: border-box; }
+  .rh-bar a { padding: 12px 0; }
+  .rh-bar button { width: 44px; height: 44px; padding: 0; line-height: 44px; text-align: center; }
+  .rh-further-list a { display: inline-block; padding: 6px 0; }
+
   .wp > summary { min-height: 44px; padding: 0 12px; font-size: 13px; box-sizing: border-box; }
-  .wp-clip { min-height: 44px; padding: 6px 12px; }
   .wp-body { padding: 6px 12px 10px; }
-  .wp-foot { padding: 0 12px; }
-  .wp-foot a { display: inline-block; padding: 12px 0; }
   .wp-stats ol, .wp-linking { font-size: 12px; }
   .wp-url a, .wp-threads a { display: block; padding: 10px 0; }
   .wp-url a { overflow: hidden; text-overflow: ellipsis; }
   .wp-threads li + li { margin-top: 0; }
 }
+
+/* One column: the shelves follow the notes, so Start here would only repeat them */
 @media (max-width: 720px) {
-  .wp-scroll { max-height: none; overflow: visible; }
+  .rh-start { display: none; }
+  .rh .box-head { row-gap: 2px; }
+  .rh-depth { flex-basis: 100%; }
+  .rh .box-body { padding: 10px 8px 12px; }
+  .rh-links li { padding: 6px 0; }
+  .rh-window, .rh-address span { font-size: 10px; }
+
+  /* The bar gives the title two lines. The label is for screen readers only
+     (the player is already called Now playing), and the link is just "YouTube »". */
+  .rh-bar-title { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .rh-bar-title b { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  .rh-wide { display: none; }
+  .rh-narrow { display: inline; }
+}
+
+/* Two cards across, and the hole opens on one big picture */
+@container (max-width: 480px) {
+  .rh-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 10px; }
+  .rh-shelf:first-child .rh-grid > li:first-child { grid-column: 1 / -1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

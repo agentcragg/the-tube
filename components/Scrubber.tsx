@@ -66,12 +66,14 @@ export default function Scrubber({
   alt,
   duration,
   lazy,
+  watched,
 }: {
   frames: string[];
   seed: string;
   alt: string;
   duration?: string; // e.g. "2:24:21"; badge hidden when not given
   lazy?: boolean; // don't load even the first frame until it's on screen (e.g. inside a closed panel)
+  watched?: boolean; // already seen in this browser (lib/watched.ts): the bar stays full, on touch screens too
 }) {
   const count = frames.length || PLACEHOLDER_FRAMES;
   const [i, setI] = useState(0);
@@ -86,7 +88,7 @@ export default function Scrubber({
 
   return (
     <div
-      className="scrub"
+      className={watched ? "scrub scrub-watched" : "scrub"}
       onMouseMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect();
         const n = Math.min(count - 1, Math.floor(((e.clientX - r.left) / r.width) * count));
@@ -121,11 +123,13 @@ export default function Scrubber({
         )}
       </div>
       {duration && <span className="scrub-time">{duration}</span>}
-      {count > 1 && (
+      {(count > 1 || watched) && (
         <div className="scrub-bar" aria-hidden>
-          <div style={{ width: active ? `${((i + 1) / count) * 100}%` : 0 }} />
+          <div style={{ width: active ? `${((i + 1) / count) * 100}%` : watched ? "100%" : 0 }} />
         </div>
       )}
+      {/* DRAFT: screen readers only */}
+      {watched && <span className="sr-only">Watched</span>}
     </div>
   );
 }

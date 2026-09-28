@@ -1,0 +1,24 @@
+/* 404 and error pages: the watch page's main column with a dead black player */
+
+.gone { max-width: 884px; }
+.gone .still-frame { margin-bottom: 16px; }
+
+.gone-box {
+  aspect-ratio: 16 / 9; box-sizing: border-box; padding: 16px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  background: #000; color: #aaa; text-align: center; text-wrap: balance;
+}
+.gone-box h1 { font: bold 14px/1.35 var(--sans); color: #fff; margin: 0 0 4px; }
+.gone-box p { font-size: 12px; margin: 0; }
+.gone-box .action { margin-top: 14px; cursor: pointer; }
+
+/* Four across like the related videos at the end of an old YouTube video,
+   two across on a tablet, one per row on a phone */
+.gone .film-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+@media (max-width: 760px) {
+  .gone .film-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 480px) {
+  .gone .film-grid { grid-template-columns: 1fr; }
+  .gone-box h1 { font-size: 13px; }
+}

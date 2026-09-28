@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Scrubber from "@/components/Scrubber";
-import { WatchPanels } from "@/components/watch";
+import { RabbitHole, StartHere, WatchPanels } from "@/components/watch";
 import Notes from "@/components/Notes";
 import { CalendarIcon, MicIcon, PinIcon, TicketIcon } from "@/components/Icons";
 import { bookingUrl, films, formatDate, getFilm, VENUE } from "@/lib/films";
-import { watchFor } from "@/lib/watch";
+import { COPY, depth, watchFor } from "@/lib/watch";
 import { SAMPLE_SEATS } from "@/lib/seats";
 
 export function generateStaticParams() {
@@ -14,7 +14,8 @@ export function generateStaticParams() {
 
 export async function generateMetadata({ params }: PageProps<"/films/[slug]">) {
   const film = getFilm((await params).slug);
-  return { title: film ? `${film.title} · The Tube` : "The Tube" };
+  if (!film) notFound();
+  return { title: `${film.title} · The Tube` };
 }
 
 const PLACEHOLDER_NOTES =
@@ -41,7 +42,11 @@ function icsLink(title: string, date: string) {
 export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
   const film = getFilm((await params).slug);
   if (!film) notFound();
-  const others = films.filter((f) => f.slug !== film.slug);
+  // The next three nights after this one, going round to the start after the last
+  const nextUp = [...films.filter((f) => f.date > film.date), ...films.filter((f) => f.date < film.date)].slice(0, 3);
+  // Films without curated sections keep the plain box of links
+  const watch = watchFor(film.slug);
+  const hole = watch?.sections.length ? watch : undefined;
 
   return (
     <div className="watch">
@@ -92,37 +97,13 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
             <Notes text={film.notes ?? PLACEHOLDER_NOTES} />
           </div>
         </section>
-      </article>
 
-      <aside className="side">
-        <section className="box">
-          <div className="box-head">
-            <h2>Also showing</h2>
-          </div>
-          <div className="box-body">
-            <ul className="related-list">
-              {others.map((f) => (
-                <li key={f.slug}>
-                  <Link href={`/films/${f.slug}`}>
-                    <Scrubber frames={f.stills} seed={f.slug} alt={f.title} />
-                    <span>
-                      <strong>{f.title}</strong>
-                      <em>{f.credit}</em>
-                      <em>{formatDate(f.date)}</em>
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-
-        {watchFor(film.slug) ? (
-          <WatchPanels film={film} />
+        {hole ? (
+          <RabbitHole sections={hole.sections} links={hole.links} depth={COPY.depth(depth(hole))} />
         ) : (
           <section className="box">
             <div className="box-head">
-              <h2>Rabbit hole</h2>
+              <h2>{COPY.title}</h2>
             </div>
             <div className="box-body">
               <ul className="links">
@@ -137,6 +118,40 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
             </div>
           </section>
         )}
+      </article>
+
+      <aside className="side">
+        {hole && (
+          <>
+            <StartHere data={hole} />
+            <WatchPanels film={film} data={hole} />
+          </>
+        )}
+
+        <section className="box">
+          <div className="box-head">
+            <h2>Also showing</h2>
+          </div>
+          <div className="box-body">
+            <ul className="related-list">
+              {nextUp.map((f) => (
+                <li key={f.slug}>
+                  <Link href={`/films/${f.slug}`}>
+                    <Scrubber frames={f.stills} seed={f.slug} alt={f.title} />
+                    <span>
+                      <strong>{f.title}</strong>
+                      <em>{f.credit}</em>
+                      <em>{formatDate(f.date)}</em>
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+            <p className="box-more">
+              <Link href="/">{COPY.allNights}</Link>
+            </p>
+          </div>
+        </section>
       </aside>
     </div>
   );

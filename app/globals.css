@@ -30,6 +30,9 @@ a { color: var(--link); }
 a:hover { color: var(--accent); }
 main { padding: 0 var(--gutter) 40px; }
 
+/* For screen readers only */
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+
 /* Header: placeholder logo; nav is 2000s-style tabs */
 .site-header { padding: 20px var(--gutter) 0; margin-bottom: 24px; border-bottom: 1px solid var(--head-edge); background: var(--head-bg); }
 
@@ -88,6 +91,7 @@ main { padding: 0 var(--gutter) 40px; }
   .scrub-strip { overflow-x: auto; scroll-snap-type: x mandatory; overscroll-behavior-x: contain; }
   .scrub-strip > * { scroll-snap-align: start; }
   .scrub-bar { display: none; }
+  .scrub-watched .scrub-bar { display: block; } /* except the watched mark */
   .scrub-time { bottom: 6px; }
 }
 .scrub-placeholder::after {
@@ -147,6 +151,8 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 .tile-info span { color: #ddd; }
 .tile-info em { font-style: normal; color: #9cf; margin-top: 4px; }
 .tile:hover .tile-info, .tile:focus-visible .tile-info { opacity: 1; }
+/* Opened in this browser before (lib/watched.ts): a thin red line along the bottom */
+.tile-watched { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: var(--accent); }
 
 /* Starts white so the active tab above flows straight into it */
 .wall-toolbar {
@@ -269,7 +275,7 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 .related-list { list-style: none; margin: 0; padding: 0; }
 .related-list li + li { margin-top: 10px; }
 .related-list a { display: grid; grid-template-columns: 124px 1fr; gap: 8px; text-decoration: none; color: var(--ink); }
-.related-list .scrub-bar, .related-list .related-list strong { display: block; font-size: 13px; line-height: 1.2; color: var(--link); }
+.related-list strong { display: block; font-size: 13px; line-height: 1.2; color: var(--link); }
 .related-list em { display: block; font-style: normal; font-size: 11px; color: var(--muted); }
 .box .links { list-style: none; margin: 0; padding: 0; }
 

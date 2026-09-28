@@ -86,10 +86,11 @@ export const credit = (v: Video) =>
   [v.maker ?? v.channel, v.year].filter(Boolean).join(", ") || undefined;
 
 // "mq" is 16:9 with no letterboxing; "hq" and the numbered frames are 4:3.
-export const thumb = (id: string, frame: 0 | 1 | 2 | 3 | "mq" | "hq" = "hq") =>
-  typeof frame === "number"
-    ? `https://i.ytimg.com/vi/${id}/${frame}.jpg`
-    : `https://i.ytimg.com/vi/${id}/${frame}default.jpg`;
+// 1–3 are YouTube's three auto frames at 120x90; hq1–hq3 are the same at 480x360.
+export const thumb = (id: string, frame: 0 | 1 | 2 | 3 | "mq" | "hq" | "hq1" | "hq2" | "hq3" = "hq") =>
+  frame === "mq" || frame === "hq"
+    ? `https://i.ytimg.com/vi/${id}/${frame}default.jpg`
+    : `https://i.ytimg.com/vi/${id}/${frame}.jpg`;
 
 // Accepts watch URLs, youtu.be links, shorts, embeds, or a bare 11-char ID.
 export function parseYouTubeId(input: string): string | null {

@@ -7,7 +7,13 @@
 // Colours come from CSS variables that change with data-state on the
 // wrapper (app/endeavour.css); things that come and go per state are in
 // <Layer>, which fades in when the state changes.
+//
+// Two things answer the mouse: Endeavour's sign, where Deptford Cinema's old
+// one shows through on a hover (or a tap), and the basement screen, a link to
+// Basement TV. The drawing is hidden from screen readers and the keyboard,
+// so the fat footer's text link is their way in.
 
+import Link from "next/link";
 import { thumb } from "@/lib/videos";
 import type { Scene as SceneT, State } from "./state";
 
@@ -289,7 +295,7 @@ function Gooseneck({ x }: { x: number }) {
 }
 
 // Endeavour itself: bar at street level, basement cinema below
-function Endeavour() {
+function Endeavour({ onSign }: { onSign?: () => void }) {
   return (
     <g>
       <rect className="en-o en-end" x={830} y={22} width={340} height={G - 22} />
@@ -304,10 +310,21 @@ function Endeavour() {
       {GOOSENECKS.map((x) => (
         <Gooseneck key={x} x={x} />
       ))}
-      <rect className="en-o en-fascia" x={836} y={61} width={328} height={20} />
-      <text className="en-sign" x={1000} y={78} textAnchor="middle" textLength={262} lengthAdjust="spacing">
-        ENDEAVOUR
-      </text>
+      {/* The sign. Deptford Cinema had the basement from 2014 to 2020, and its
+          name shows through on a hover or a tap. The clear rect on top
+          catches the mouse, so the thin letters aren't the only target. */}
+      <g className="en-signboard">
+        {/* DRAFT */}
+        <title>Deptford Cinema was here, 2014 to 2020. About forty seats downstairs, some of them sofas.</title>
+        <rect className="en-o en-fascia" x={836} y={61} width={328} height={20} />
+        <text className="en-sign" x={1000} y={78} textAnchor="middle" textLength={262} lengthAdjust="spacing">
+          ENDEAVOUR
+        </text>
+        <text className="en-ghost" x={1000} y={78} textAnchor="middle" textLength={262} lengthAdjust="spacing">
+          DEPTFORD CINEMA
+        </text>
+        <rect className="en-sign-hit" x={836} y={61} width={328} height={20} onClick={onSign} />
+      </g>
 
       {/* Painted frame round the whole shopfront */}
       <rect className="en-o en-frame" x={836} y={81} width={328} height={G - 81} />
@@ -370,7 +387,13 @@ function Basement() {
       <rect className="en-o en-wall" x={828} y={G} width={344} height={86} />
       <rect className="en-room" x={834} y={G + 2} width={332} height={78} />
       <rect className="en-o en-wall" x={828} y={G} width={314} height={10} />
-      <rect className="en-o en-screen" x={872} y={147} width={128} height={44} />
+      {/* Out of tab order: the footer's own link does this for the keyboard.
+          Not prefetched, since the footer is on every page. */}
+      <Link href="/tv" className="en-tv" tabIndex={-1} prefetch={false}>
+        {/* DRAFT */}
+        <title>Basement TV</title>
+        <rect className="en-o en-screen" x={872} y={147} width={128} height={44} />
+      </Link>
       <polygon className="en-o en-stair" points={stairPoints} />
       <path className="en-rail" d={`M${STAIR_TOP - 4} ${G + 2} L${STAIR_TOP - 64} ${G + 76}`} />
       {/* Projector on its stand */}
@@ -520,7 +543,7 @@ function Layer({ scene }: { scene: SceneT }) {
   );
 }
 
-export default function Scene({ scene }: { scene: SceneT | null }) {
+export default function Scene({ scene, onSign }: { scene: SceneT | null; onSign?: () => void }) {
   return (
     <svg viewBox="0 -44 2000 284" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
       <defs>
@@ -579,7 +602,7 @@ export default function Scene({ scene }: { scene: SceneT | null }) {
         </g>
         <path className="en-far" d={FAR_SKYLINE} />
         <Neighbours />
-        <Endeavour />
+        <Endeavour onSign={onSign} />
         {LAMPS.map((l) => (
           <Lamp key={l.x} {...l} />
         ))}
@@ -600,7 +623,8 @@ export default function Scene({ scene }: { scene: SceneT | null }) {
 
       {/* 3am to 4am: the projector runs for an empty room, showing something off the wall.
           The 4:3 "hq" thumbnail, drawn a little larger than the screen and cropped to it,
-          fills the screen with no black bars whether the video is 4:3 or widescreen. */}
+          fills the screen with no black bars whether the video is 4:3 or widescreen.
+          Clicks go through it to Basement TV (.en-layer). */}
       {scene?.eggVideo && (
         <image
           key={scene.eggVideo}
