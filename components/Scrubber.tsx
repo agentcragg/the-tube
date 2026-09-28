@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
-import { canMeasure, measureBars, zoomPastBars } from "@/lib/letterbox";
+import { barsFor, zoomPastBars } from "@/lib/letterbox";
 
 // A film's stills in a row, one showing at a time.
 // Mouse: move across the image to scrub through them, like old YouTube thumbnails.
@@ -26,16 +26,20 @@ function placeholder(seed: string, i: number) {
     linear-gradient(${h % 180}deg, hsl(${(hue + 40) % 360} 35% 22%), hsl(${(hue + 200) % 360} 30% 8%))`;
 }
 
-// One still, in its own clipping box. Once it has loaded, it checks itself for
-// black bars and, if it has any, zooms in past them inside that box (so the
-// strip's scrolling and swiping don't see the zoom).
+// One still, in its own clipping box. A still listed in lib/letterbox.ts as
+// having black bars zooms in past them once it has loaded, inside that box
+// (so the strip's scrolling and swiping don't see the zoom).
 function Still({ src, alt, eager }: { src: string; alt: string; eager: boolean }) {
   const [zoom, setZoom] = useState(1);
-  const check = useCallback((img: HTMLImageElement) => {
-    if (!canMeasure(img.currentSrc || img.src) || !img.naturalWidth) return;
-    const frame = img.clientWidth && img.clientHeight ? img.clientWidth / img.clientHeight : 16 / 9;
-    setZoom(zoomPastBars(measureBars(img), img.naturalWidth / img.naturalHeight, frame));
-  }, []);
+  const bars = barsFor(src);
+  const check = useCallback(
+    (img: HTMLImageElement) => {
+      if (!bars || !img.naturalWidth) return;
+      const frame = img.clientWidth && img.clientHeight ? img.clientWidth / img.clientHeight : 16 / 9;
+      setZoom(zoomPastBars(bars, img.naturalWidth / img.naturalHeight, frame));
+    },
+    [bars],
+  );
   // A picture that finished loading before the page came to life never fires onLoad
   const ref = useCallback((img: HTMLImageElement | null) => {
     if (img?.complete) check(img);
@@ -48,7 +52,6 @@ function Still({ src, alt, eager }: { src: string; alt: string; eager: boolean }
         src={src}
         alt={alt}
         loading={eager ? "eager" : "lazy"}
-        crossOrigin={canMeasure(src) ? "anonymous" : undefined}
         draggable={false}
         onLoad={(e) => check(e.currentTarget)}
         style={zoom > 1 ? { transform: `scale(${zoom})` } : undefined}

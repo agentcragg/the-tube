@@ -1,77 +1,29 @@
-// Some stills have black bars baked into the picture: a film shot wider than
-// 16:9 in a YouTube thumbnail, say. These work out how thick the bars are in
-// the browser, so a frame can zoom just past them. Only near-black bars of
-// equal size on opposite sides count, so a night sky or a shadow down one
-// side isn't mistaken for one.
+// Stills with black bars baked into the picture (a film shot wider than 16:9
+// in a YouTube thumbnail, say), and how thick the bars are, so a frame can
+// zoom just past them. Measured by hand: the pixels can't be read in the
+// browser, because TMDB and YouTube images are cached without the headers
+// that would allow it. Add a line here when a new still has bars.
 
 export type Bars = { v: number; h: number }; // bar on each side, as a fraction of the height / width
 
-// Hosts that allow the browser to read their pixels (they send CORS headers).
-// Pictures from anywhere else are left as they are.
-const READABLE_HOSTS = ["i.ytimg.com", "image.tmdb.org"];
+const MARGIN = 0.006; // trim a hair more, so no dark line is left at the edge
 
-export function canMeasure(src: string) {
-  try {
-    return READABLE_HOSTS.includes(new URL(src).hostname);
-  } catch {
-    return false;
-  }
-}
+const BARS: Record<string, Bars> = {
+  // Nebraska City, episode 10: 38px top and bottom of 720
+  "https://i.ytimg.com/vi/srgrYYqRk5g/maxresdefault.jpg": { v: 38 / 720, h: 0 },
+  // Nebraska City, episode 9: 69px top and bottom of 720
+  "https://i.ytimg.com/vi/SLLIXxxLcdU/maxresdefault.jpg": { v: 69 / 720, h: 0 },
+  // Nebraska City, episode 1: 28px and 31px of 360 (a 16:9 frame crops these off anyway)
+  "https://i.ytimg.com/vi/mkRpQU2xVCo/hqdefault.jpg": { v: 31 / 360, h: 0 },
+};
 
-const cache = new Map<string, Bars>();
-const NONE: Bars = { v: 0, h: 0 };
-const SAMPLE_WIDTH = 160;
-const DARK = 24; // brightest a bar pixel can be, out of 255
-const MARGIN = 0.012; // trim a hair more (about one sample row), so no dark line is left at the edge
+// With the margin added, worked out once so each still gets the same object every time
+const TRIMMED = new Map(
+  Object.entries(BARS).map(([src, { v, h }]) => [src, { v: v && v + MARGIN, h: h && h + MARGIN }]),
+);
 
-export function measureBars(img: HTMLImageElement): Bars {
-  const key = img.currentSrc || img.src;
-  const known = cache.get(key);
-  if (known) return known;
-
-  let bars = NONE;
-  try {
-    const W = img.naturalWidth;
-    const H = img.naturalHeight;
-    const canvas = document.createElement("canvas");
-    const sw = SAMPLE_WIDTH;
-    const sh = Math.max(1, Math.round((H * sw) / W));
-    canvas.width = sw;
-    canvas.height = sh;
-    const ctx = canvas.getContext("2d", { willReadFrequently: true });
-    if (W && H && ctx) {
-      ctx.drawImage(img, 0, 0, sw, sh);
-      const d = ctx.getImageData(0, 0, sw, sh).data;
-      const lum = (x: number, y: number) => {
-        const i = (y * sw + x) * 4;
-        return 0.299 * d[i] + 0.587 * d[i + 1] + 0.114 * d[i + 2];
-      };
-      const rowDark = (y: number) => {
-        for (let x = 0; x < sw; x++) if (lum(x, y) >= DARK) return false;
-        return true;
-      };
-      const colDark = (x: number) => {
-        for (let y = 0; y < sh; y++) if (lum(x, y) >= DARK) return false;
-        return true;
-      };
-      const run = (n: number, dark: (i: number) => boolean) => {
-        let k = 0;
-        while (k < n / 3 && dark(k)) k++;
-        return k;
-      };
-      const top = run(sh, rowDark);
-      const bottom = run(sh, (k) => rowDark(sh - 1 - k));
-      const left = run(sw, colDark);
-      const right = run(sw, (k) => colDark(sw - 1 - k));
-      const pair = (a: number, b: number, n: number) =>
-        a / n > 0.02 && b / n > 0.02 && Math.abs(a - b) / n < 0.04 ? Math.min(a, b) / n + MARGIN : 0;
-      bars = { v: pair(top, bottom, sh), h: pair(left, right, sw) };
-    }
-  } catch {
-    // The pixels couldn't be read: leave the picture alone
-  }
-  cache.set(key, bars);
-  return bars;
+export function barsFor(src: string): Bars | undefined {
+  return TRIMMED.get(src);
 }
 
 /**
