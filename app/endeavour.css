@@ -118,6 +118,11 @@
 .en-strip[data-state="night"] .en-shutter rect,
 .en-strip[data-state="egg"] .en-shutter rect { fill: #3a3a3a; }
 .en-shutter line { stroke: var(--line); stroke-width: 0.8; opacity: 0.6; }
+.en-shutter-down { opacity: 1; }
+.en-roof { fill: color-mix(in srgb, var(--nbr1) 62%, #000); }
+.en-brick { fill: color-mix(in srgb, var(--nbr1) 80%, #000); }
+.en-awning { fill: color-mix(in srgb, var(--nbr2) 55%, #000); }
+.en-pubfront { fill: #333; }
 .en-post { fill: none; stroke: #333; stroke-width: 2; }
 .en-post-thin { stroke-width: 1.2; }
 .en-lamp { fill: var(--lamp); }

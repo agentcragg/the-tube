@@ -39,21 +39,11 @@ const FAR_SKYLINE = (() => {
   return `${d} V${G} Z`;
 })();
 
-// Neighbours along the Broadway. Invented shapes, not the real buildings.
-const TERRACE = [
-  { x: 170, w: 130, top: 50, tone: 1, lit: [2] },
-  { x: 300, w: 130, top: 44, tone: 2, lit: [1] },
-  { x: 430, w: 130, top: 36, tone: 1, lit: [] },
-  { x: 560, w: 130, top: 28, tone: 2, lit: [0, 4] },
-  { x: 690, w: 140, top: 40, tone: 1, lit: [2] },
-  { x: 1170, w: 130, top: 30, tone: 2, lit: [1] },
-  { x: 1300, w: 140, top: 60, tone: 1, lit: [] },
-  { x: 1440, w: 130, top: 34, tone: 2, lit: [3] },
-  { x: 1570, w: 130, top: 50, tone: 1, lit: [0] },
-  { x: 1700, w: 130, top: 42, tone: 2, lit: [] },
+// Street lamps: where the post stands, and how high its head is
+const LAMPS = [
+  { x: 250, top: 50 },
+  { x: 1156, top: 46 }, // in front of Endeavour, with the Deptford Broadway sign on it
 ];
-
-const LAMPS = [364, 806, 1270, 1640];
 
 // Stones in the soil, and the neighbours' cellars, for the ant-farm look
 const PEBBLES = (() => {
@@ -65,10 +55,10 @@ const PEBBLES = (() => {
   })).filter((p) => p.x < 820 || p.x > 1180);
 })();
 const CELLARS = [
-  { x: 700, w: 118, h: 50 },
-  { x: 1182, w: 104, h: 46 },
-  { x: 440, w: 108, h: 42 },
-  { x: 1452, w: 112, h: 48 },
+  { x: 90, w: 120, h: 46 },
+  { x: 600, w: 150, h: 50 },
+  { x: 1230, w: 120, h: 44 },
+  { x: 1640, w: 130, h: 48 },
 ];
 
 // Thirty seats in three rows, seen from behind. Far row first so nearer heads overlap.
@@ -121,49 +111,122 @@ const LAMPS_ON: State[] = ["evening", "setup", "queue", "screening", "after", "n
 const CHAIRS_OUT: State[] = ["setup", "queue"];
 const CHAIRS_STACKED: State[] = ["after", "night", "egg", "morning", "day", "evening"];
 
-function Terrace({ x, w, top, tone, lit }: (typeof TERRACE)[number]) {
-  const cols = Math.max(2, Math.floor((w - 20) / 34));
-  const gap = (w - cols * 16) / (cols + 1);
-  const rows: number[] = [];
-  for (let y = top + 12; y + 18 <= 78; y += 28) rows.push(y);
+function Lamp({ x, top }: { x: number; top: number }) {
   return (
     <g>
-      <rect className={`en-o en-nbr${tone}`} x={x} y={top} width={w} height={G - top} />
-      <rect fill="url(#en-pencil)" x={x} y={top} width={w} height={82 - top} />
-      <rect className={`en-o en-nbr${tone}`} x={x - 2} y={top - 4} width={w + 4} height={5} />
-      {rows.map((y, row) =>
-        Array.from({ length: cols }, (_, c) => {
-          const i = row * cols + c;
-          return (
-            <rect
-              key={`${y}-${c}`}
-              className={`en-o ${lit.includes(i) ? "en-lit" : "en-win"}`}
-              x={x + gap + c * (16 + gap)}
-              y={y}
-              width={16}
-              height={18}
-            />
-          );
-        }),
-      )}
-      <rect className="en-o en-fascia" x={x + 5} y={82} width={w - 10} height={9} />
-      <rect className="en-o en-win" x={x + 9} y={95} width={w - 46} height={31} />
-      <rect className="en-o en-door" x={x + w - 30} y={97} width={18} height={G - 97} />
-      <g className="en-shutter">
-        <rect className="en-o" x={x + 6} y={93} width={w - 12} height={G - 93} />
-        {Array.from({ length: 8 }, (_, i) => (
-          <line key={i} x1={x + 6} x2={x + w - 6} y1={97 + i * 4.2} y2={97 + i * 4.2} />
-        ))}
-      </g>
+      <path className="en-post" d={`M${x} ${G} V${top + 6} Q${x} ${top} ${x + 8} ${top}`} />
+      <rect className="en-o en-lamp" x={x + 5} y={top} width={9} height={4.5} rx={1} />
     </g>
   );
 }
 
-function Lamp({ x }: { x: number }) {
+// A window with a round top, and a sill unless it's at street level
+function Arched({ x, y, w, h, lit, sill = true }: { x: number; y: number; w: number; h: number; lit?: boolean; sill?: boolean }) {
+  const r = w / 2;
   return (
     <g>
-      <path className="en-post" d={`M${x} ${G} V62 Q${x} 56 ${x + 8} 56`} />
-      <rect className="en-o en-lamp" x={x + 5} y={56} width={9} height={4.5} rx={1} />
+      <path className={`en-o ${lit ? "en-lit" : "en-win"}`} d={`M${x} ${y + h} V${y + r} A${r} ${r} 0 0 1 ${x + w} ${y + r} V${y + h} Z`} />
+      <line className="en-bar-line" x1={x + r} x2={x + r} y1={y} y2={y + h} />
+      {sill && <rect className="en-o en-end" x={x - 2} y={y + h} width={w + 4} height={2.5} />}
+    </g>
+  );
+}
+
+// A roller shutter, down at night and first thing (or always, if the shop has shut for good)
+function Shutter({ x, y, w, h, always }: { x: number; y: number; w: number; h: number; always?: boolean }) {
+  const lines = Array.from({ length: Math.floor((h - 4) / 4.2) }, (_, i) => y + 4 + i * 4.2);
+  return (
+    <g className={always ? "en-shutter en-shutter-down" : "en-shutter"}>
+      <rect className="en-o" x={x} y={y} width={w} height={h} />
+      {lines.map((ly) => (
+        <line key={ly} x1={x} x2={x + w} y1={ly} y2={ly} />
+      ))}
+    </g>
+  );
+}
+
+// The rest of the block, after Street View, left to right. Kept simple: the
+// shapes, heights and windows are the real ones; the signs are left blank.
+function Neighbours() {
+  return (
+    <g>
+      {/* Behind the pub: the taller brick block */}
+      <path className="en-far" d="M40 130 V16 L135 2 L230 16 V130 Z" />
+
+      {/* The corner pub: red brick, slate mansard roof, arched windows, painted front */}
+      <path className="en-o en-roof" d="M-6 26 L6 12 H356 L368 26 Z" />
+      <rect className="en-o en-brick" x={0} y={26} width={370} height={G - 26} />
+      <rect fill="url(#en-pencil)" x={0} y={26} width={370} height={54} />
+      <rect className="en-o en-nbr1" x={-4} y={24} width={378} height={4} />
+      <rect className="en-o en-nbr1" x={-4} y={52} width={378} height={3} />
+      {[62, 172, 282].map((x, i) => (
+        <g key={x}>
+          <Arched x={x} y={31} w={26} h={17} lit={i === 1} />
+          <Arched x={x} y={58} w={26} h={17} />
+        </g>
+      ))}
+      <rect className="en-o en-pubfront" x={0} y={80} width={370} height={G - 80} />
+      {[30, 118, 206, 294].map((x, i) => (
+        <Arched key={x} x={x} y={90} w={36} h={G - 90} lit={i === 1 || i === 2} sill={false} />
+      ))}
+
+      {/* Narrow cream house: one window a floor; the tandoori's shutter is down for good */}
+      <rect className="en-o en-nbr2" x={382} y={6} width={12} height={14} />
+      <rect className="en-o en-nbr1" x={370} y={20} width={170} height={G - 20} />
+      <rect fill="url(#en-pencil)" x={370} y={20} width={170} height={60} />
+      <rect className="en-o en-nbr1" x={368} y={17} width={174} height={4} />
+      <Sash x={445} y={28} w={20} h={18} />
+      <Sash x={445} y={54} w={20} h={18} lit />
+      <rect className="en-o en-fascia" x={374} y={82} width={162} height={10} />
+      <Shutter x={378} y={94} w={110} h={G - 94} always />
+      <rect className="en-o en-frame" x={496} y={97} width={20} height={G - 97} />
+
+      {/* Tall cream building, four storeys, two windows a floor; shop with an awning */}
+      <rect className="en-o en-nbr2" x={540} y={6} width={290} height={G - 6} />
+      <rect fill="url(#en-pencil)" x={540} y={6} width={290} height={74} />
+      <rect className="en-o en-nbr2" x={534} y={2} width={302} height={5} />
+      {[12, 34, 56].map((y, row) => (
+        <g key={y}>
+          <Sash x={612} y={y} w={24} h={18} lit={row === 0} />
+          <Sash x={718} y={y} w={24} h={18} />
+        </g>
+      ))}
+      <rect className="en-o en-fascia" x={544} y={82} width={282} height={10} />
+      <path className="en-o en-awning" d="M546 92 H824 L830 101 H540 Z" />
+      <rect className="en-o en-win" x={552} y={101} width={200} height={G - 101} />
+      <rect className="en-o en-door" x={764} y={101} width={22} height={G - 101} />
+      <Shutter x={546} y={101} w={278} h={G - 101} />
+
+      {/* Autocolour: low brick shop with a hipped roof, one window upstairs */}
+      <path className="en-o en-roof" d="M1162 53 L1186 36 H1439 L1463 53 Z" />
+      <rect className="en-o en-brick" x={1170} y={52} width={285} height={G - 52} />
+      <rect fill="url(#en-pencil)" x={1170} y={52} width={285} height={28} />
+      <Sash x={1236} y={57} w={26} h={17} />
+      <rect className="en-o en-fascia" x={1174} y={82} width={277} height={10} />
+      <rect className="en-o en-frame" x={1176} y={93} width={273} height={G - 93} />
+      <rect className="en-o en-win" x={1180} y={96} width={110} height={30} />
+      <rect className="en-o en-win" x={1296} y={96} width={110} height={30} />
+      <rect className="en-o en-door" x={1413} y={96} width={30} height={G - 96} />
+      <Shutter x={1176} y={93} w={273} h={G - 93} />
+
+      {/* Harton Street goes off between here and the next building */}
+
+      {/* The big Victorian corner building: yellow brick, two floors of arched windows */}
+      <rect className="en-o en-nbr2" x={1540} y={8} width={470} height={G - 8} />
+      <rect fill="url(#en-pencil)" x={1540} y={8} width={470} height={72} />
+      <rect className="en-o en-nbr1" x={1534} y={4} width={480} height={5} />
+      <rect className="en-o en-nbr1" x={1534} y={40} width={480} height={3} />
+      {[1566, 1628, 1690, 1752, 1814, 1876, 1938].map((x, i) => (
+        <g key={x}>
+          <Arched x={x} y={14} w={22} h={19} lit={i === 1 || i === 4} />
+          <Arched x={x} y={47} w={22} h={21} lit={i === 5} />
+        </g>
+      ))}
+      <rect className="en-o en-fascia" x={1544} y={80} width={466} height={11} />
+      {[1552, 1662, 1772, 1882].map((x) => (
+        <rect key={x} className="en-o en-win" x={x} y={95} width={92} height={31} />
+      ))}
+      <Shutter x={1546} y={93} w={462} h={G - 93} />
     </g>
   );
 }
@@ -269,9 +332,8 @@ function StreetFurniture() {
       <path className="en-o en-aboard-frame" d="M1128 112 H1146 L1149.5 130 H1124.5 Z" />
       <path className="en-o en-aboard" d="M1130 114.5 H1144 L1146.5 127.5 H1127.5 Z" />
       <path className="en-chalk" d="M1131.5 118 H1140 M1131 121.5 H1142.5 M1130.5 125 H1138" />
-      <path className="en-post" d={`M1182 ${G} V60`} />
-      <rect className="en-o en-street-sign" x={1185} y={63} width={64} height={12} rx={1} />
-      <text className="en-street-sign-text" x={1217} y={71.6} textAnchor="middle">
+      <rect className="en-o en-street-sign" x={1124} y={98} width={64} height={12} rx={1} />
+      <text className="en-street-sign-text" x={1156} y={106.6} textAnchor="middle">
         Deptford Broadway
       </text>
     </g>
@@ -325,7 +387,9 @@ function Layer({ scene }: { scene: SceneT }) {
   return (
     <g className="en-layer">
       {LAMPS_ON.includes(state) &&
-        LAMPS.map((x) => <path key={x} className="en-pool" d={`M${x + 6} 60.5 H${x + 13} L${x + 32} ${G} H${x - 13} Z`} />)}
+        LAMPS.map(({ x, top }) => (
+          <path key={x} className="en-pool" d={`M${x + 6} ${top + 4.5} H${x + 13} L${x + 32} ${G} H${x - 13} Z`} />
+        ))}
 
       {/* People at the ledge in the big window */}
       <g clipPath="url(#en-windows)">
@@ -444,12 +508,10 @@ export default function Scene({ scene }: { scene: SceneT | null }) {
           ))}
         </g>
         <path className="en-far" d={FAR_SKYLINE} />
-        {TERRACE.map((t) => (
-          <Terrace key={t.x} {...t} />
-        ))}
+        <Neighbours />
         <Endeavour />
-        {LAMPS.map((x) => (
-          <Lamp key={x} x={x} />
+        {LAMPS.map((l) => (
+          <Lamp key={l.x} {...l} />
         ))}
         <StreetFurniture />
         <rect className="en-o en-pave" x={-4} y={G} width={2008} height={5} />
