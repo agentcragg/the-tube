@@ -56,3 +56,13 @@ export const MicIcon = ({ className }: P) => (
     <path d="M3.5 7.5a4.5 4.5 0 0 0 9 0M8 12v2.5M5.5 14.5h5" stroke="#4d525c" strokeWidth="1.2" fill="none" strokeLinecap="round" />
   </svg>
 );
+
+// An energy drink: a grey can with a red bolt
+export const CanIcon = ({ className }: P) => (
+  <svg {...base} className={className}>
+    <path d="M4.5 3.5h7v10a1.5 1.5 0 0 1-1.5 1.5H6a1.5 1.5 0 0 1-1.5-1.5z" fill="#b8c2cf" stroke="#4d525c" />
+    <path d="M5 1.5h6l.5 2h-7z" fill="#dfe4ea" stroke="#4d525c" strokeLinejoin="round" />
+    <path d="M8.7 5L6.4 9.3h1.8L7.3 13l2.6-4.6H8.1z" fill="#d9483b" stroke="#a3322a" strokeWidth=".6" strokeLinejoin="round" />
+    <path d="M5.6 5v7.5" stroke="#fff" strokeOpacity=".6" />
+  </svg>
+);

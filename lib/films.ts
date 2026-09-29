@@ -14,6 +14,7 @@ export type Film = {
   notes?: string; // programme notes
   pairedWith?: string;
   extra?: string; // something extra on the night, e.g. a Q&A
+  perk?: string; // something laid on for the audience, e.g. free drinks
   colour: string; // taken from the film's own stills; only the Endeavour drawing uses it (the lit screen and the poster in the window)
   rabbitHole: { label: string; url: string }[];
 };
@@ -207,6 +208,7 @@ export const films: Film[] = [
     date: "2027-03-23",
     runtime: 88 * 60, // TMDB
     colour: "#d0661e", // hot orange
+    perk: "Complimentary energy drinks",
     stills: [
       `${TMDB}/xCB02ebMOe2xaAPffVemQPzSgbY.jpg`,
       `${TMDB}/iF7Ay1Q0D0IbEq1rjSetrRKed1N.jpg`,

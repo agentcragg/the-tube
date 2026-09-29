@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Scrubber from "@/components/Scrubber";
 import { RabbitHole, StartHere, WatchPanels } from "@/components/watch";
 import Notes from "@/components/Notes";
-import { CalendarIcon, MicIcon, PinIcon, TicketIcon } from "@/components/Icons";
+import { CalendarIcon, CanIcon, MicIcon, PinIcon, TicketIcon } from "@/components/Icons";
 import { bookingUrl, films, formatDate, getFilm, VENUE } from "@/lib/films";
 import { COPY, depth, watchFor } from "@/lib/watch";
 import { SAMPLE_SEATS } from "@/lib/seats";
@@ -60,6 +60,11 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
         {film.extra && (
           <p className="extra extra-big">
             <MicIcon /> {film.extra}
+          </p>
+        )}
+        {film.perk && (
+          <p className="extra extra-big">
+            <CanIcon /> {film.perk}
           </p>
         )}
 
