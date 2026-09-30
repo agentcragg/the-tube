@@ -10,22 +10,19 @@ export type Clip = {
   by?: string; // the uploading channel, as YouTube shows it
   year?: string; // year uploaded
   length?: string; // "8:43" or "1:16:39"
-  note?: string; // DRAFT: one plain line on why it's here
   start?: number; // seconds into the clip to start the player at (the good bit)
   embed?: false; // the uploader has switched embedding off: the card opens YouTube instead
   smallFrames?: true; // YouTube never made the 480x360 frames for this one, so it scrubs the small ones
 };
 
-// 2–4 clips. The first clip of the first section is Start here.
-export type Section = { heading: string; clips: Clip[] };
-
 // A link with a `shot` (a screenshot of the Wayback copy the url opens, in
-// public/archive/<slug>/) goes on the From the archive shelf; `archived` is
-// the day of that copy. Captured 28 Sep 2026.
-export type Link = { label: string; url: string; year?: string; note?: string; shot?: string; archived?: string };
+// public/archive/<slug>/) goes in the Rabbit hole after the clips; `archived`
+// is the day of that copy (captured 28 Sep 2026). The rest are listed under
+// Sites linking to this film. `label` is only a note for whoever edits this.
+export type Link = { label: string; url: string; year?: string; shot?: string; archived?: string };
 
 export type WatchData = {
-  sections: Section[];
+  clips: Clip[];
   links?: Link[];
   // YouTube's hyphenated form. The house line (below) is added after these.
   honours?: string[];
@@ -46,19 +43,10 @@ export const HOUSE_HONOUR = {
 // DRAFT: wording, after YouTube's own (Feb 2008)
 export const COPY = {
   title: "Rabbit hole",
-  // "15 videos · 2h 51m deep"; under an hour, "40m deep"
-  depth: ({ count, seconds }: { count: number; seconds: number }) => {
-    const mins = Math.round(seconds / 60);
-    const deep = mins >= 60 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : `${mins}m`;
-    return `${count} ${count === 1 ? "video" : "videos"} · ${deep} deep`;
-  },
-  startHere: "Start here",
-  furtherDown: "Further down:",
   nowPlaying: "Now playing:",
   onYouTube: "Watch on YouTube »",
   onYouTubeShort: "YouTube »", // the same link in the player's bar on a phone
   playsOnYouTube: "Plays on YouTube", // the ↗ on a clip that won't embed
-  elsewhere: "Elsewhere",
   allNights: "All nights »",
   stats: "Statistics & Data",
   honours: (n: number) => `Honours for this film (${n})`,
@@ -69,12 +57,6 @@ export const COPY = {
 // "1:16:39" → 4599
 export const lengthSeconds = (l?: string) =>
   l ? l.split(":").reduce((sum, n) => sum * 60 + Number(n), 0) : undefined;
-
-// How far down it goes: every clip, and the lengths we know
-export const depth = (d: WatchData) => {
-  const clips = d.sections.flatMap((s) => s.clips);
-  return { count: clips.length, seconds: clips.reduce((sum, c) => sum + (lengthSeconds(c.length) ?? 0), 0) };
-};
 
 // YouTube's own link, at the good bit if there is one
 export const watchUrl = (c: Clip) =>

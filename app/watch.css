@@ -1,25 +1,18 @@
 /* The Rabbit hole on a film page, as a 2008 YouTube channel and watch page:
-   shelves of clips in the main column, a Start here box at the top of the
-   sidebar, and stacked grey-headed panels (native <details>) under it. */
+   one grid of clips in the main column, and stacked grey-headed panels
+   (native <details>) in the sidebar. */
 
-/* ---------- Shelves ---------- */
+/* ---------- The grid ---------- */
 
 .rh .box-body { container-type: inline-size; }
-.rh-depth { font-size: 12px; color: #666; }
 
-.rh-shelf { scroll-margin-top: 8px; }
-.rh-shelf:focus { outline: none; } /* focus lands here from Start here's links */
-.rh-shelf + .rh-shelf { margin-top: 16px; padding-top: 12px; border-top: 1px solid #ddd; }
-.rh-shelf h3 { margin: 0 0 10px; font: bold 13px/1.3 var(--sans); color: var(--ink); }
-
-/* 4 across in the full column, 3 at about 640px, 2 below 560px. Short
-   shelves keep their empty columns, so they sit left. */
+/* 4 across in the full column, 3 at about 640px, 2 below 560px */
 .rh-grid {
   list-style: none; margin: 0; padding: 0;
   display: grid; gap: 16px 14px; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
 }
 
-/* A card: framed thumbnail, blue title, grey uploader, then the note.
+/* A card: framed thumbnail, blue title, grey uploader.
    The padding is pulled back by the margin, so the yellow "now playing"
    background doesn't move anything. */
 .rh-card {
@@ -36,12 +29,7 @@
 .rh-card:hover strong, .rh-card:focus-visible strong { text-decoration: underline; }
 .rh-card em { display: block; margin-top: 2px; font: 11px/1.35 var(--sans); font-style: normal; color: #666; }
 .rh-out { color: #999; }
-.rh-note {
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  margin-top: 3px; font: 12px/1.35 var(--sans); color: #555;
-}
-
-/* The player opens above its shelf's cards, full width, bar like the wall's */
+/* The player opens at the top of the box, full width, bar like the wall's */
 .rh-player { margin-bottom: 14px; border: 1px solid var(--box-edge); background: #000; scroll-margin: 8px; }
 .rh-bar {
   display: flex; align-items: center; gap: 12px;
@@ -56,12 +44,8 @@
 .rh-bar button:focus-visible { outline: 2px solid var(--link); }
 .rh-player iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; }
 
-/* From the archive: the films' old websites, each in a flat grey browser
-   window with its old address. 3 across in the full column, 1 on a phone. */
-.rh-sites {
-  list-style: none; margin: 0; padding: 0;
-  display: grid; gap: 16px 14px; grid-template-columns: repeat(auto-fill, minmax(min(260px, 100%), 1fr));
-}
+/* The films' old websites, after the clips: each in a flat grey browser
+   window with its old address */
 .rh-site { display: block; text-decoration: none; color: var(--ink); }
 .rh-site figure { margin: 0; }
 .rh-frame { border: 1px solid var(--box-edge); background: #fff; }
@@ -79,27 +63,10 @@
   font: 11px/1.3 var(--sans); color: #333;
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
-.rh-site img { display: block; width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; object-position: top; }
+.rh-site img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; object-position: top; }
 .rh-site figcaption { margin-top: 5px; }
-.rh-site strong {
-  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
-  font: bold 13px/1.25 var(--sans); color: var(--link);
-  overflow-wrap: anywhere;
-}
-.rh-site:hover strong, .rh-site:focus-visible strong { text-decoration: underline; }
-.rh-site em { display: block; margin-top: 2px; font: 11px/1.35 var(--sans); font-style: normal; color: #666; }
-
-/* Elsewhere: the links without a screenshot, as a plain list */
-.rh-links a { overflow-wrap: anywhere; }
-.rh-year { font-size: 11px; color: #666; }
-
-/* ---------- Start here (sidebar, desktop only) ---------- */
-
-.rh-start .rh-card { margin: 0; padding: 0; }
-.rh-start .rh-start-label { margin-bottom: 6px; font: bold 12px var(--sans); }
-.rh-start .rh-further { margin: 12px 0 2px; font: bold 12px var(--sans); }
-.rh-further-list { list-style: none; margin: 0; padding: 0; font-size: 12px; line-height: 1.6; }
-.rh-start .rh-start-depth { margin-top: 6px; font-size: 11px; color: #666; }
+.rh-site em { display: block; font: 11px/1.35 var(--sans); font-style: normal; color: var(--link); }
+.rh-site:hover em, .rh-site:focus-visible em { text-decoration: underline; }
 
 /* ---------- Sidebar panels ---------- */
 
@@ -153,7 +120,6 @@
   .rh-bar { min-height: 44px; padding: 0 0 0 10px; box-sizing: border-box; }
   .rh-bar a { padding: 12px 0; }
   .rh-bar button { width: 44px; height: 44px; padding: 0; line-height: 44px; text-align: center; }
-  .rh-further-list a { display: inline-block; padding: 6px 0; }
 
   .wp > summary { min-height: 44px; padding: 0 12px; font-size: 13px; box-sizing: border-box; }
   .wp-body { padding: 6px 12px 10px; }
@@ -163,13 +129,8 @@
   .wp-threads li + li { margin-top: 0; }
 }
 
-/* One column: the shelves follow the notes, so Start here would only repeat them */
 @media (max-width: 720px) {
-  .rh-start { display: none; }
-  .rh .box-head { row-gap: 2px; }
-  .rh-depth { flex-basis: 100%; }
   .rh .box-body { padding: 10px 8px 12px; }
-  .rh-links li { padding: 6px 0; }
   .rh-window, .rh-address span { font-size: 10px; }
 
   /* The bar gives the title two lines. The label is for screen readers only
@@ -183,7 +144,7 @@
 /* Two cards across, and the hole opens on one big picture */
 @container (max-width: 480px) {
   .rh-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 10px; }
-  .rh-shelf:first-child .rh-grid > li:first-child { grid-column: 1 / -1; }
+  .rh-grid > li:first-child { grid-column: 1 / -1; }
 }
 
 @media (prefers-reduced-motion: reduce) {

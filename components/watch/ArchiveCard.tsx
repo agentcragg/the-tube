@@ -2,7 +2,7 @@
 // in a plain grey browser window, its old address in the bar, and the day it
 // was archived underneath. The whole card opens the Wayback copy. The
 // screenshots are static files in public/archive/<slug>/, so the page never
-// calls the Wayback Machine itself. Used by the Rabbit hole's last shelf.
+// calls the Wayback Machine itself. Used at the end of the Rabbit hole.
 
 import type { Link } from "@/lib/rabbit-hole";
 
@@ -24,8 +24,6 @@ const day = (iso: string) =>
 
 export default function ArchiveCard({ link }: { link: Link & { shot: string } }) {
   const address = original(link.url);
-  // "... (Wayback Machine)": the caption's second line already says so
-  const label = link.label.replace(/\s*\([^)]*Wayback Machine[^)]*\)$/, "");
   return (
     <a className="rh-site" href={link.url} target="_blank" rel="noreferrer">
       <figure>
@@ -45,7 +43,6 @@ export default function ArchiveCard({ link }: { link: Link & { shot: string } })
           <img src={link.shot} alt="" loading="lazy" width={800} height={600} />
         </div>
         <figcaption>
-          <strong>{label}</strong>
           <em>
             {link.archived && `${day(link.archived)} · `}
             {WAYBACK}

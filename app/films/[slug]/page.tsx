@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import Scrubber from "@/components/Scrubber";
-import { RabbitHole, StartHere, WatchPanels } from "@/components/watch";
+import { RabbitHole, WatchPanels } from "@/components/watch";
 import Notes from "@/components/Notes";
 import { CalendarIcon, CanIcon, MicIcon, PinIcon, TicketIcon } from "@/components/Icons";
 import { bookingUrl, films, formatDate, getFilm, VENUE } from "@/lib/films";
-import { COPY, depth, watchFor } from "@/lib/watch";
+import { COPY, watchFor } from "@/lib/watch";
 import { SAMPLE_SEATS } from "@/lib/seats";
 
 export function generateStaticParams() {
@@ -44,9 +44,9 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
   if (!film) notFound();
   // The next three nights after this one, going round to the start after the last
   const nextUp = [...films.filter((f) => f.date > film.date), ...films.filter((f) => f.date < film.date)].slice(0, 3);
-  // Films without curated sections keep the plain box of links
+  // Films without curated clips keep the plain box of links
   const watch = watchFor(film.slug);
-  const hole = watch?.sections.length ? watch : undefined;
+  const hole = watch?.clips.length ? watch : undefined;
 
   return (
     <div className="watch">
@@ -104,7 +104,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
         </section>
 
         {hole ? (
-          <RabbitHole sections={hole.sections} links={hole.links} depth={COPY.depth(depth(hole))} />
+          <RabbitHole clips={hole.clips} sites={hole.links?.filter((l) => l.shot) ?? []} />
         ) : (
           <section className="box">
             <div className="box-head">
@@ -126,12 +126,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
       </article>
 
       <aside className="side">
-        {hole && (
-          <>
-            <StartHere data={hole} />
-            <WatchPanels film={film} data={hole} />
-          </>
-        )}
+        {hole && <WatchPanels film={film} data={hole} />}
 
         <section className="box">
           <div className="box-head">

@@ -6,9 +6,9 @@ import { badgeTime, films, formatDate, isPast } from "@/lib/films";
 import "./errors.css";
 
 // Any unknown address, and /films/<unknown>. A 2008 YouTube dead video: the
-// black player with its apology, then the next four nights as Related Videos.
+// black player with a message (Matt's words to come), then the next four nights.
 
-export const metadata: Metadata = { title: "Page not available · The Tube" }; // DRAFT
+export const metadata: Metadata = { title: "Not found · The Tube" };
 
 export default function NotFound() {
   const next = films.filter((f) => !isPast(f.date)).slice(0, 4);
@@ -16,17 +16,16 @@ export default function NotFound() {
   return (
     <div className="gone">
       <div className="still-frame">
-        {/* DRAFT */}
+        {/* Placeholder until Matt writes it */}
         <div className="gone-box">
-          <h1>We&apos;re sorry, this page is no longer available.</h1>
-          <p>It may have been removed by the user. Or it was never here.</p>
+          <h1>404 text to come.</h1>
         </div>
       </div>
 
       {next.length > 0 && (
         <section className="box">
           <div className="box-head">
-            <h2>Related Videos</h2> {/* DRAFT */}
+            <h2>Coming up</h2>
           </div>
           <div className="box-body">
             <ul className="film-grid">

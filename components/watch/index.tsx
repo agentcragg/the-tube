@@ -1,25 +1,29 @@
-// A film page's watch-page parts, 2008 YouTube style. The Rabbit hole's
-// shelves go in the main column under the programme notes (RabbitHole); the
-// sidebar opens with Start here (StartHere), then these panels: Statistics &
-// Data (honours and sites linking to the film), open, and, where one existed,
-// the film's old IMDb message board. Native <details>, so no JS beyond the
-// last honour's tense. Data: lib/watch.ts. Films without sections keep the
-// plain Rabbit hole box and get none of this (see the film page).
+// A film page's watch-page parts, 2008 YouTube style. The Rabbit hole goes in
+// the main column under the programme notes (RabbitHole); the sidebar opens
+// with these panels: Statistics & Data (honours and sites linking to the
+// film), open, and, where one existed, the film's old IMDb message board.
+// Native <details>, so no JS beyond the last honour's tense. Data:
+// lib/watch.ts. Films without clips keep the plain Rabbit hole box and get
+// none of this (see the film page).
 
 import type { Film } from "@/lib/films";
 import { COPY, HOUSE_HONOUR, type WatchData } from "@/lib/rabbit-hole";
 import HouseHonour from "./HouseHonour";
 
 export { default as RabbitHole } from "./RabbitHole";
-export { default as StartHere } from "./StartHere";
 
 // "https://www.example.com/page" → "example.com/page"
 const bare = (url: string) => url.replace(/^https?:\/\/(www\.)?/, "");
 
-// Film page sidebar, under Start here
+// Film page sidebar, above Also showing
 export function WatchPanels({ film, data }: { film: Film; data: WatchData }): React.ReactNode {
   const honours = data.honours ?? [];
-  const linking = data.linking?.length ? data.linking : undefined;
+  // The pages written about it, and the other links that come with the clips
+  const all = [
+    ...(data.linking ?? []),
+    ...(data.links ?? []).filter((l) => !l.shot).map((l) => ({ url: l.url, year: l.year ?? "" })),
+  ];
+  const linking = all.length ? all : undefined;
   const boards = data.boards?.threads.length ? data.boards : undefined;
   const linkingId = `wp-linking-${film.slug}`;
 

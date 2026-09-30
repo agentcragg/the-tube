@@ -177,20 +177,6 @@
 .en-beam-egg { fill: #e0e0e0; opacity: 0.22; }
 .en-egg { opacity: 0.85; mix-blend-mode: screen; }
 
-/* Deptford Cinema's sign (2014 to 2020) under Endeavour's. Nothing shows
-   until a deliberate hover: the delay stops it flickering as the mouse
-   passes. A tap on a touch screen shows it at once (data-ghost, Strip.tsx). */
-.en-sign-hit { fill: transparent; pointer-events: all; }
-.en-strip .en-ghost { font: 21px Georgia, "Times New Roman", serif; fill: #cfcfcf; opacity: 0; transition: opacity 0.5s ease; }
-.en-strip[data-state="night"] .en-ghost,
-.en-strip[data-state="egg"] .en-ghost { fill: #9a9a9a; }
-@media (hover: hover) {
-  .en-signboard:hover .en-ghost { opacity: 0.55; transition-delay: 0.7s; }
-  .en-signboard:hover .en-sign { opacity: 0.12; transition-delay: 0.7s; }
-}
-.en-strip[data-ghost] .en-ghost { opacity: 0.55; }
-.en-strip[data-ghost] .en-sign { opacity: 0.12; }
-
 /* The basement screen goes to Basement TV. Everything drawn over it (the
    heads, the beam, the 3am picture) lets clicks through. */
 .en-tv { cursor: pointer; }
@@ -204,7 +190,4 @@
 @media (prefers-reduced-motion: reduce) {
   .en-strip svg * { transition: none; }
   .en-layer { animation: none; }
-  /* No fade, but still the wait before the old sign shows */
-  .en-strip .en-ghost,
-  .en-strip .en-sign { transition: opacity 0s; }
 }

@@ -9,10 +9,9 @@ export default function ErrorPage({ retry }: { error: Error & { digest?: string 
   return (
     <div className="gone">
       <div className="still-frame">
-        {/* DRAFT */}
+        {/* Placeholder until Matt writes it */}
         <div className="gone-box">
-          <h1>Something went wrong.</h1>
-          <p>A small team of highly trained ushers has been sent to deal with it.</p>
+          <h1>Error text to come.</h1>
           <button className="action" onClick={() => retry()}>
             Try again
           </button>

@@ -55,9 +55,7 @@ const shortSlots = (slug: string): Slot[] =>
 
 // The rabbit hole's clips in order, each from its good bit if it has one
 const holeSlots = (slug: string): Slot[] =>
-  (watchFor(slug)?.sections ?? [])
-    .flatMap((s) => s.clips)
-    .flatMap((c) => {
+  (watchFor(slug)?.clips ?? []).flatMap((c) => {
       const start = c.start ?? 0;
       const seconds = (lengthSeconds(c.length) ?? 0) - start;
       if (c.embed === false || seconds <= 0) return [];
@@ -68,7 +66,7 @@ const loopSeconds = (slots: Slot[]) => slots.reduce((sum, s) => sum + s.seconds,
 
 export function slotsFor(film: Film): Slot[] {
   const own = [...shortSlots(film.slug), ...holeSlots(film.slug)];
-  const topUp = loopSeconds(own) < SHORTEST_LOOP || !watchFor(film.slug)?.sections.length;
+  const topUp = loopSeconds(own) < SHORTEST_LOOP || !watchFor(film.slug)?.clips.length;
   const all = topUp ? [...own, ...films.filter((f) => f.slug !== film.slug).flatMap((f) => holeSlots(f.slug))] : own;
   // Once each, if a video turns up twice
   return all.filter((s, i) => all.findIndex((t) => t.id === s.id) === i);

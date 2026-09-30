@@ -8,10 +8,9 @@
 // wrapper (app/endeavour.css); things that come and go per state are in
 // <Layer>, which fades in when the state changes.
 //
-// Two things answer the mouse: Endeavour's sign, where Deptford Cinema's old
-// one shows through on a hover (or a tap), and the basement screen, a link to
-// Basement TV. The drawing is hidden from screen readers and the keyboard,
-// so the fat footer's text link is their way in.
+// The basement screen is a link to Basement TV. The drawing is hidden from
+// screen readers and the keyboard, so the fat footer's text link is their
+// way in.
 
 import Link from "next/link";
 import { thumb } from "@/lib/videos";
@@ -295,7 +294,7 @@ function Gooseneck({ x }: { x: number }) {
 }
 
 // Endeavour itself: bar at street level, basement cinema below
-function Endeavour({ onSign }: { onSign?: () => void }) {
+function Endeavour() {
   return (
     <g>
       <rect className="en-o en-end" x={830} y={22} width={340} height={G - 22} />
@@ -310,21 +309,10 @@ function Endeavour({ onSign }: { onSign?: () => void }) {
       {GOOSENECKS.map((x) => (
         <Gooseneck key={x} x={x} />
       ))}
-      {/* The sign. Deptford Cinema had the basement from 2014 to 2020, and its
-          name shows through on a hover or a tap. The clear rect on top
-          catches the mouse, so the thin letters aren't the only target. */}
-      <g className="en-signboard">
-        {/* DRAFT */}
-        <title>Deptford Cinema was here, 2014 to 2020. About forty seats downstairs, some of them sofas.</title>
-        <rect className="en-o en-fascia" x={836} y={61} width={328} height={20} />
-        <text className="en-sign" x={1000} y={78} textAnchor="middle" textLength={262} lengthAdjust="spacing">
-          ENDEAVOUR
-        </text>
-        <text className="en-ghost" x={1000} y={78} textAnchor="middle" textLength={262} lengthAdjust="spacing">
-          DEPTFORD CINEMA
-        </text>
-        <rect className="en-sign-hit" x={836} y={61} width={328} height={20} onClick={onSign} />
-      </g>
+      <rect className="en-o en-fascia" x={836} y={61} width={328} height={20} />
+      <text className="en-sign" x={1000} y={78} textAnchor="middle" textLength={262} lengthAdjust="spacing">
+        ENDEAVOUR
+      </text>
 
       {/* Painted frame round the whole shopfront */}
       <rect className="en-o en-frame" x={836} y={81} width={328} height={G - 81} />
@@ -543,7 +531,7 @@ function Layer({ scene }: { scene: SceneT }) {
   );
 }
 
-export default function Scene({ scene, onSign }: { scene: SceneT | null; onSign?: () => void }) {
+export default function Scene({ scene }: { scene: SceneT | null }) {
   return (
     <svg viewBox="0 -44 2000 284" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
       <defs>
@@ -602,7 +590,7 @@ export default function Scene({ scene, onSign }: { scene: SceneT | null; onSign?
         </g>
         <path className="en-far" d={FAR_SKYLINE} />
         <Neighbours />
-        <Endeavour onSign={onSign} />
+        <Endeavour />
         {LAMPS.map((l) => (
           <Lamp key={l.x} {...l} />
         ))}

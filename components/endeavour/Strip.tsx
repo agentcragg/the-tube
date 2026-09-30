@@ -9,9 +9,6 @@
 // Time switch: visit any page with ?time to get a small menu on the drawing
 // for flicking through the times of day (remembered in that browser);
 // ?time=off hides it again. Everyone else just sees the real time.
-//
-// Touch screens can't hover, so a tap on the sign shows Deptford Cinema's
-// old one for six seconds (data-ghost), and a second tap hides it again.
 
 import { useEffect, useState, type CSSProperties } from "react";
 import { useLondonNow } from "@/lib/clock";
@@ -29,7 +26,6 @@ export function EndeavourStrip({ films }: { films: Film[] }): React.ReactNode {
   const now = useLondonNow();
   const [showSwitch, setShowSwitch] = useState(false);
   const [picked, setPicked] = useState<State | "">("");
-  const [ghost, setGhost] = useState(false);
 
   useEffect(() => {
     let on = false;
@@ -43,12 +39,6 @@ export function EndeavourStrip({ films }: { films: Film[] }): React.ReactNode {
     setShowSwitch(on);
   }, []);
 
-  useEffect(() => {
-    if (!ghost) return;
-    const timer = setTimeout(() => setGhost(false), 6000);
-    return () => clearTimeout(timer);
-  }, [ghost]);
-
   const scene = now ? (picked ? sceneAs(picked, now, films, WALL_IDS) : sceneAt(now, films, WALL_IDS)) : null;
 
   const style: Record<string, string> = {};
@@ -56,8 +46,8 @@ export function EndeavourStrip({ films }: { films: Film[] }): React.ReactNode {
   if (scene?.tonight) style["--glow"] = scene.tonight.colour;
 
   return (
-    <div className="en-strip" data-state={scene?.state} data-ghost={ghost || undefined} style={style as CSSProperties}>
-      <Scene scene={scene} onSign={() => setGhost((g) => !g)} />
+    <div className="en-strip" data-state={scene?.state} style={style as CSSProperties}>
+      <Scene scene={scene} />
       {showSwitch && (
         <div className="en-time">
           <label>

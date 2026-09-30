@@ -71,11 +71,6 @@ export default function ClipCard({
           )}
         </em>
       )}
-      {clip.note && (
-        <span className="rh-note" title={clip.note}>
-          {clip.note}
-        </span>
-      )}
     </a>
   );
 }
