@@ -14,11 +14,17 @@ export const SHEET_URL =
 // so the sheet's ticked rows are the whole wall and unticking hides one.
 type Sheet = { version?: number; videos?: Video[] };
 
-// Refreshed every few minutes so ticks show up quickly. null if unreachable.
+// The cache tag on everything read from the sheet. When the sheet is edited it
+// tells the site (app/api/sheet-changed), which clears this tag, so the wall,
+// the front page and Basement TV show the change on their next visit.
+export const SHEET_TAG = "sheet";
+
+// Also re-read every couple of minutes, in case a change notice goes astray.
+// null if unreachable.
 async function readSheet(): Promise<Sheet | null> {
   if (!SHEET_URL) return null;
   try {
-    const res = await fetch(SHEET_URL, { next: { revalidate: 120 } });
+    const res = await fetch(SHEET_URL, { next: { revalidate: 120, tags: [SHEET_TAG] } });
     if (!res.ok) return null;
     return (await res.json()) as Sheet;
   } catch {
@@ -75,4 +81,27 @@ export async function latestVideos(count: number): Promise<Video[]> {
   return [...approvedV1(sheet).reverse(), ...seed.slice().reverse()]
     .filter((v, i, all) => all.findIndex((w) => w.id === v.id) === i)
     .slice(0, count);
+}
+
+// The videos ticked in the sheet, or null when the sheet can't say
+// (unreachable, the old script, or nothing ticked), in which case nothing
+// should be hidden
+export async function tickedVideos(): Promise<Video[] | null> {
+  const sheet = await readSheet();
+  const videos = sheet && isV2(sheet) ? sheetVideos(sheet) : [];
+  return videos.length ? videos : null;
+}
+
+// Whether the sheet really did send this change notice: it keeps the last
+// one it sent, and says yes only to that one, for a few minutes
+export async function sheetSentNotice(notice: string): Promise<boolean> {
+  if (!SHEET_URL) return false;
+  try {
+    const url = `${SHEET_URL}${SHEET_URL.includes("?") ? "&" : "?"}confirm=${encodeURIComponent(notice)}`;
+    const res = await fetch(url, { cache: "no-store" });
+    if (!res.ok) return false;
+    return (await res.json())?.confirmed === true;
+  } catch {
+    return false;
+  }
 }

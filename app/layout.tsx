@@ -60,12 +60,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                     <Link href="/wall">Suggest a video</Link>
                   </li>
                   <li>
-                    {/* DRAFT. Not prefetched, since the footer is on every page. */}
-                    <Link href="/tv" prefetch={false}>
-                      Basement TV
-                    </Link>
-                  </li>
-                  <li>
                     <Link href="/about">About</Link>
                   </li>
                 </ul>

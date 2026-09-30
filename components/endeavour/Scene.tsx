@@ -8,9 +8,9 @@
 // wrapper (app/endeavour.css); things that come and go per state are in
 // <Layer>, which fades in when the state changes.
 //
-// The basement screen is a link to Basement TV. The drawing is hidden from
-// screen readers and the keyboard, so the fat footer's text link is their
-// way in.
+// The basement screen is a link to Basement TV, the only way there: Matt
+// wants it found, not signposted. The drawing is hidden from screen readers
+// and the keyboard.
 
 import Link from "next/link";
 import { thumb } from "@/lib/videos";

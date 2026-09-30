@@ -34,11 +34,13 @@ const FRICTION = 0.95; // per-frame slowdown after a flick; closer to 1 glides f
 const DRAG_THRESHOLD = 4; // px before a press counts as a drag rather than a click
 const MAX_FLING = 45; // px per frame cap, so a violent flick doesn't fly off for miles
 
-type Pending = { id: string; title: string; author?: string };
+type Pending = { id: string; title: string; author?: string; at?: number }; // at: when it was sent
 const STORAGE_KEY = "tube-pending";
+// A suggestion that's never approved is forgotten after this long
+const FORGET_AFTER_MS = 30 * 24 * 60 * 60 * 1000;
 
-// The submitter's own pending suggestions, kept in their browser until
-// there's a database behind the wall.
+// The submitter's own suggestions that aren't on the wall yet, kept in their
+// browser. One drops off the list once it's on the wall.
 const EMPTY: Pending[] = [];
 let cache: Pending[] | null = null;
 const listeners = new Set<() => void>();
@@ -146,11 +148,21 @@ export default function Wall({ videos }: { videos: Video[] }) {
   const [input, setInput] = useState("");
   const [status, setStatus] = useState<{ kind: "error" | "ok" | "busy"; msg: string } | null>(null);
   const pending = useSyncExternalStore(pendingStore.subscribe, pendingStore.get, () => EMPTY);
+  // Still waiting: not on the wall yet
+  const waiting = pending.filter((p) => !videos.some((v) => v.id === p.id));
   const watched = useWatched();
 
   useEffect(() => {
     playing.current = !!open;
   }, [open]);
+
+  // Once a suggestion's on the wall, or it's been a month, it's off the list
+  // for good, so unticking it later doesn't bring it back as waiting
+  useEffect(() => {
+    const now = Date.now();
+    const keep = pending.filter((p) => !videos.some((v) => v.id === p.id) && !(p.at && now - p.at > FORGET_AFTER_MS));
+    if (keep.length !== pending.length) pendingStore.set(keep);
+  }, [pending, videos]);
 
   // Move the layer directly; only re-render when a new row/column of cells is needed.
   const apply = useCallback(() => {
@@ -303,7 +315,7 @@ export default function Wall({ videos }: { videos: Video[] }) {
     if (!res.ok) return setStatus({ kind: "error", msg: data.error });
     if (!id && known(data.id)) return alreadyIn();
 
-    pendingStore.set([{ id: data.id, title: data.title, author: data.channel }, ...pending]);
+    pendingStore.set([{ id: data.id, title: data.title, author: data.channel, at: Date.now() }, ...pending]);
     setInput("");
     setStatus({
       kind: "ok",
@@ -361,7 +373,7 @@ export default function Wall({ videos }: { videos: Video[] }) {
               screen treatment, you great big dogs. Everything on this wall was suggested by someone.
             </>
           )}
-          {pending.length > 0 && <span className="pending-count"> · {pending.length} of yours waiting for approval</span>}
+          {waiting.length > 0 && <span className="pending-count"> · {waiting.length} of yours waiting for approval</span>}
         </p>
       </div>
 

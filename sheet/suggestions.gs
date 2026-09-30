@@ -1,13 +1,12 @@
 /**
- * The Tube: suggestion sheet (version 2).
+ * The Tube: suggestion sheet (version 3).
  *
  * Paste this into the Google Sheet's Apps Script editor (Extensions > Apps Script),
- * replacing what's there, and save. Pick doGet in the menu next to Run, press
- * Run, and allow access when Google asks (Advanced > Go to ... if it warns):
- * this version needs a permission the old one didn't, and running it once adds
- * the starters straight away. Then Deploy > Manage deployments > Edit (the
- * pencil) > Version: New version > Deploy. The web app keeps its URL, so the
- * website switches over by itself within a few minutes.
+ * replacing what's there, and save. Pick setUpAutoRefresh in the menu next to
+ * Run, press Run, and allow access when Google asks (Advanced > Go to ... if it
+ * warns): it sets the sheet to tell the website whenever it's edited, so ticks
+ * show up straight away. Then Deploy > Manage deployments > Edit (the pencil) >
+ * Version: New version > Deploy. The web app keeps its URL.
  * (Setting up from scratch: Deploy > New deployment > Web app, execute as Me,
  * access Anyone, and put the URL in lib/suggestions.ts.)
  *
@@ -23,7 +22,9 @@
  * A TikTok's Video ID is "tt" followed by TikTok's number for the video.
  */
 
-const VERSION = 2;
+const VERSION = 3;
+// The website, which is told about every edit (its app/api/sheet-changed)
+const SITE = "https://the-tube-seven.vercel.app";
 const HEADERS = ["On the wall?", "Title", "Channel", "Link", "Suggested", "Video ID"];
 const YOUTUBE_ID = /^[\w-]{11}$/;
 const TIKTOK_ID = /^tt\d{10,24}$/;
@@ -179,8 +180,44 @@ function doPost(e) {
   }
 }
 
-// The website reads the ticked rows, which are everything on the wall, from here
-function doGet() {
+// Every edit tells the website, which checks the notice with doGet (?confirm)
+// before showing the change. Set up by setUpAutoRefresh, not run by hand.
+function onSheetEdit() {
+  const notice = Utilities.getUuid();
+  PropertiesService.getScriptProperties().setProperty("notice", notice + " " + Date.now());
+  try {
+    UrlFetchApp.fetch(SITE + "/api/sheet-changed", {
+      method: "post",
+      contentType: "application/json",
+      payload: JSON.stringify({ notice: notice }),
+      muteHttpExceptions: true,
+    });
+  } catch (err) {
+    // The website re-reads the sheet every couple of minutes anyway
+  }
+}
+
+// Run once from the editor. Asks for the two permissions it needs (to reach
+// the website, and to run on edits) and sets onSheetEdit to run on every edit.
+function setUpAutoRefresh() {
+  ScriptApp.getProjectTriggers()
+    .filter((t) => t.getHandlerFunction() === "onSheetEdit")
+    .forEach((t) => ScriptApp.deleteTrigger(t));
+  ScriptApp.newTrigger("onSheetEdit").forSpreadsheet(SpreadsheetApp.getActive()).onEdit().create();
+  addStarters_(sheet_());
+}
+
+// Yes only to the last notice sent, for five minutes
+function noticeSent_(notice) {
+  const kept = String(PropertiesService.getScriptProperties().getProperty("notice") || "").split(" ");
+  return !!kept[0] && kept[0] === notice && Date.now() - Number(kept[1]) < 5 * 60 * 1000;
+}
+
+// The website reads the ticked rows, which are everything on the wall, from
+// here; and checks change notices with ?confirm=
+function doGet(e) {
+  const confirm = e && e.parameter && e.parameter.confirm;
+  if (confirm) return json_({ confirmed: noticeSent_(String(confirm)) });
   const sh = sheet_();
   addStarters_(sh);
   if (sh.getLastRow() < 2) return json_({ version: VERSION, videos: [] });
