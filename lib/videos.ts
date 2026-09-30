@@ -1,15 +1,18 @@
 // Videos on the suggestion wall. For now these are the shorts lists
 // (Desktop/tube-shorts.md and Desktop/files/tube-shorts-v2.md); nothing on
 // them is cleared for screening yet.
-// Makers and years come from that list and still need checking. Later the
-// wall will come from the database, showing approved public suggestions.
+// Makers and years come from that list and still need checking.
+// Once the suggestion sheet is on version 2 (sheet/suggestions.gs), these are
+// rows in it like everything else and the wall comes from the sheet; this list
+// is then only a fallback, and where the makers and years come from.
 
 export type Video = {
-  id: string;
+  id: string; // YouTube ID, or "tt" and the number for a TikTok (see isTikTok)
   title: string;
   maker?: string; // who made it, when known; otherwise the channel is shown
   year?: string;
-  channel?: string; // YouTube channel, filled in from YouTube
+  channel?: string; // YouTube channel or TikTok account, filled in from there
+  url?: string; // the TikTok's own link, from the sheet
   suggestedBy?: string;
   suggestedOn?: string; // ISO date
 };
@@ -91,6 +94,40 @@ export const thumb = (id: string, frame: 0 | 1 | 2 | 3 | "mq" | "hq" | "hq1" | "
   frame === "mq" || frame === "hq"
     ? `https://i.ytimg.com/vi/${id}/${frame}default.jpg`
     : `https://i.ytimg.com/vi/${id}/${frame}.jpg`;
+
+// TikToks are kept as "tt" plus TikTok's number for the video. That's at least
+// 12 characters, so it can never be mistaken for an 11-character YouTube ID.
+export const isTikTok = (id: string) => /^tt\d{10,24}$/.test(id);
+export const isVideoId = (id: string) => /^[\w-]{11}$/.test(id) || isTikTok(id);
+
+// TikTok's image links expire, so its thumbnails go through app/api/tiktok
+export const tikTokThumb = (id: string) => `/api/tiktok/${id.slice(2)}/thumb`;
+export const tikTokLink = (v: Video) =>
+  v.url?.startsWith("https://www.tiktok.com/") ? v.url : `https://www.tiktok.com/@/video/${v.id.slice(2)}`;
+export const tikTokPlayer = (id: string) =>
+  `https://www.tiktok.com/player/v1/${id.slice(2)}?autoplay=1&loop=1&rel=0`;
+
+// Full TikTok links give the video's number straight away. Short ones
+// (vm.tiktok.com/…, tiktok.com/t/…) only redirect to it, so they're returned
+// as they are for the server to follow.
+export function parseTikTok(input: string): { id: string } | { short: string } | null {
+  const s = input.trim();
+  try {
+    const u = new URL(s.startsWith("http") ? s : `https://${s}`);
+    const host = u.hostname.toLowerCase();
+    if (host !== "tiktok.com" && !host.endsWith(".tiktok.com")) return null;
+    const m = u.pathname.match(/^\/@[^/]*\/video\/(\d+)|^\/v\/(\d+)\.html|^\/(?:embed(?:\/v2)?|player\/v1)\/(\d+)/);
+    const id = m && `tt${m[1] ?? m[2] ?? m[3]}`;
+    if (id && isTikTok(id)) return { id };
+    if ((host === "vm.tiktok.com" || host === "vt.tiktok.com") && /^\/[\w-]+\/?$/.test(u.pathname)) {
+      return { short: `https://${host}${u.pathname}` };
+    }
+    if (/^(www\.|m\.)?tiktok\.com$/.test(host) && /^\/t\/[\w-]+\/?$/.test(u.pathname)) {
+      return { short: `https://www.tiktok.com${u.pathname}` };
+    }
+  } catch {}
+  return null;
+}
 
 // Accepts watch URLs, youtu.be links, shorts, embeds, or a bare 11-char ID.
 export function parseYouTubeId(input: string): string | null {

@@ -3,19 +3,15 @@ import ComingUp from "@/components/ComingUp";
 import { CalendarIcon, PinIcon, TvIcon } from "@/components/Icons";
 import { films, formatDate, isPast, VENUE } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
-import { approvedSuggestions } from "@/lib/suggestions";
-import { credit, seedVideos, thumb, withYouTubeDetails } from "@/lib/videos";
+import { latestVideos } from "@/lib/suggestions";
+import { credit, isTikTok, thumb, tikTokLink, tikTokThumb } from "@/lib/videos";
 
 const daysUntil = (iso: string) =>
   Math.ceil((new Date(iso + "T00:00:00").getTime() - Date.now()) / 86_400_000);
 
 export default async function WhatsOn() {
   const next = films.find((f) => !isPast(f.date)) ?? films[films.length - 1];
-  const [seed, approved] = await Promise.all([withYouTubeDetails(seedVideos), approvedSuggestions()]);
-  // Newest approved suggestions first, then the most recently added of our own
-  const latest = [...approved.slice().reverse(), ...seed.slice().reverse()]
-    .filter((v, i, all) => all.findIndex((w) => w.id === v.id) === i)
-    .slice(0, 6);
+  const latest = await latestVideos(6);
 
   return (
     <div className="home">
@@ -45,18 +41,36 @@ export default async function WhatsOn() {
           </div>
           <div className="box-body">
             <ul className="mini-list">
-              {latest.map((v) => (
-                <li key={v.id}>
-                  <Link href="/wall">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={thumb(v.id, "hq")} alt="" />
-                    <span>
-                      <strong>{v.title}</strong>
-                      {credit(v) && <em>{credit(v)}</em>}
-                    </span>
-                  </Link>
-                </li>
-              ))}
+              {latest.map((v) => {
+                const words = (
+                  <span>
+                    {v.title && <strong>{v.title}</strong>}
+                    {credit(v) && <em>{credit(v)}</em>}
+                  </span>
+                );
+                return (
+                  <li key={v.id}>
+                    {isTikTok(v.id) ? (
+                      <a href={tikTokLink(v)} target="_blank" rel="noreferrer">
+                        {/* Upright, over a blurred copy of itself, as on the wall */}
+                        <span className="tt-thumb">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={tikTokThumb(v.id)} alt="" className="tt-blur" />
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={tikTokThumb(v.id)} alt="" />
+                        </span>
+                        {words}
+                      </a>
+                    ) : (
+                      <Link href="/wall">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={thumb(v.id, "hq")} alt="" />
+                        {words}
+                      </Link>
+                    )}
+                  </li>
+                );
+              })}
             </ul>
             <p className="box-more">
               <Link href="/wall">Suggest a video »</Link>

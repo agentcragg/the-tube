@@ -138,6 +138,9 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
   overflow: hidden; background: #eee;
 }
 .tile img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+/* TikToks: upright, centred over a blurred, darkened copy of the same picture */
+.tile .tile-blur { position: absolute; inset: 0; filter: blur(10px) brightness(0.55); transform: scale(1.2); }
+.tile .tile-upright { position: relative; object-fit: contain; }
 .tile:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
 .tile-info {
   position: absolute; inset: 0;
@@ -188,6 +191,11 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 .modal-bar { display: flex; justify-content: space-between; align-items: center; background: #eee; padding: 4px 8px; font: bold 13px var(--sans); }
 .modal-bar button { all: unset; cursor: pointer; font-size: 22px; line-height: 1; padding: 0 4px; }
 .modal iframe { width: 100%; aspect-ratio: 16 / 9; border: 0; display: block; }
+/* TikToks play upright, as tall as the screen allows (less the padding and the bar) */
+.modal-inner.modal-tall { width: min(100vw - 32px, (100svh - 64px) * 9 / 16); }
+.modal-tall iframe { aspect-ratio: 9 / 16; }
+.modal-tall .modal-bar { gap: 8px; }
+.modal-tall .modal-bar span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .about { max-width: 60ch; font-size: 16px; }
 
@@ -254,6 +262,9 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 .mini-list strong { display: block; font-size: 12px; line-height: 1.25; color: var(--link); }
 .mini-list a:hover strong { text-decoration: underline; }
 .mini-list em { font-style: normal; font-size: 11px; color: var(--muted); }
+.mini-list .tt-thumb { display: block; position: relative; overflow: hidden; width: 96px; aspect-ratio: 16 / 9; border: 1px solid #ccc; background: #000; }
+.mini-list .tt-thumb img { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; object-fit: contain; }
+.mini-list .tt-thumb .tt-blur { object-fit: cover; filter: blur(6px) brightness(0.55); transform: scale(1.2); }
 
 /* Watch page */
 .still-frame { border: 1px solid var(--frame); padding: 2px; background: #fff; }

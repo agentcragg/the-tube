@@ -2,7 +2,16 @@
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
 import { Laurel } from "@/components/laurels";
-import { credit, parseYouTubeId, thumb, type Video } from "@/lib/videos";
+import {
+  credit,
+  isTikTok,
+  parseTikTok,
+  parseYouTubeId,
+  thumb,
+  tikTokPlayer,
+  tikTokThumb,
+  type Video,
+} from "@/lib/videos";
 import { markWatched, useWatched } from "@/lib/watched";
 
 // An endless grid of thumbnails. Drag to move it; a hard flick keeps gliding
@@ -83,13 +92,26 @@ function Tile({
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
     >
-      {/* hqdefault is 4:3 with the video letterboxed inside; cropping it to 16:9
-          cuts the bars off both widescreen and 4:3 videos */}
-      {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={thumb(video.id, "hq")} alt="" draggable={false} />
-      <Laurel videoId={video.id} />
+      {isTikTok(video.id) ? (
+        // Upright, over a blurred and darkened copy of itself filling the tile,
+        // the way YouTube shows vertical videos
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={tikTokThumb(video.id)} alt="" draggable={false} className="tile-blur" />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={tikTokThumb(video.id)} alt="" draggable={false} className="tile-upright" />
+        </>
+      ) : (
+        <>
+          {/* hqdefault is 4:3 with the video letterboxed inside; cropping it to 16:9
+              cuts the bars off both widescreen and 4:3 videos */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={thumb(video.id, "hq")} alt="" draggable={false} />
+          <Laurel videoId={video.id} />
+        </>
+      )}
       <span className="tile-info">
-        <strong>{video.title}</strong>
+        {video.title && <strong>{video.title}</strong>}
         {credit(video) && <span>{credit(video)}</span>}
         {video.suggestedBy && (
           <span>
@@ -258,28 +280,35 @@ export default function Wall({ videos }: { videos: Video[] }) {
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
-    const id = parseYouTubeId(input);
-    if (!id) return setStatus({ kind: "error", msg: "That doesn't look like a YouTube link." });
-    if (videos.some((v) => v.id === id) || pending.some((p) => p.id === id)) {
-      return setStatus({ kind: "error", msg: "Someone's already suggested that one." });
-    }
+    const yt = parseYouTubeId(input);
+    const tt = yt ? null : parseTikTok(input);
+    if (!yt && !tt) return setStatus({ kind: "error", msg: "That doesn't look like a YouTube or TikTok link." });
+    const known = (id: string) => videos.some((v) => v.id === id) || pending.some((p) => p.id === id);
+    const alreadyIn = () => setStatus({ kind: "error", msg: "Someone's already suggested that one." });
+    // A short TikTok link only says which video it is once the server has followed it
+    const id = yt ?? (tt && "id" in tt ? tt.id : null);
+    if (id && known(id)) return alreadyIn();
     setStatus({ kind: "busy", msg: "Sending…" });
     let res: Response;
     try {
       res = await fetch("/api/suggest", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ id }),
+        body: JSON.stringify({ url: input.trim() }),
       });
     } catch {
       return setStatus({ kind: "error", msg: "Couldn't send that. Check your connection and try again." });
     }
-    const data = await res.json();
+    const data = await res.json().catch(() => ({ error: "Something went wrong sending that. Try again in a minute." }));
     if (!res.ok) return setStatus({ kind: "error", msg: data.error });
+    if (!id && known(data.id)) return alreadyIn();
 
-    pendingStore.set([{ id, title: data.title, author: data.channel }, ...pending]);
+    pendingStore.set([{ id: data.id, title: data.title, author: data.channel }, ...pending]);
     setInput("");
-    setStatus({ kind: "ok", msg: `Thanks: "${data.title}" has been sent. It goes on the wall once it's been approved.` });
+    setStatus({
+      kind: "ok",
+      msg: `Thanks: "${data.title || data.channel}" has been sent. It goes on the wall once it's been approved.`,
+    });
   }
 
   const onHover = (on: boolean) => {
@@ -315,7 +344,7 @@ export default function Wall({ videos }: { videos: Video[] }) {
             id="yt"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Paste a YouTube link"
+            placeholder="Paste a YouTube or TikTok link"
             autoComplete="off"
           />
           <button type="submit" disabled={status?.kind === "busy"}>
@@ -359,17 +388,21 @@ export default function Wall({ videos }: { videos: Video[] }) {
       </div>
 
       {open && (
-        <div className="modal" onClick={() => setOpen(null)} role="dialog" aria-label={open.title}>
-          <div className="modal-inner" onClick={(e) => e.stopPropagation()}>
+        <div className="modal" onClick={() => setOpen(null)} role="dialog" aria-label={open.title || open.channel}>
+          <div className={isTikTok(open.id) ? "modal-inner modal-tall" : "modal-inner"} onClick={(e) => e.stopPropagation()}>
             <div className="modal-bar">
-              <span>{open.title}</span>
+              <span>{open.title || open.channel}</span>
               <button onClick={() => setOpen(null)} aria-label="Close">
                 ×
               </button>
             </div>
             <iframe
-              src={`https://www.youtube-nocookie.com/embed/${open.id}?autoplay=1`}
-              title={open.title}
+              src={
+                isTikTok(open.id)
+                  ? tikTokPlayer(open.id)
+                  : `https://www.youtube-nocookie.com/embed/${open.id}?autoplay=1`
+              }
+              title={open.title || open.channel}
               allow="autoplay; encrypted-media; picture-in-picture"
               allowFullScreen
             />
