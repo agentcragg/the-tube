@@ -1,104 +1,148 @@
 // Basement TV (/tv): a channel that's always on, the same for everyone. It
-// plays this week's night round and round, the shorts first, then the
-// film's rabbit hole, on a fixed schedule. There's no server and no
-// database: every browser works the slot out from the clock, so whoever
-// tunes in at 21:14 sees the same video at the same second.
+// plays every video in lib/tv-channel.json in one shuffled order, round and
+// round, from a fixed start. There's no server and no database: every
+// browser works out from the clock where the channel has got to, so whoever
+// tunes in at 21:14 sees the same video at the same second, and the same
+// comments posted under it.
 //
-// This week's film is the next one on, today's included, or the last one
-// once the season is over. Clips that won't embed or have no length are
-// left out. A loop under 20 minutes, or a film with no rabbit hole, gets the
-// other films' holes after its own.
+// lib/tv-channel.json is made by scripts/tv-comments.py (fetches the videos'
+// details and YouTube comments) and scripts/tv-channel.py (keeps the picked
+// comments and writes the file). No imports here, so node can run it on its
+// own to check the schedule.
 
-import { films, type Film } from "./films";
-import { NIGHTS } from "./nights";
-import { seedVideos } from "./videos";
-import { COPY as WATCH_COPY, lengthSeconds, watchFor } from "./watch";
-
-export type Slot = {
-  id: string; // YouTube video ID
-  title: string;
-  credit?: string; // "From: Arrow Video · 2020"
-  start: number; // seconds into the video to start at (a clip's good bit)
-  seconds: number; // how long it's on for
+export type Comment = {
+  author: string; // "@handle", as on YouTube
+  text: string; // plain text with line breaks; never HTML
+  votes: string; // likes as YouTube shows them: "0", "344", "5.5k"
+  time: string; // "13 years ago", as it was when it was fetched
 };
 
-// One film's channel, built ahead of time for every film so a page left open
-// carries on into the next week
-export type Week = { slug: string; title: string; date: string; when: string; shorts: boolean; slots: Slot[] };
+export type Video = {
+  id: string; // YouTube video ID
+  title: string;
+  credit: string; // who made it, or the YouTube channel
+  seconds: number; // how long it's on for
+  comments: Comment[];
+};
 
-// DRAFT: all of it
 export const COPY = {
   name: "Basement TV",
   tuning: "Tuning in…",
   soundOn: "Sound on",
-  next: "Next on Basement TV",
-  about: "Always on. Whoever's tuned in is watching the same thing.",
+  next: "Up next",
+  comments: "Comments",
+  noComments: "No comments",
 };
 
-// The schedule's zero. Moving it moves everyone's channel together.
+// The schedule's zero: midnight, 1 January 2026, London (GMT then). Moving
+// it, or the seed, moves everyone's channel together.
 export const EPOCH = Date.UTC(2026, 0, 1);
-const SHORTEST_LOOP = 20 * 60;
+const SEED = 20260101;
 
-// "From: Arrow Video · 2020", as under a clip on a film page; just the year
-// if there's no one to credit
-const from = (by?: string, year?: string) => {
-  const line = [by, year].filter(Boolean).join(" · ");
-  return by ? `${WATCH_COPY.from} ${line}` : line || undefined;
-};
-
-// That night's shorts, which already have their seconds
-const shortSlots = (slug: string): Slot[] =>
-  (NIGHTS[slug]?.shorts?.items ?? []).map((s) => {
-    const v = seedVideos.find((w) => w.id === s.id);
-    return { id: s.id, title: s.title, credit: from(v?.maker ?? v?.channel, v?.year), start: 0, seconds: s.seconds };
-  });
-
-// The rabbit hole's clips in order, each from its good bit if it has one
-const holeSlots = (slug: string): Slot[] =>
-  (watchFor(slug)?.clips ?? []).flatMap((c) => {
-      const start = c.start ?? 0;
-      const seconds = (lengthSeconds(c.length) ?? 0) - start;
-      if (c.embed === false || seconds <= 0) return [];
-      return [{ id: c.id, title: c.title, credit: from(c.by, c.year), start, seconds }];
-    });
-
-const loopSeconds = (slots: Slot[]) => slots.reduce((sum, s) => sum + s.seconds, 0);
-
-export function slotsFor(film: Film): Slot[] {
-  const own = [...shortSlots(film.slug), ...holeSlots(film.slug)];
-  const topUp = loopSeconds(own) < SHORTEST_LOOP || !watchFor(film.slug)?.clips.length;
-  const all = topUp ? [...own, ...films.filter((f) => f.slug !== film.slug).flatMap((f) => holeSlots(f.slug))] : own;
-  // Once each, if a video turns up twice
-  return all.filter((s, i) => all.findIndex((t) => t.id === s.id) === i);
+// A small seeded random number generator (mulberry32), so the shuffle and
+// the comments' timing come out the same in every browser
+function random(seed: number) {
+  let a = seed >>> 0;
+  return () => {
+    a = (a + 0x6d2b79f5) >>> 0;
+    let t = a;
+    t = Math.imul(t ^ (t >>> 15), t | 1);
+    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
 }
 
-/** The next film on from a London date (YYYY-MM-DD), that day's included, or the last once the season is over. */
-export const thisWeek = <T extends { date: string }>(weeks: T[], isoDate: string): T =>
-  weeks.find((w) => w.date >= isoDate) ?? weeks[weeks.length - 1];
+// A number from a string, to seed a video's own randomness
+function hash(s: string) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+  return h >>> 0;
+}
 
-/** What's on at a moment: which slot, how far into it, and when it ends. Null for an empty loop. */
-export function nowPlaying(slots: Slot[], nowMs: number) {
-  const loop = loopSeconds(slots);
+/**
+ * The channel's running order: every video once, shuffled with a fixed seed.
+ * It only depends on which videos there are, not the order they're listed
+ * in. Where the same credit would come up twice running, the second is
+ * swapped with a later one, so it doesn't turn into a run of one maker.
+ */
+export function lineUp<T extends { id: string; credit: string; seconds: number }>(videos: T[]): T[] {
+  const list = videos.filter((v) => v.seconds > 0).sort((a, b) => (a.id < b.id ? -1 : a.id > b.id ? 1 : 0));
+  const rand = random(SEED);
+  for (let i = list.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [list[i], list[j]] = [list[j], list[i]];
+  }
+  const n = list.length;
+  const clash = (i: number) => n > 2 && list[i].credit === list[(i - 1 + n) % n].credit;
+  for (let i = 0; i < n; i++) {
+    if (!clash(i)) continue;
+    for (let k = 1; k < n; k++) {
+      const j = (i + k) % n;
+      [list[i], list[j]] = [list[j], list[i]];
+      const ok = !clash(i) && !clash((i + 1) % n) && !clash(j) && !clash((j + 1) % n);
+      if (ok) break;
+      [list[i], list[j]] = [list[j], list[i]];
+    }
+  }
+  return list;
+}
+
+const loopSeconds = (videos: { seconds: number }[]) => videos.reduce((sum, v) => sum + v.seconds, 0);
+
+/**
+ * What's on at a moment: which video, how many whole seconds into it, and
+ * when it started and ends. Null for an empty channel.
+ */
+export function nowPlaying(videos: { seconds: number }[], nowMs: number) {
+  const loop = loopSeconds(videos);
   if (!loop) return null;
   const elapsed = Math.floor((nowMs - EPOCH) / 1000);
   let t = ((elapsed % loop) + loop) % loop;
-  for (let index = 0; index < slots.length; index++) {
-    const { seconds } = slots[index];
-    if (t < seconds) return { index, offset: t, endsAtMs: EPOCH + (elapsed - t + seconds) * 1000 };
+  for (let index = 0; index < videos.length; index++) {
+    const { seconds } = videos[index];
+    if (t < seconds) {
+      const startsAtMs = EPOCH + (elapsed - t) * 1000;
+      return { index, offset: t, startsAtMs, endsAtMs: startsAtMs + seconds * 1000 };
+    }
     t -= seconds;
   }
   return null;
 }
 
-/** The next n slots after the one on now, with when each starts. */
-export function upNext(slots: Slot[], nowMs: number, n: number) {
-  const on = nowPlaying(slots, nowMs);
+/** The next n videos after the one on now, with when each starts. */
+export function upNext<T extends { seconds: number }>(videos: T[], nowMs: number, n: number) {
+  const on = nowPlaying(videos, nowMs);
   if (!on) return [];
   let atMs = on.endsAtMs;
-  return Array.from({ length: n }, (_, k) => {
-    const slot = slots[(on.index + 1 + k) % slots.length];
-    const next = { slot, atMs };
-    atMs += slot.seconds * 1000;
+  return Array.from({ length: Math.min(n, videos.length) }, (_, k) => {
+    const video = videos[(on.index + 1 + k) % videos.length];
+    const next = { video, atMs };
+    atMs += video.seconds * 1000;
     return next;
+  });
+}
+
+// Comments are at least this far apart, so there's time to read each one
+const MIN_GAP_MS = 4000;
+
+/**
+ * When each of a video's comments is posted, in ms from the start of the
+ * video: the first a few seconds in, the last at 85% of the way through, the
+ * rest spread between, each nudged a little so they don't arrive like
+ * clockwork. A short video gets only as many as fit MIN_GAP_MS apart (the
+ * first ones), so the list can be shorter than count. The same for everyone,
+ * so someone tuning in late sees the ones already posted.
+ */
+export function postTimes(video: { id: string; seconds: number }, wanted: number): number[] {
+  if (wanted <= 0) return [];
+  const ms = video.seconds * 1000;
+  const first = Math.min(3000, ms * 0.1);
+  const count = Math.min(wanted, Math.max(1, Math.floor((ms * 0.85 - first) / MIN_GAP_MS) + 1));
+  if (count === 1) return [Math.round(first)];
+  const gap = (ms * 0.85 - first) / (count - 1);
+  const rand = random(hash(video.id));
+  return Array.from({ length: count }, (_, k) => {
+    const nudge = k > 0 && k < count - 1 ? (rand() - 0.5) * 0.7 : 0;
+    return Math.round(first + gap * (k + nudge));
   });
 }
