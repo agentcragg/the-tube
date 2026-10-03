@@ -1,1 +1,36 @@
 /* look-building: every selector starts with its html class (lib/look.ts). */
+
+/* Crops of the footer drawing (components/endeavour/Crop.tsx): a framed
+   picture rather than a full-bleed strip. This also outranks the phone rule
+   in endeavour.css. Glow and poster held grey: no film colour in the UI. */
+html.look-building .en-crop {
+  margin: 0; width: 100%; aspect-ratio: 16 / 9; height: auto; min-height: 0; max-height: none;
+  -webkit-mask-image: none; mask-image: none;
+  --glow: #9a9a9a; --en-next: #9a9a9a;
+}
+/* A crop is only drawn once the page runs in the browser; till then its
+   frame keeps the space */
+html.look-building :is(.find-crop, .avatar-frame):empty::before { content: ""; display: block; aspect-ratio: 16 / 9; }
+/* Thumbnail size: a grey line with a white one inside */
+html.look-building .thumb-frame { border: 1px solid #999; padding: 1px; background: #fff; }
+/* Avatar size */
+html.look-building .avatar-frame { border: 3px double #999; padding: 2px; background: #fff; }
+
+/* What's on and film pages: Find us */
+html.look-building .find-crop { margin-bottom: 8px; }
+
+/* About: a channel page, profile on the left */
+html.look-building .about-channel {
+  display: grid; grid-template-columns: 300px minmax(0, 1fr); gap: 16px; align-items: start; max-width: 1000px;
+}
+@media (max-width: 720px) {
+  html.look-building .about-channel { grid-template-columns: minmax(0, 1fr); }
+}
+html.look-building .profile { display: grid; grid-template-columns: auto 1fr; gap: 3px 8px; font-size: 12px; margin: 10px 0 0; }
+html.look-building .profile dt { color: #666; }
+html.look-building .profile dd { margin: 0; font-weight: bold; color: #333; }
+html.look-building .photos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+html.look-building .ph {
+  aspect-ratio: 4 / 3; background: #eee; border: 1px solid #ccc;
+  display: grid; place-items: center; font-size: 11px; color: #666; text-align: center;
+}

@@ -19,7 +19,15 @@ export default function LookMenu() {
 
   const change = (next: Look | null) => {
     writeLook(next);
-    location.reload();
+    // A ?look or ?today still in the address would undo the change on reload
+    const u = new URL(location.href);
+    if (u.searchParams.has("look") || u.searchParams.has("today")) {
+      u.searchParams.delete("look");
+      u.searchParams.delete("today");
+      location.replace(u.href);
+    } else {
+      location.reload();
+    }
   };
   // Opening and closing the menu needs no reload
   const toggleOpen = () => {

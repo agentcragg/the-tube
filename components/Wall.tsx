@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import Ago from "@/components/Ago";
 import { Laurel } from "@/components/laurels";
 import {
   credit,
@@ -119,6 +120,12 @@ function Tile({
           <span>
             Suggested by {video.suggestedBy}
             {video.suggestedOn && `, ${formatDay(video.suggestedOn)}`}
+          </span>
+        )}
+        {/* Well used: how long ago the sheet says it came in */}
+        {video.suggestedOn && (
+          <span className="x-used">
+            <Ago iso={video.suggestedOn} />
           </span>
         )}
       </span>

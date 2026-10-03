@@ -84,7 +84,10 @@ export default function RabbitHole({ clips, sites }: { clips: Clip[]; sites: Lin
   return (
     <section id="rabbit-hole" className="box rh" aria-labelledby="rh-title">
       <div className="box-head">
-        <h2 id="rh-title">{COPY.title}</h2>
+        <h2 id="rh-title">
+          {COPY.title}
+          <span className="x-counts idea-count"> ({clips.length + sites.length})</span>
+        </h2>
       </div>
       <div className="box-body">
         {playing && (

@@ -10,12 +10,14 @@
 // for flicking through the times of day (remembered in that browser);
 // ?time=off hides it again. Everyone else just sees the real time.
 
-import { useEffect, useState, type CSSProperties } from "react";
+import { useEffect, useState, useSyncExternalStore, type CSSProperties } from "react";
 import { useLondonNow } from "@/lib/clock";
 import type { Film } from "@/lib/films";
+import { tvNow } from "@/lib/tv-now";
+import { useLook } from "@/lib/use-look";
 import { seedVideos } from "@/lib/videos";
 import Scene from "./Scene";
-import { sceneAs, sceneAt, STATES, type State } from "./state";
+import { sceneAs, sceneAt, STATES, timePick, type State } from "./state";
 
 const WALL_IDS = seedVideos.map((v) => v.id);
 const SWITCH_KEY = "tube-time-switch";
@@ -25,7 +27,7 @@ export function EndeavourStrip({ films }: { films: Film[] }): React.ReactNode {
   // greys, and the right state fades in once the browser knows the time
   const now = useLondonNow();
   const [showSwitch, setShowSwitch] = useState(false);
-  const [picked, setPicked] = useState<State | "">("");
+  const picked = useSyncExternalStore<State | "">(timePick.subscribe, timePick.get, () => "");
 
   useEffect(() => {
     let on = false;
@@ -41,18 +43,23 @@ export function EndeavourStrip({ films }: { films: Film[] }): React.ReactNode {
 
   const scene = now ? (picked ? sceneAs(picked, now, films, WALL_IDS) : sceneAt(now, films, WALL_IDS)) : null;
 
+  // The tvscreen idea: on /tv the basement screen shows what Basement TV is
+  // playing, drawn the way the 3am video is. The time of day stays real.
+  const playing = useSyncExternalStore(tvNow.subscribe, tvNow.get, () => null);
+  const tv = useLook("tvscreen") && scene ? playing : null;
+
   const style: Record<string, string> = {};
   if (scene?.next) style["--en-next"] = scene.next.colour;
   if (scene?.tonight) style["--glow"] = scene.tonight.colour;
 
   return (
-    <div className="en-strip" data-state={scene?.state} style={style as CSSProperties}>
-      <Scene scene={scene} />
+    <div className="en-strip" data-state={scene?.state} data-tv={tv ?? undefined} style={style as CSSProperties}>
+      <Scene scene={tv && scene ? { ...scene, eggVideo: tv } : scene} />
       {showSwitch && (
         <div className="en-time">
           <label>
             Time{" "}
-            <select value={picked} onChange={(e) => setPicked(e.target.value as State | "")}>
+            <select value={picked} onChange={(e) => timePick.set(e.target.value as State | "")}>
               <option value="">Real time</option>
               {STATES.map((s) => (
                 <option key={s.state} value={s.state}>

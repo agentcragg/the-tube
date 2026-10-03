@@ -3,3 +3,8 @@
 
 // Wall, inside each tile (client).
 export { Laurel } from "./Laurel";
+
+// The drawing and its words on their own, for the Well used look's past
+// nights (programme cards and film pages).
+export { default as LaurelMark } from "./LaurelMark";
+export { LAUREL_LABEL, laurelLines } from "./copy";

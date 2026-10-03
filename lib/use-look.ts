@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import { pretendDay } from "@/lib/look";
 
 // For client components only: lib/look.ts is also read by the server layout.
 
@@ -14,4 +15,9 @@ export function useLook(id: string): boolean {
     },
     () => false,
   );
+}
+
+/** The look switch's ?today, if one is set in this browser (undefined on the server). */
+export function usePretendDay(): string | undefined {
+  return useSyncExternalStore(noSubscribe, pretendDay, () => undefined);
 }

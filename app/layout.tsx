@@ -77,6 +77,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 </ul>
               </section>
             </div>
+            {/* Footer closing line idea */}
+            <p className="x-colophon colophon-line">© {new Date().getFullYear()} The Tube</p>
           </footer>
         </div>
         <LookMenu />

@@ -1,9 +1,12 @@
 import Link from "next/link";
+import Ago from "@/components/Ago";
 import ComingUp from "@/components/ComingUp";
-import { CalendarIcon, PinIcon, TvIcon } from "@/components/Icons";
-import { films, formatDate, isPast, VENUE } from "@/lib/films";
+import { Crop } from "@/components/endeavour";
+import { PinIcon, TvIcon } from "@/components/Icons";
+import NextScreening from "@/components/NextScreening";
+import { films, isPast, VENUE } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
-import { latestVideos } from "@/lib/suggestions";
+import { latestVideos, wallVideos } from "@/lib/suggestions";
 import { credit, isTikTok, thumb, tikTokLink, tikTokThumb } from "@/lib/videos";
 
 const daysUntil = (iso: string) =>
@@ -11,32 +14,21 @@ const daysUntil = (iso: string) =>
 
 export default async function WhatsOn() {
   const next = films.find((f) => !isPast(f.date)) ?? films[films.length - 1];
-  const latest = await latestVideos(6);
+  const [latest, wall] = await Promise.all([latestVideos(6), wallVideos()]);
 
   return (
     <div className="home">
       <ComingUp films={films} seats={SAMPLE_SEATS} />
 
       <aside className="side">
-        <section className="box">
-          <div className="box-head">
-            <h2>
-              <CalendarIcon /> Next screening
-            </h2>
-          </div>
-          <div className="box-body next-up">
-            <p className="next-when">{formatDate(next.date)}</p>
-            <p className="next-title">
-              <Link href={`/films/${next.slug}`}>{next.title}</Link>
-            </p>
-            <p className="next-count">In {daysUntil(next.date)} days · {SAMPLE_SEATS[next.slug]} seats left</p>
-          </div>
-        </section>
+        <NextScreening next={next} days={daysUntil(next.date)} />
 
         <section className="box">
           <div className="box-head">
             <h2>
               <TvIcon /> Just suggested
+              {/* Counts in brackets: the number on the wall */}
+              <span className="x-counts idea-count"> ({wall.length})</span>
             </h2>
           </div>
           <div className="box-body">
@@ -46,6 +38,13 @@ export default async function WhatsOn() {
                   <span>
                     {v.title && <strong>{v.title}</strong>}
                     {credit(v) && <em>{credit(v)}</em>}
+                    {/* Well used: when the sheet says it came in */}
+                    {v.suggestedOn && (
+                      <em className="x-used">
+                        {" "}
+                        (<Ago iso={v.suggestedOn} />)
+                      </em>
+                    )}
                   </span>
                 );
                 return (
@@ -78,13 +77,16 @@ export default async function WhatsOn() {
           </div>
         </section>
 
-        <section className="box">
+        <section className="box box-flat-08">
           <div className="box-head">
             <h2>
               <PinIcon /> Find us
             </h2>
           </div>
           <div className="box-body">
+            <div className="x-building thumb-frame find-crop">
+              <Crop crop="building" />
+            </div>
             <p>
               {VENUE.lines.map((l) => (
                 <span key={l}>

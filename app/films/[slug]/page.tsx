@@ -1,10 +1,16 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Crop } from "@/components/endeavour";
+import Ago from "@/components/Ago";
+import { LAUREL_LABEL, LaurelMark, laurelLines } from "@/components/laurels";
 import Scrubber from "@/components/Scrubber";
+import Screened from "@/components/Screened";
 import { RabbitHole, WatchPanels } from "@/components/watch";
 import Notes from "@/components/Notes";
+import Tonight from "@/components/Tonight";
 import { CalendarIcon, CanIcon, MicIcon, PinIcon, TicketIcon } from "@/components/Icons";
-import { bookingUrl, films, formatDate, getFilm, VENUE } from "@/lib/films";
+import { bookingUrl, films, formatDate, getFilm, runningTime, VENUE } from "@/lib/films";
+import { HOUSE_HONOUR } from "@/lib/rabbit-hole";
 import { COPY, watchFor } from "@/lib/watch";
 import { SAMPLE_SEATS } from "@/lib/seats";
 
@@ -47,12 +53,19 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
   // Films without curated clips keep the plain box of links
   const watch = watchFor(film.slug);
   const hole = watch?.clips.length ? watch : undefined;
+  const time = runningTime(film);
 
   return (
     <div className="watch">
       <article>
         <div className="still-frame">
           <Scrubber frames={film.stills} seed={film.slug} alt={film.title} />
+          {/* Well used: the wall's laurel once the night is over */}
+          <Screened date={film.date}>
+            <span className="x-used still-laurel">
+              <LaurelMark lines={laurelLines(film.date.slice(0, 4))} label={LAUREL_LABEL} />
+            </span>
+          </Screened>
         </div>
 
         <h1>{film.title}</h1>
@@ -68,9 +81,35 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           </p>
         )}
 
-        <ul className="meta meta-big">
+        {/* Measured 2008: the watch page's info box in place of the icon row */}
+        <dl className="x-08 info08">
+          <div>
+            <dt>Date:</dt>
+            <dd>
+              <Tonight date={film.date} fallback={formatDate(film.date)} />
+            </dd>
+          </div>
+          {time && (
+            <div>
+              <dt>Running time:</dt>
+              <dd>{time}</dd>
+            </div>
+          )}
+          <div>
+            <dt>Tickets:</dt>
+            <dd>£10 · {SAMPLE_SEATS[film.slug] ?? 30} of 30 seats left</dd>
+          </div>
+        </dl>
+
+        <ul className="meta meta-big no-08">
           <li>
-            <CalendarIcon /> {formatDate(film.date)}
+            <CalendarIcon /> <Tonight date={film.date} fallback={formatDate(film.date)} />
+            <Screened date={film.date}>
+              <span className="x-used night-ago">
+                {" "}
+                (<Ago iso={film.date} relativeOnly />)
+              </span>
+            </Screened>
           </li>
           <li>
             <TicketIcon /> {SAMPLE_SEATS[film.slug] ?? 30} of 30 seats left · £10
@@ -81,6 +120,10 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           <a className="book" href={bookingUrl(film)}>
             Book tickets
           </a>
+          {/* Well used: takes Book's place once the night is over (look-used.css) */}
+          <Screened date={film.date}>
+            <span className="x-used screened">{HOUSE_HONOUR.after}</span>
+          </Screened>
           <a className="action" href={icsLink(film.title, film.date)} download={`${film.slug}.ics`}>
             <CalendarIcon /> Add to calendar
           </a>
@@ -108,7 +151,10 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
         ) : (
           <section className="box">
             <div className="box-head">
-              <h2>{COPY.title}</h2>
+              <h2>
+                {COPY.title}
+                <span className="x-counts idea-count"> ({film.rabbitHole.length})</span>
+              </h2>
             </div>
             <div className="box-body">
               <ul className="links">
@@ -126,9 +172,34 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
       </article>
 
       <aside className="side">
+        {/* The building look: this film on the drawn basement screen */}
+        <section className="box x-building">
+          <div className="box-head">
+            <h2>
+              <PinIcon /> Find us
+            </h2>
+          </div>
+          <div className="box-body">
+            <div className="thumb-frame find-crop">
+              <Crop crop="screen" scene={{ state: "screening", tonight: film }} screenImage={film.stills[0]} />
+            </div>
+            <p>
+              {VENUE.lines.map((l) => (
+                <span key={l}>
+                  {l}
+                  <br />
+                </span>
+              ))}
+              <a href={VENUE.map} target="_blank" rel="noreferrer">
+                Map »
+              </a>
+            </p>
+          </div>
+        </section>
+
         {hole && <WatchPanels film={film} data={hole} />}
 
-        <section className="box">
+        <section className="box also-08">
           <div className="box-head">
             <h2>Also showing</h2>
           </div>

@@ -11,6 +11,9 @@
 // The basement screen is a link to Basement TV, the only way there: Matt
 // wants it found, not signposted. The drawing is hidden from screen readers
 // and the keyboard.
+//
+// Crop.tsx shows parts of the same drawing in pages (the building look):
+// its own viewBox and fit, and its own ids, so two drawings on a page don't clash.
 
 import Link from "next/link";
 import { thumb } from "@/lib/videos";
@@ -112,6 +115,9 @@ const stairPoints = (() => {
 })();
 const stepAt = (k: number) => ({ x: STAIR_TOP - STEP_RUN * k + STEP_RUN / 2, y: G + STEP_RISE * k });
 
+// "url(#en-pencil)", with this drawing's id prefix
+type Url = (name: string) => string;
+
 const LAMPS_ON: State[] = ["evening", "setup", "queue", "screening", "after", "night", "egg"];
 const CHAIRS_OUT: State[] = ["setup", "queue"];
 const CHAIRS_STACKED: State[] = ["after", "night", "egg", "morning", "day", "evening"];
@@ -152,7 +158,7 @@ function Shutter({ x, y, w, h, always }: { x: number; y: number; w: number; h: n
 
 // The rest of the block, after Street View, left to right. Kept simple: the
 // shapes, heights and windows are the real ones; the signs are left blank.
-function Neighbours() {
+function Neighbours({ url }: { url: Url }) {
   return (
     <g>
       {/* Behind the pub: the taller brick block */}
@@ -162,7 +168,7 @@ function Neighbours() {
       <path className="en-aerial" d="M64 12 V1 M56 3 H72 M58 6.5 H70" />
       <path className="en-o en-roof" d="M-6 26 L6 12 H356 L368 26 Z" />
       <rect className="en-o en-brick" x={0} y={26} width={370} height={G - 26} />
-      <rect fill="url(#en-pencil)" x={0} y={26} width={370} height={54} />
+      <rect fill={url("pencil")} x={0} y={26} width={370} height={54} />
       <rect className="en-o en-nbr1" x={-4} y={24} width={378} height={4} />
       <rect className="en-o en-nbr1" x={-4} y={52} width={378} height={3} />
       {[62, 172, 282].map((x, i) => (
@@ -183,7 +189,7 @@ function Neighbours() {
       {/* Narrow cream house: one window a floor; the tandoori's shutter is down for good */}
       <rect className="en-o en-nbr2" x={382} y={6} width={12} height={14} />
       <rect className="en-o en-nbr1" x={370} y={20} width={170} height={G - 20} />
-      <rect fill="url(#en-pencil)" x={370} y={20} width={170} height={60} />
+      <rect fill={url("pencil")} x={370} y={20} width={170} height={60} />
       <rect className="en-o en-nbr1" x={368} y={17} width={174} height={4} />
       <Sash x={445} y={28} w={20} h={18} />
       <Sash x={445} y={54} w={20} h={18} lit />
@@ -194,7 +200,7 @@ function Neighbours() {
 
       {/* Tall cream building, four storeys, two windows a floor; shop with an awning */}
       <rect className="en-o en-nbr2" x={540} y={6} width={290} height={G - 6} />
-      <rect fill="url(#en-pencil)" x={540} y={6} width={290} height={74} />
+      <rect fill={url("pencil")} x={540} y={6} width={290} height={74} />
       <rect className="en-o en-nbr2" x={534} y={2} width={302} height={5} />
       {[12, 34, 56].map((y, row) => (
         <g key={y}>
@@ -217,7 +223,7 @@ function Neighbours() {
       {/* Autocolour: low brick shop with a hipped roof, one window upstairs */}
       <path className="en-o en-roof" d="M1162 53 L1186 36 H1439 L1463 53 Z" />
       <rect className="en-o en-brick" x={1170} y={52} width={285} height={G - 52} />
-      <rect fill="url(#en-pencil)" x={1170} y={52} width={285} height={28} />
+      <rect fill={url("pencil")} x={1170} y={52} width={285} height={28} />
       <Sash x={1236} y={57} w={26} h={17} />
       <rect className="en-o en-fascia" x={1174} y={82} width={277} height={10} />
       <rect className="en-o en-frame" x={1176} y={93} width={273} height={G - 93} />
@@ -242,7 +248,7 @@ function Neighbours() {
         </g>
       ))}
       <rect className="en-o en-nbr2" x={1540} y={8} width={470} height={G - 8} />
-      <rect fill="url(#en-pencil)" x={1540} y={8} width={470} height={72} />
+      <rect fill={url("pencil")} x={1540} y={8} width={470} height={72} />
       <rect className="en-o en-nbr1" x={1534} y={4} width={480} height={5} />
       <rect className="en-o en-nbr1" x={1534} y={40} width={480} height={3} />
       {[1566, 1628, 1690, 1752, 1814, 1876, 1938].map((x, i) => (
@@ -294,11 +300,11 @@ function Gooseneck({ x }: { x: number }) {
 }
 
 // Endeavour itself: bar at street level, basement cinema below
-function Endeavour() {
+function Endeavour({ url }: { url: Url }) {
   return (
     <g>
       <rect className="en-o en-end" x={830} y={22} width={340} height={G - 22} />
-      <rect fill="url(#en-pencil)" x={830} y={22} width={340} height={36} />
+      <rect fill={url("pencil")} x={830} y={22} width={340} height={36} />
       <rect className="en-o en-end" x={826} y={17} width={348} height={6} />
       <rect className="en-o en-win" x={900} y={34} width={7} height={7} />
       <Sash x={925} y={27} w={44} h={22} />
@@ -441,7 +447,7 @@ function StackedChairs({ x }: { x: number }) {
 }
 
 // Everything that belongs to one state. Keyed by state, so it fades in on change.
-function Layer({ scene }: { scene: SceneT }) {
+function Layer({ scene, url }: { scene: SceneT; url: Url }) {
   const { state } = scene;
   return (
     <g className="en-layer">
@@ -464,7 +470,7 @@ function Layer({ scene }: { scene: SceneT }) {
       {(state === "night" || state === "egg") && <Fox x={266} />}
 
       {/* People at the ledge in the big window */}
-      <g clipPath="url(#en-windows)">
+      <g clipPath={url("windows")}>
         {BAR_PEOPLE[state].map((i) => {
           const x = BAR_X[i];
           return (
@@ -492,7 +498,7 @@ function Layer({ scene }: { scene: SceneT }) {
       )}
 
       {/* Basement */}
-      <g clipPath="url(#en-room)">
+      <g clipPath={url("room")}>
         {CHAIRS_STACKED.includes(state) && (
           <g>
             <StackedChairs x={840} />
@@ -531,39 +537,56 @@ function Layer({ scene }: { scene: SceneT }) {
   );
 }
 
-export default function Scene({ scene }: { scene: SceneT | null }) {
+type Props = {
+  scene: SceneT | null;
+  viewBox?: string; // the part of the drawing to show; the footer shows it all
+  fit?: string; // preserveAspectRatio
+  idPrefix?: string; // for the ids in <defs>, so two drawings on a page don't clash
+  screenImage?: string; // a picture on the basement screen (a crop's film still)
+};
+
+export default function Scene({ scene, viewBox = "0 -44 2000 284", fit = "xMidYMax slice", idPrefix = "en", screenImage }: Props) {
+  const id = (name: string) => `${idPrefix}-${name}`;
+  const url: Url = (name) => `url(#${id(name)})`;
+  const screen = screenImage ?? (scene?.eggVideo ? thumb(scene.eggVideo, "hq") : undefined);
+  const layer = scene && <Layer key={scene.state} scene={scene} url={url} />;
+  // People and chairs go in front of a picture on the screen: a crop's film
+  // still, or Basement TV's video (the tvscreen idea) at any hour but 3am,
+  // when the room is empty and the drawing stays as it was
+  const inFront = !!screenImage || (!!scene?.eggVideo && scene.state !== "egg");
+
   return (
-    <svg viewBox="0 -44 2000 284" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
+    <svg viewBox={viewBox} preserveAspectRatio={fit} xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
       <defs>
         {/* Wobbles every line a little, like a pencil drawing */}
-        <filter id="en-wobble" x="-1%" y="-4%" width="102%" height="108%">
+        <filter id={id("wobble")} x="-1%" y="-4%" width="102%" height="108%">
           <feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves={2} seed={4} result="noise" />
           <feDisplacementMap in="SourceGraphic" in2="noise" scale={2.4} xChannelSelector="R" yChannelSelector="G" />
         </filter>
-        <pattern id="en-hatch" width={16} height={14} patternUnits="userSpaceOnUse">
+        <pattern id={id("hatch")} width={16} height={14} patternUnits="userSpaceOnUse">
           <path d="M2 11 l5 -3 M10 5 l4 -2" className="en-hatch" />
         </pattern>
-        <pattern id="en-pencil" width={9} height={9} patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
+        <pattern id={id("pencil")} width={9} height={9} patternUnits="userSpaceOnUse" patternTransform="rotate(-35)">
           <path d="M0 4.5 H6" className="en-pencil" />
         </pattern>
         {/* The soil darkens with depth until it meets the footer */}
-        <linearGradient id="en-deep" x1="0" y1="0" x2="0" y2="1">
+        <linearGradient id={id("deep")} x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" className="en-deep-0" />
           <stop offset="0.45" className="en-deep-1" />
           <stop offset="1" className="en-deep-2" />
         </linearGradient>
-        <clipPath id="en-room">
+        <clipPath id={id("room")}>
           <rect x={834} y={G + 2} width={332} height={78} />
         </clipPath>
-        <clipPath id="en-screen-clip">
+        <clipPath id={id("screen-clip")}>
           <rect x={872} y={147} width={128} height={44} />
         </clipPath>
-        <clipPath id="en-windows">
+        <clipPath id={id("windows")}>
           <rect x={WINDOW.x} y={WINDOW.y} width={WINDOW.w} height={WINDOW.h} />
         </clipPath>
       </defs>
 
-      <g filter="url(#en-wobble)">
+      <g filter={url("wobble")}>
         <rect className="en-sky" x={0} y={-44} width={2000} height={G + 44} />
         <g className="en-night-sky">
           <circle cx={1108} cy={-24} r={7} className="en-moon" />
@@ -589,43 +612,45 @@ export default function Scene({ scene }: { scene: SceneT | null }) {
           ))}
         </g>
         <path className="en-far" d={FAR_SKYLINE} />
-        <Neighbours />
-        <Endeavour />
+        <Neighbours url={url} />
+        <Endeavour url={url} />
         {LAMPS.map((l) => (
           <Lamp key={l.x} {...l} />
         ))}
         <StreetFurniture />
         <rect className="en-o en-pave" x={-4} y={G} width={2008} height={5} />
         <rect className="en-earth" x={0} y={G + 5} width={2000} height={110} />
-        <rect fill="url(#en-hatch)" x={0} y={G + 5} width={2000} height={110} />
+        <rect fill={url("hatch")} x={0} y={G + 5} width={2000} height={110} />
         {PEBBLES.map((p, i) => (
           <ellipse key={i} className="en-pebble" cx={p.x} cy={p.y} rx={p.rx} ry={p.rx * 0.7} />
         ))}
         {CELLARS.map((c) => (
           <rect key={c.x} className="en-cellar" x={c.x} y={G + 5} width={c.w} height={c.h} />
         ))}
-        <rect fill="url(#en-deep)" x={0} y={G + 5} width={2000} height={240 - G - 5} />
+        <rect fill={url("deep")} x={0} y={G + 5} width={2000} height={240 - G - 5} />
         <Basement />
-        {scene && <Layer key={scene.state} scene={scene} />}
+        {!inFront && layer}
       </g>
 
       {/* 3am to 4am: the projector runs for an empty room, showing something off the wall.
           The 4:3 "hq" thumbnail, drawn a little larger than the screen and cropped to it,
           fills the screen with no black bars whether the video is 4:3 or widescreen.
-          Clicks go through it to Basement TV (.en-layer). */}
-      {scene?.eggVideo && (
+          Clicks go through it to Basement TV (.en-layer). A screenImage goes the same
+          way, at full strength. With inFront, the audience is drawn after it. */}
+      {screen && (
         <image
-          key={scene.eggVideo}
-          className="en-layer en-egg"
-          href={thumb(scene.eggVideo, "hq")}
+          key={screen}
+          className={screenImage ? "en-layer" : "en-layer en-egg"}
+          href={screen}
           x={864}
           y={143}
           width={144}
           height={52}
           preserveAspectRatio="xMidYMid slice"
-          clipPath="url(#en-screen-clip)"
+          clipPath={url("screen-clip")}
         />
       )}
+      {inFront && layer && <g filter={url("wobble")}>{layer}</g>}
     </svg>
   );
 }
