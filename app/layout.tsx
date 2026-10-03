@@ -2,11 +2,19 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { EndeavourStrip } from "@/components/endeavour";
 import Header from "@/components/Header";
+import LookMenu from "@/components/LookMenu";
 import { films, formatDate, isPast, VENUE } from "@/lib/films";
+import { LOOK_SCRIPT } from "@/lib/look";
 import "./globals.css";
 import "./watch.css";
 import "./endeavour.css";
 import "./laurels.css";
+// The look switch's options go last so they win over the defaults above
+import "./looks.css";
+import "./look-building.css";
+import "./look-used.css";
+import "./look-08.css";
+import "./ideas.css";
 
 export const metadata: Metadata = {
   title: "The Tube",
@@ -15,7 +23,11 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en-GB">
+    // The look switch adds classes to <html> before React loads
+    <html lang="en-GB" suppressHydrationWarning>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: LOOK_SCRIPT }} />
+      </head>
       <body>
         <div className="page">
           <Header />
@@ -67,6 +79,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </div>
           </footer>
         </div>
+        <LookMenu />
       </body>
     </html>
   );
