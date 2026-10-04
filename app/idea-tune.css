@@ -1,0 +1,29 @@
+/* ================= Pictures tune in (idea "tune": components/Tune.tsx) ================= */
+
+/* Snow in a picture's place while it's on its way */
+html.idea-tune img.tuning {
+  background: #000 url(/intro/static.png) 0 0 / 320px 320px;
+  image-rendering: pixelated;
+  animation: tune-snow 320ms step-end infinite;
+}
+html.idea-tune img.tuning.snow-1 { animation-delay: -80ms; }
+html.idea-tune img.tuning.snow-2 { animation-delay: -160ms; }
+html.idea-tune img.tuning.snow-3 { animation-delay: -240ms; }
+@keyframes tune-snow {
+  0% { background-position: 0 0; }
+  25% { background-position: 117px 53px; }
+  50% { background-position: 41px 199px; }
+  75% { background-position: 230px 141px; }
+}
+/* Switching on: a bright line across the middle opens out into the picture, washed out at first */
+html.idea-tune img.tune-on { animation: tune-on 300ms ease-out; }
+@keyframes tune-on {
+  0%, 25% { clip-path: inset(calc(50% - 1px) 0); filter: brightness(3) saturate(0); }
+  60% { clip-path: inset(0); filter: brightness(1.6) saturate(0.4); }
+  100% { clip-path: inset(0); filter: none; }
+}
+/* The wall's tiles are light grey; a screen is dark while it warms up */
+html.idea-tune .tile:has(> img.tune-on) { background: #000; }
+@media (prefers-reduced-motion: reduce) {
+  html.idea-tune img.tuning, html.idea-tune img.tune-on { animation: none; }
+}

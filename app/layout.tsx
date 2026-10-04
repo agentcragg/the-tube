@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Channel from "@/components/Channel";
 import { EndeavourStrip } from "@/components/endeavour";
 import Header from "@/components/Header";
+import Intro from "@/components/Intro";
 import LookMenu from "@/components/LookMenu";
+import Tune from "@/components/Tune";
 import { films, formatDate, isPast, VENUE } from "@/lib/films";
 import { LOOK_SCRIPT } from "@/lib/look";
 import "./globals.css";
@@ -12,6 +15,9 @@ import "./laurels.css";
 // The look switch's options go last so they win over the defaults above
 import "./looks.css";
 import "./ideas.css";
+import "./idea-intro.css";
+import "./idea-channel.css";
+import "./idea-tune.css";
 
 export const metadata: Metadata = {
   title: "The Tube",
@@ -26,6 +32,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: LOOK_SCRIPT }} />
       </head>
       <body>
+        <Intro />
         <div className="page">
           <Header />
           <main>{children}</main>
@@ -76,6 +83,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </div>
           </footer>
         </div>
+        <Channel />
+        <Tune />
         <LookMenu />
       </body>
     </html>

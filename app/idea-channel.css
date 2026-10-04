@@ -1,0 +1,29 @@
+/* ================= Channel change (idea "channel": components/Channel.tsx) ================= */
+
+/* Four frames of static, thinning out, with the tube's line across the first.
+   Kept faint: it should register, not interrupt. */
+html.idea-channel .channel-static {
+  position: fixed; inset: 0; z-index: 999; pointer-events: none;
+  background: url(/intro/static.png) 0 0 / 320px 320px;
+  image-rendering: pixelated;
+  animation: channel-static 180ms step-end forwards;
+}
+html.idea-channel .channel-static::after {
+  content: ""; position: absolute; left: 0; right: 0; top: 50%; height: 2px;
+  background: #818181;
+  animation: channel-line 180ms step-end forwards;
+}
+@keyframes channel-static {
+  0% { opacity: 0.55; background-position: 0 0; }
+  25% { opacity: 0.35; background-position: 117px 53px; }
+  50% { opacity: 0.18; background-position: 41px 199px; }
+  75% { opacity: 0.07; background-position: 230px 141px; }
+  100% { opacity: 0; visibility: hidden; }
+}
+@keyframes channel-line {
+  0% { opacity: 1; }
+  25% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  html.idea-channel .channel-static { display: none; }
+}
