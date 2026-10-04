@@ -285,6 +285,25 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
   float: right; width: 120px; aspect-ratio: 16 / 9; object-fit: cover;
   border: 3px double #999; padding: 2px; margin: 0 0 4px 8px;
 }
+/* A night's own picture (Film.art), full width, in the same double frame */
+.next-art { position: relative; display: block; border: 3px double #999; padding: 2px; margin: 6px 0 6px; }
+.next-art img { display: block; width: 100%; height: auto; }
+.next-art .sparkles { position: absolute; inset: 2px; pointer-events: none; overflow: hidden; }
+/* Four-point stars that pop in and out in a few hard frames, like an old GIF */
+.next-art .sparkles i {
+  position: absolute; translate: -50% -50%; scale: 0;
+  background: #fff; clip-path: polygon(50% 0, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0 50%, 39% 39%);
+  filter: drop-shadow(0 0 2px #ffe27a) drop-shadow(0 0 5px #fff3b0);
+  animation: sparkle 1.8s steps(2, jump-none) infinite;
+}
+@keyframes sparkle {
+  0%, 30%, 100% { scale: 0; rotate: 0deg; }
+  45% { scale: 1; rotate: 0deg; }
+  60% { scale: 0.55; rotate: 45deg; }
+  75% { scale: 1.15; rotate: 45deg; }
+  90% { scale: 0.4; rotate: 90deg; }
+}
+@media (prefers-reduced-motion: reduce) { .next-art .sparkles { display: none; } }
 
 .mini-list { list-style: none; margin: 0; padding: 0; }
 .mini-list li + li { margin-top: 8px; }

@@ -15,6 +15,7 @@ export type Film = {
   pairedWith?: string;
   extra?: string; // something extra on the night, e.g. a Q&A
   perk?: string; // something laid on for the audience, e.g. free drinks
+  art?: string; // a picture made for the night, shown big in Next screening in place of the still
   colour: string; // taken from the film's own stills; only the Endeavour drawing uses it (the lit screen and the poster in the window)
   rabbitHole: { label: string; url: string }[];
 };
@@ -32,6 +33,7 @@ export const films: Film[] = [
   {
     slug: "southland-tales",
     title: "Southland Tales",
+    art: "/films/southland-tales/art.png",
     credit: "Richard Kelly, 2006",
     date: "2027-01-19",
     runtime: 8661, // 2h 24m 21s, BBFC, UK cinema version (the 2020 Arrow cut is 2h 38m)
