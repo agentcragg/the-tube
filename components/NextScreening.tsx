@@ -1,11 +1,13 @@
 "use client";
 
 import Link from "next/link";
+import Letterboard from "@/components/Letterboard";
 import Tonight from "@/components/Tonight";
 import { daysBetween, londonParts, useLondonNow } from "@/lib/clock";
+import { ditherSrc } from "@/lib/dither";
 import { films, formatDate, type Film } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
-import { usePretendDay } from "@/lib/use-look";
+import { useLook, usePretendDay } from "@/lib/use-look";
 
 // What's on's Next screening box: 2008's headerless box, its label set inside
 // the frame, with the film's picture beside the count. The server picks the
@@ -18,6 +20,7 @@ export default function NextScreening({ next: fromServer, days: daysFromServer }
   const today = pretend && now ? londonParts(now).isoDate : null;
   const next = today ? (films.find((f) => f.date >= today) ?? films[films.length - 1]) : fromServer;
   const days = today ? daysBetween(today, next.date) : daysFromServer;
+  const dither = useLook("dither");
 
   return (
     <section className="box box-plain">
@@ -27,13 +30,16 @@ export default function NextScreening({ next: fromServer, days: daysFromServer }
         </h2>
       </div>
       <div className="box-body next-up">
-        <p className="next-when">{formatDate(next.date)}</p>
+        <p className="next-when no-letterboard">{formatDate(next.date)}</p>
         <p className="next-title">
-          <Link href={`/films/${next.slug}`}>{next.title}</Link>
+          <Link href={`/films/${next.slug}`}>
+            <span className="no-letterboard">{next.title}</span>
+            <Letterboard className="x-letterboard" title={next.title} date={next.date} />
+          </Link>
         </p>
         {/* The film's first still for now; a GIF per film is to come, in this slot */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="next-still" src={next.stills[0]} alt="" />
+        <img className="next-still" src={dither ? ditherSrc(next.stills[0], 120) : next.stills[0]} alt="" />
         <p className="next-count">
           In {days} days · {SAMPLE_SEATS[next.slug]} seats left
         </p>

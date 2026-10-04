@@ -1,0 +1,25 @@
+/* ideas: "dither" (lib/dither.ts). A scrubber given a dither width shows its
+   first still as a four-colour GIF; the pointer brings the real stills in from
+   the top in bands, like a picture coming down a modem. Until the GIF is in
+   place the real still stays hidden, so colour never flashes up first. */
+
+html.idea-dither .scrub-ditherable .scrub-frame { position: relative; }
+html.idea-dither .scrub-dither { position: absolute; inset: 0; image-rendering: pixelated; }
+html.idea-dither .scrub-ditherable .scrub-frame:first-child > img:not(.scrub-dither) {
+  position: relative; clip-path: inset(0 0 100%);
+}
+html.idea-dither .scrub-ditherable:hover .scrub-frame > img:not(.scrub-dither) {
+  animation: dither-in 640ms steps(8, jump-start) both;
+}
+@keyframes dither-in {
+  from { clip-path: inset(0 0 100%); }
+  to { clip-path: inset(0); }
+}
+/* A touch screen has no pointer to bring it in: a swipe goes straight to the real ones */
+@media (hover: none) {
+  html.idea-dither .scrub-ditherable:hover .scrub-frame > img:not(.scrub-dither) { animation: none; }
+}
+
+/* Next screening's picture: the GIF only (components/NextScreening.tsx) */
+html.idea-dither .next-still { image-rendering: pixelated; }
+html.idea-dither .next-still:is([src^="https://image.tmdb.org/"], [src^="https://i.ytimg.com/"]) { visibility: hidden; }

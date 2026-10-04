@@ -80,7 +80,7 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
               return (
                 <li key={f.slug}>
                   <Link href={`/films/${f.slug}`}>
-                    <Scrubber frames={f.stills} seed={f.slug} alt={f.title} duration={badgeTime(f)} />
+                    <Scrubber frames={f.stills} seed={f.slug} alt={f.title} duration={badgeTime(f)} dither={320} />
                     {gone && (
                       <span className="card-laurel">
                         <LaurelMark lines={laurelLines(f.date.slice(0, 4))} label={LAUREL_LABEL} />

@@ -1,13 +1,17 @@
 "use client";
 
 import { useCallback, useRef, useState } from "react";
+import { ditherSrc, type DitherWidth } from "@/lib/dither";
 import { barsFor, zoomPastBars } from "@/lib/letterbox";
+import { useLook } from "@/lib/use-look";
 
 // A film's stills in a row, one showing at a time.
 // Mouse: move across the image to scrub through them, like old YouTube thumbnails.
 // Touch: swipe sideways to flick through them.
 // With no real frames it shows generated placeholders.
 // A still with black bars baked in is zoomed just past them (lib/letterbox.ts).
+// With the look switch's "dither" idea, a scrubber given a dither width shows
+// its first still as a dithered GIF until the pointer arrives (ideas.css).
 
 const PLACEHOLDER_FRAMES = 4;
 
@@ -29,7 +33,7 @@ function placeholder(seed: string, i: number) {
 // One still, in its own clipping box. A still listed in lib/letterbox.ts as
 // having black bars zooms in past them once it has loaded, inside that box
 // (so the strip's scrolling and swiping don't see the zoom).
-function Still({ src, alt, eager }: { src: string; alt: string; eager: boolean }) {
+function Still({ src, alt, eager, dither }: { src: string; alt: string; eager: boolean; dither?: string }) {
   const [zoom, setZoom] = useState(1);
   const bars = barsFor(src);
   const check = useCallback(
@@ -44,8 +48,13 @@ function Still({ src, alt, eager }: { src: string; alt: string; eager: boolean }
   const ref = useCallback((img: HTMLImageElement | null) => {
     if (img?.complete) check(img);
   }, [check]);
+  const style = zoom > 1 ? { transform: `scale(${zoom})` } : undefined;
   return (
     <span className="scrub-frame">
+      {dither && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img className="scrub-dither" src={dither} alt="" loading={eager ? "eager" : "lazy"} draggable={false} style={style} />
+      )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={ref}
@@ -54,7 +63,7 @@ function Still({ src, alt, eager }: { src: string; alt: string; eager: boolean }
         loading={eager ? "eager" : "lazy"}
         draggable={false}
         onLoad={(e) => check(e.currentTarget)}
-        style={zoom > 1 ? { transform: `scale(${zoom})` } : undefined}
+        style={style}
       />
     </span>
   );
@@ -67,6 +76,7 @@ export default function Scrubber({
   duration,
   lazy,
   watched,
+  dither,
 }: {
   frames: string[];
   seed: string;
@@ -74,8 +84,10 @@ export default function Scrubber({
   duration?: string; // e.g. "2:24:21"; badge hidden when not given
   lazy?: boolean; // don't load even the first frame until it's on screen (e.g. inside a closed panel)
   watched?: boolean; // already seen in this browser (lib/watched.ts): the bar stays full, on touch screens too
+  dither?: DitherWidth; // about the width it's shown at, for the "dither" idea
 }) {
   const count = frames.length || PLACEHOLDER_FRAMES;
+  const dithered = useLook("dither") && dither;
   const [i, setI] = useState(0);
   const [active, setActive] = useState(false);
   const strip = useRef<HTMLDivElement>(null);
@@ -88,7 +100,7 @@ export default function Scrubber({
 
   return (
     <div
-      className={watched ? "scrub scrub-watched" : "scrub"}
+      className={["scrub", watched && "scrub-watched", dither && "scrub-ditherable"].filter(Boolean).join(" ")}
       onMouseMove={(e) => {
         const r = e.currentTarget.getBoundingClientRect();
         const n = Math.min(count - 1, Math.floor(((e.clientX - r.left) / r.width) * count));
@@ -110,7 +122,13 @@ export default function Scrubber({
       >
         {Array.from({ length: count }, (_, n) =>
           frames.length ? (
-            <Still key={n} src={frames[n]} alt={n === 0 ? alt : ""} eager={n === 0 && !lazy} />
+            <Still
+              key={n}
+              src={frames[n]}
+              alt={n === 0 ? alt : ""}
+              eager={n === 0 && !lazy}
+              dither={dithered && n === 0 ? ditherSrc(frames[n], dithered) : undefined}
+            />
           ) : (
             <div
               key={n}

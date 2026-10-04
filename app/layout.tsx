@@ -12,6 +12,10 @@ import "./laurels.css";
 // The look switch's options go last so they win over the defaults above
 import "./looks.css";
 import "./ideas.css";
+import "./idea-dither.css";
+import "./idea-letterboard.css";
+import "./idea-leader.css";
+import "./idea-handout.css";
 
 export const metadata: Metadata = {
   title: "The Tube",
