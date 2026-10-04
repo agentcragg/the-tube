@@ -11,21 +11,20 @@
 // ?time=off hides it again. Everyone else just sees the real time.
 
 import { useEffect, useState, type CSSProperties } from "react";
-import { useLondonNow } from "@/lib/clock";
 import type { Film } from "@/lib/films";
-import { seedVideos } from "@/lib/videos";
 import Scene from "./Scene";
-import { sceneAs, sceneAt, STATES, type State } from "./state";
+import { SeasonalSky } from "./Seasonal";
+import { STATES, type State } from "./state";
+import { pickState, usePicked, useScene } from "./use-scene";
 
-const WALL_IDS = seedVideos.map((v) => v.id);
 const SWITCH_KEY = "tube-time-switch";
 
 export function EndeavourStrip({ films }: { films: Film[] }): React.ReactNode {
   // null while rendering on the server: the drawing's shell shows, in neutral
   // greys, and the right state fades in once the browser knows the time
-  const now = useLondonNow();
+  const scene = useScene(films);
+  const picked = usePicked();
   const [showSwitch, setShowSwitch] = useState(false);
-  const [picked, setPicked] = useState<State | "">("");
 
   useEffect(() => {
     let on = false;
@@ -39,8 +38,6 @@ export function EndeavourStrip({ films }: { films: Film[] }): React.ReactNode {
     setShowSwitch(on);
   }, []);
 
-  const scene = now ? (picked ? sceneAs(picked, now, films, WALL_IDS) : sceneAt(now, films, WALL_IDS)) : null;
-
   const style: Record<string, string> = {};
   if (scene?.next) style["--en-next"] = scene.next.colour;
   if (scene?.tonight) style["--glow"] = scene.tonight.colour;
@@ -48,11 +45,12 @@ export function EndeavourStrip({ films }: { films: Film[] }): React.ReactNode {
   return (
     <div className="en-strip" data-state={scene?.state} style={style as CSSProperties}>
       <Scene scene={scene} />
+      <SeasonalSky scene={scene} />
       {showSwitch && (
         <div className="en-time">
           <label>
             Time{" "}
-            <select value={picked} onChange={(e) => setPicked(e.target.value as State | "")}>
+            <select value={picked} onChange={(e) => pickState(e.target.value as State | "")}>
               <option value="">Real time</option>
               {STATES.map((s) => (
                 <option key={s.state} value={s.state}>

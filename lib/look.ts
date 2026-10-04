@@ -29,6 +29,10 @@ export const IDEAS: Option[] = [
   { id: "intro", label: "TV intro" },
   { id: "channel", label: "Channel change" },
   { id: "tune", label: "Pictures tune in" },
+  { id: "lights", label: "House lights on screening nights" },
+  { id: "tabtitle", label: "Tab title on screening nights" },
+  { id: "pumpkin", label: "Pumpkins for Halloween" },
+  { id: "fireworks", label: "Fireworks for Bonfire Night" },
 ];
 
 export type Look = { example?: string; ideas: string[]; today?: string; closed?: boolean };
