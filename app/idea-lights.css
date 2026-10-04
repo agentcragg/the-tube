@@ -51,6 +51,8 @@ html.idea-lights {
   --l-ink3: color-mix(in oklab, color-mix(in oklab, #333, #1a1a1a var(--deepen)), #c4c4c4 var(--flip));
   --l-faint: color-mix(in oklab, color-mix(in oklab, #999, #555 var(--deepen)), #8a8a8a var(--flip));
   --l-visited: color-mix(in oklab, color-mix(in oklab, #551a8b, #3d0f69 var(--deepen)), #bf9ee8 var(--flip));
+  --l-arrow: color-mix(in oklab, color-mix(in oklab, #555, #333 var(--deepen)), #9c9c9c var(--flip));
+  --l-ticker: color-mix(in oklab, color-mix(in oklab, #777, #444 var(--deepen)), #8a8a8a var(--flip));
   /* The light off the stills once it's dark */
   --l-glow: color-mix(in srgb, transparent, rgb(214 226 255 / 0.2) var(--flip));
 }
@@ -91,6 +93,22 @@ html.idea-lights .rh-address span { background: var(--l-field); border-color: va
 html.idea-lights :is(.rh-window, .rh-bar button) { color: var(--l-ink3); }
 html.idea-lights .rh-window-buttons i { background: var(--l-soft); border-color: var(--l-field-edge); }
 html.idea-lights .tile { background: var(--l-soft); }
+html.idea-lights .modal-bar { background: var(--l-soft); }
+
+/* The visitor's suggestions on the wall (app/queue.css, idea-queue-side.css) */
+html.idea-lights .tray { background: var(--l-box); }
+html.idea-lights .tray-thumb { background: var(--l-soft); }
+html.idea-lights .tray-arrow { border-top-color: var(--l-arrow); }
+html.idea-lights .tray-closed .tray-arrow { border-bottom-color: var(--l-arrow); }
+html.idea-lights .tray-wall .tray-state { color: color-mix(in oklab, #070, #7c7 var(--flip)); }
+html.idea-lights .tray-item { border-bottom-color: color-mix(in oklab, #e5e5e5, #333 var(--dn)); }
+
+/* The ticker (idea "ticker"): still running into the open tab at the top */
+html.idea-lights.idea-ticker .ticker {
+  background: linear-gradient(var(--bg), color-mix(in oklab, #ececec, #1a1a1a var(--dn)));
+  border-bottom-color: color-mix(in oklab, #c8c8c8, #333 var(--dn)); color: var(--muted);
+}
+html.idea-lights.idea-ticker :is(.ticker-date, .ticker-credit) { color: var(--l-ticker); }
 html.idea-lights .tv-c { border-bottom-color: var(--box-edge); }
 
 /* Text in the site's fixed greys */

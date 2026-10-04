@@ -21,8 +21,15 @@ html.idea-letterboard .letterboard {
   box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.9), 0 1px 2px rgb(0 0 0 / 0.35);
   font: bold var(--lb-size)/1 Arial, Helvetica, sans-serif;
 }
-html.idea-letterboard .lb-line { display: flex; flex-wrap: wrap; column-gap: 0.5em; row-gap: var(--lb-groove); }
-html.idea-letterboard .lb-word { display: flex; white-space: nowrap; }
+/* A long title goes up in lines of about the same length, rather than
+   leaving its last word on its own. The words space the rows themselves, a
+   groove apart, so line-height is out of it. */
+html.idea-letterboard .lb-line {
+  display: block; margin: 0 -0.25em calc(var(--lb-groove) * -1); line-height: 0; text-wrap: balance; text-align: center;
+}
+html.idea-letterboard .lb-word {
+  display: inline-flex; vertical-align: top; white-space: nowrap; margin: 0 0.25em var(--lb-groove);
+}
 html.idea-letterboard .lb-ch {
   display: inline-block; height: calc(var(--lb-groove) * 4); line-height: calc(var(--lb-groove) * 4);
   margin-left: calc(1px + var(--lb-gap));

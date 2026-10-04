@@ -45,16 +45,32 @@ const FRAMES: [number, number, number | "line"][] = [
 ];
 const PUSH = 2490; // then into the screen
 const PUSH_MS = 800;
-// No intro if the TV picture takes longer than this to arrive
-const WAIT_MS = 1500;
+// No intro if the TV picture takes longer than this to arrive: a moment of
+// blank grey is fine, a long one isn't
+const WAIT_MS = 400;
+
+// The TV against the wall, wide and for tall phone screens
+export const TV_WIDE = "/intro/tv-wide.png";
+export const TV_TALL = "/intro/tv-tall.png";
+const TALL = "(max-aspect-ratio: 2/3)";
+
+// Plays this time: the idea's on, it hasn't played yet this visit (or
+// ?look=intro asks again), and nobody's asked for less movement. ES5.
+const PLAYS = `var d=document.documentElement,c=d.classList,K=${JSON.stringify(INTRO_KEY)};
+var q=new URLSearchParams(location.search).get("look"),again=!!q&&q.split(",").indexOf("intro")>=0;
+var plays=c.contains("idea-intro")&&(again||!sessionStorage.getItem(K))&&!matchMedia("(prefers-reduced-motion: reduce)").matches;`;
+
+// In <head>, straight after the look script: starts the TV picture on its way
+// while the page's CSS still is, so it's usually in by the time the intro starts.
+export const INTRO_PRELOAD = `(function(){try{${PLAYS}
+if(!plays)return;var l=document.createElement("link");l.rel="preload";l.as="image";
+l.href=matchMedia(${JSON.stringify(TALL)}).matches?${JSON.stringify(TV_TALL)}:${JSON.stringify(TV_WIDE)};document.head.appendChild(l);
+}catch(e){}})();`;
 
 // Plain ES5, no imports. Once a visit, so it remembers in sessionStorage;
 // ?look=intro in the address plays it again, for trying it out.
-export const INTRO_SCRIPT = `(function(){try{
-var d=document.documentElement,c=d.classList,K=${JSON.stringify(INTRO_KEY)};
-var q=new URLSearchParams(location.search).get("look");if(q&&q.split(",").indexOf("intro")>=0)sessionStorage.removeItem(K);
-if(!c.contains("idea-intro")||sessionStorage.getItem(K))return;
-if(matchMedia("(prefers-reduced-motion: reduce)").matches)return;
+export const INTRO_SCRIPT = `(function(){try{${PLAYS}
+if(!plays)return;
 var el=document.getElementById("tv-intro");if(!el)return;
 sessionStorage.setItem(K,"1");
 var F=${JSON.stringify(FRAMES)},timers=[],started=false,over=false,EV=["pointerdown","keydown","wheel","touchstart"];
@@ -77,7 +93,7 @@ F.forEach(function(f){timers.push(setTimeout(function(){set(f)},f[0]))});
 timers.push(setTimeout(push,${PUSH}));timers.push(setTimeout(function(){end(false)},${PUSH + PUSH_MS}))}
 EV.forEach(function(t){addEventListener(t,skip,{capture:true,passive:true})});
 var img=new Image();img.onload=go;img.onerror=function(){end(true)};
-img.src=el.getAttribute(matchMedia("(max-aspect-ratio: 2/3)").matches?"data-tall":"data-wide");
+img.src=el.getAttribute(matchMedia(${JSON.stringify(TALL)}).matches?"data-tall":"data-wide");
 if(img.complete)go();
 timers.push(setTimeout(function(){if(!started)end(true)},${WAIT_MS}));
 }catch(e){}})();`;

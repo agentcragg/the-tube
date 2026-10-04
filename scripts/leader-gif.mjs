@@ -1,7 +1,9 @@
 // The countdown leader as a little animated GIF (public/leader.gif), for the
 // look switch's "leader" idea: shown where a still or a video is still on its
-// way, the way a site in 2008 had a spinning loader. Run by hand from the
-// project folder when it needs to change: node scripts/leader-gif.mjs
+// way, the way a site in 2008 had a spinning loader. Its first frame is also
+// kept still (public/leader.png), for anyone who's asked for less movement.
+// Run by hand from the project folder when it needs to change:
+// node scripts/leader-gif.mjs
 //
 // Each number gets one turn of the sweep, 8 down to 3, a second each, as on
 // a projectionist's leader.
@@ -36,3 +38,6 @@ await sharp(frames, { join: { animated: true } })
   .gif({ colours: 8, dither: 0, loop: 0, delay: frames.map(() => DELAY) })
   .toFile("public/leader.gif");
 console.log(`public/leader.gif: ${frames.length} frames`);
+
+await sharp(frames[0]).png({ palette: true, colours: 8 }).toFile("public/leader.png");
+console.log("public/leader.png");

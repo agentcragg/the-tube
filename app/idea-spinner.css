@@ -26,11 +26,12 @@ html.idea-spinner .tv-screen p::before {
   content: ""; width: 32px; height: 32px; background: url(/loading/spinner-dark.gif) center / 32px no-repeat;
 }
 
-/* The wall's "Sending…" while a suggestion goes off */
+/* The wall's "Sending…" while a suggestion goes off, in place of the queue's own spinner */
 html.idea-spinner .status-busy::before {
   content: ""; display: inline-block; width: 16px; height: 16px; margin-right: 5px; vertical-align: -3px;
   background: url(/loading/spinner-16.gif) center / 16px no-repeat;
 }
+html.idea-spinner .status-busy .queue-spinner { display: none; }
 
 /* Between pages (components/NavSpinner.tsx): the page that's going fades
    back and the box sits in the middle of the window. Both wait a fifth of a

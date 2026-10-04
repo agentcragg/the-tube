@@ -7,7 +7,8 @@ import { formatDate } from "@/lib/films";
 // the way a cinema puts up what's on (the look switch's "letterboard" idea).
 // Each letter sits a little crooked by an amount fixed by its place on the
 // board, so the board looks the same on every visit. On the night itself the
-// date makes way for "Tonight". Spans only, so it can sit inside a heading.
+// board has the title only, as "Tonight" is already beside it. Spans only, so
+// it can sit inside a heading.
 
 function hash(s: string) {
   let h = 2166136261;
@@ -48,7 +49,7 @@ export default function Letterboard({ title, date, className }: { title: string;
   return (
     <span className={className ? `letterboard ${className}` : "letterboard"} aria-hidden>
       <Line text={title} />
-      <Line text={tonight ? "Tonight" : formatDate(date)} />
+      {!tonight && <Line text={formatDate(date)} />}
     </span>
   );
 }

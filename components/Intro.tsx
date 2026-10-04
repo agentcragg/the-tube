@@ -1,6 +1,6 @@
 import type { CSSProperties } from "react";
 import { films, isPast } from "@/lib/films";
-import { INTRO_SCRIPT, scene } from "@/lib/intro";
+import { INTRO_SCRIPT, scene, TV_TALL, TV_WIDE } from "@/lib/intro";
 
 // The TV intro's markup (lib/intro.ts), first thing in <body>. Hidden unless
 // its script, straight after it, decides to play. The pictures are CSS
@@ -34,8 +34,8 @@ export default function Intro() {
         className="tv-intro x-intro"
         aria-hidden
         style={vars}
-        data-wide="/intro/tv-wide.png"
-        data-tall="/intro/tv-tall.png"
+        data-wide={TV_WIDE}
+        data-tall={TV_TALL}
       >
         <div className="tv-intro-scene">
           <div className="tv-intro-screen">

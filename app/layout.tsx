@@ -11,6 +11,7 @@ import TabTitle from "@/components/TabTitle";
 import Ticker from "@/components/Ticker";
 import Tune from "@/components/Tune";
 import { films, formatDate, isPast, VENUE } from "@/lib/films";
+import { INTRO_PRELOAD } from "@/lib/intro";
 import { LOOK_SCRIPT } from "@/lib/look";
 import "./globals.css";
 import "./watch.css";
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en-GB" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: LOOK_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: INTRO_PRELOAD }} />
       </head>
       <body>
         <Intro />

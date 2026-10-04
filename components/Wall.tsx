@@ -59,6 +59,16 @@ const SLOTS: Cell[] = [
   [-2, 0],
   [0, -2],
 ];
+// Then on outwards a ring at a time, for anyone who's sent more than that
+for (let r = 2; r <= 6; r++) {
+  for (let dy = -r; dy <= r; dy++) {
+    for (let dx = -r; dx <= r; dx++) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) === r && !SLOTS.some(([x, y]) => x === dx && y === dy)) {
+        SLOTS.push([dx, dy]);
+      }
+    }
+  }
+}
 const FLY_MS = 900;
 const FADE_MS = 2600; // the yellow fade on one just sent or found
 const LEAVE_MS = 400;
@@ -182,7 +192,8 @@ export default function Wall({ videos }: { videos: Video[] }) {
 
   const [open, setOpen] = useState<Video | null>(null);
   const [input, setInput] = useState("");
-  const [status, setStatus] = useState<{ kind: "error" | "ok" | "busy"; msg: string } | null>(null);
+  // `about`: the suggestion a thanks is for
+  const [status, setStatus] = useState<{ kind: "error" | "ok" | "busy"; msg: string; about?: string } | null>(null);
   const pending = usePending();
   const trayClosed = useTrayClosed();
   const watched = useWatched();
@@ -581,10 +592,13 @@ export default function Wall({ videos }: { videos: Video[] }) {
   }, [landing, glideTo]);
 
   async function withdraw(p: Pending) {
+    // The thanks for sending it no longer holds: back to the usual words
+    const unthank = () => setStatus((s) => (s?.about === p.id ? null : s));
     // Off this browser's list only: the tile goes, the sheet keeps it
     const forget = () => {
       leave(p);
       pendingStore.forget(p.id);
+      unthank();
     };
     if (!p.key) return forget();
     setBusy(p.id);
@@ -602,6 +616,7 @@ export default function Wall({ videos }: { videos: Video[] }) {
     if (done.withdrawn) {
       leave(p);
       pendingStore.mark(p.id, "withdrawnAt");
+      unthank();
     } else if (done.state === "wall") {
       pendingStore.mark(p.id, "wallAt");
     } else {
@@ -665,6 +680,7 @@ export default function Wall({ videos }: { videos: Video[] }) {
     setStatus({
       kind: "ok",
       msg: `Thanks: "${data.title || data.channel}" has been sent. It goes on the wall once it's been approved.`,
+      about: mine.id,
     });
   }
 

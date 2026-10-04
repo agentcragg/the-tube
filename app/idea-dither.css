@@ -3,6 +3,11 @@
    the top in bands, like a picture coming down a modem. Until the GIF is in
    place the real still stays hidden, so colour never flashes up first. */
 
+/* The GIFs are in every page's markup, lazy, and only show with the idea on */
+.x-dither, .scrub-frame .x-dither { display: none; }
+html.idea-dither .x-dither { display: block; }
+html.idea-dither .no-dither { display: none; }
+
 html.idea-dither .scrub-ditherable .scrub-frame { position: relative; }
 html.idea-dither .scrub-dither { position: absolute; inset: 0; image-rendering: pixelated; }
 html.idea-dither .scrub-ditherable .scrub-frame:first-child > img:not(.scrub-dither) {
@@ -19,7 +24,10 @@ html.idea-dither .scrub-ditherable:hover .scrub-frame > img:not(.scrub-dither) {
 @media (hover: none) {
   html.idea-dither .scrub-ditherable:hover .scrub-frame > img:not(.scrub-dither) { animation: none; }
 }
+/* Less movement asked for: the real still is simply there under the pointer */
+@media (prefers-reduced-motion: reduce) {
+  html.idea-dither .scrub-ditherable:hover .scrub-frame > img:not(.scrub-dither) { animation: none; clip-path: none; }
+}
 
 /* Next screening's picture: the GIF only (components/NextScreening.tsx) */
 html.idea-dither .next-still { image-rendering: pixelated; }
-html.idea-dither .next-still:is([src^="https://image.tmdb.org/"], [src^="https://i.ytimg.com/"]) { visibility: hidden; }

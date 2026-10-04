@@ -7,7 +7,7 @@ import { daysBetween, londonParts, useLondonNow } from "@/lib/clock";
 import { ditherSrc } from "@/lib/dither";
 import { films, formatDate, type Film } from "@/lib/films";
 import { SAMPLE_SEATS } from "@/lib/seats";
-import { useLook, usePretendDay } from "@/lib/use-look";
+import { usePretendDay } from "@/lib/use-look";
 
 // What's on's Next screening box: 2008's headerless box, its label set inside
 // the frame, with the film's picture beside the count. The server picks the
@@ -20,7 +20,6 @@ export default function NextScreening({ next: fromServer, days: daysFromServer }
   const today = pretend && now ? londonParts(now).isoDate : null;
   const next = today ? (films.find((f) => f.date >= today) ?? films[films.length - 1]) : fromServer;
   const days = today ? daysBetween(today, next.date) : daysFromServer;
-  const dither = useLook("dither");
 
   return (
     <section className="box box-plain">
@@ -39,9 +38,14 @@ export default function NextScreening({ next: fromServer, days: daysFromServer }
         </p>
         {/* The film's first still for now; a GIF per film is to come, in this slot */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="next-still" src={dither ? ditherSrc(next.stills[0], 120) : next.stills[0]} alt="" />
+        <img className="next-still no-dither" src={next.stills[0]} alt="" />
+        {/* The "dither" idea's copy: lazy, so it's only fetched while it shows */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="next-still x-dither" src={ditherSrc(next.stills[0], 120)} alt="" loading="lazy" />
         <p className="next-count">
-          In {days} days · {SAMPLE_SEATS[next.slug]} seats left
+          {/* On the night the heading says Tonight */}
+          {days > 0 && `In ${days} ${days === 1 ? "day" : "days"} · `}
+          {SAMPLE_SEATS[next.slug]} seats left
         </p>
       </div>
     </section>

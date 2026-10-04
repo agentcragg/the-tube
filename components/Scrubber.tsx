@@ -4,7 +4,6 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { ditherSrc, type DitherWidth } from "@/lib/dither";
 import { barsFor, zoomPastBars } from "@/lib/letterbox";
 import { CYCLE_FIRST_MS, CYCLE_MS } from "@/lib/use-cycle";
-import { useLook } from "@/lib/use-look";
 
 // A film's stills in a row, one showing at a time.
 // Mouse: move across the image to scrub through them, like old YouTube thumbnails.
@@ -14,7 +13,9 @@ import { useLook } from "@/lib/use-look";
 // With no real frames it shows generated placeholders.
 // A still with black bars baked in is zoomed just past them (lib/letterbox.ts).
 // With the look switch's "dither" idea, a scrubber given a dither width shows
-// its first still as a dithered GIF until the pointer arrives (ideas.css).
+// its first still as a dithered GIF until the pointer arrives (idea-dither.css).
+// The GIF is in the page from the start, so it's there before React loads,
+// and lazy, so nobody without the idea (who never sees it) fetches it.
 
 const PLACEHOLDER_FRAMES = 4;
 
@@ -56,7 +57,7 @@ function Still({ src, alt, eager, dither }: { src: string; alt: string; eager: b
     <span className="scrub-frame">
       {dither && (
         // eslint-disable-next-line @next/next/no-img-element
-        <img className="scrub-dither" src={dither} alt="" loading={eager ? "eager" : "lazy"} draggable={false} style={style} />
+        <img className="scrub-dither x-dither" src={dither} alt="" loading="lazy" draggable={false} style={style} />
       )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
@@ -92,7 +93,6 @@ export default function Scrubber({
   dither?: DitherWidth; // about the width it's shown at, for the "dither" idea
 }) {
   const count = frames.length || PLACEHOLDER_FRAMES;
-  const dithered = useLook("dither") && dither;
   const [i, setI] = useState(0);
   const [active, setActive] = useState(false);
   const strip = useRef<HTMLDivElement>(null);
@@ -150,7 +150,7 @@ export default function Scrubber({
               src={frames[n]}
               alt={n === 0 ? alt : ""}
               eager={n === 0 && !lazy}
-              dither={dithered && n === 0 ? ditherSrc(frames[n], dithered) : undefined}
+              dither={dither && n === 0 ? ditherSrc(frames[n], dither) : undefined}
             />
           ) : (
             <div
