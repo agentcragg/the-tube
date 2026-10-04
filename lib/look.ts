@@ -4,32 +4,27 @@
 // everything off and hides the menu again.
 //
 // From the address bar:
-//   ?look=building        one example at a time (building, used, 08)
-//   ?look=counts,yellow   add ideas; ?look=-yellow takes one away
+//   ?look=<example>       one example at a time
+//   ?look=<idea>,<idea>   add ideas; ?look=-<idea> takes one away
 //   ?look=none            no example, ideas kept
 //   ?today=2027-01-26     the browser behaves as if it's that day in London
 //                         (the time of day stays real); ?today=off
 //
 // An example puts look-<id> on <html>, an idea puts idea-<id>. Markup that
 // only belongs to an option carries x-<id> and is hidden unless it's on
-// (app/looks.css); markup it replaces carries no-<id>.
+// (app/looks.css); markup it replaces carries no-<id>. Ideas' styles go in
+// app/ideas.css.
+//
+// Empty between rounds: the options Matt picks become the normal site and the
+// rest are taken out.
 
 export const LOOK_KEY = "tube-look";
 
-export const EXAMPLES = [
-  { id: "building", label: "1. The building" },
-  { id: "used", label: "2. Well used" },
-  { id: "08", label: "3. Measured 2008" },
-] as const;
+type Option = { id: string; label: string };
 
-export const IDEAS = [
-  { id: "counts", label: "Counts in brackets" },
-  { id: "tvscreen", label: "Basement TV on the drawn screen" },
-  { id: "yellow", label: "Yellow Suggest button" },
-  { id: "loading", label: "loading... in empty frames" },
-  { id: "tonight", label: "Tonight" },
-  { id: "colophon", label: "Footer closing line" },
-] as const;
+export const EXAMPLES: Option[] = [];
+
+export const IDEAS: Option[] = [];
 
 export type Look = { example?: string; ideas: string[]; today?: string; closed?: boolean };
 
@@ -56,8 +51,9 @@ export function pretendDay(): string | undefined {
   return day && /^\d{4}-\d{2}-\d{2}$/.test(day) ? day : undefined;
 }
 
-// Runs in <head> before the page paints: reads ?look and ?today, saves them,
-// and puts the classes on <html> so nothing flashes. Plain ES5, no imports.
+// Runs in <head> before the page paints: reads ?look and ?today, saves them
+// (forgetting options that have since been taken out), and puts the classes
+// on <html> so nothing flashes. Plain ES5, no imports.
 export const LOOK_SCRIPT = `(function(){try{
 var K=${JSON.stringify(LOOK_KEY)},EX=${JSON.stringify(EXAMPLES.map((e) => e.id))},ID=${JSON.stringify(IDEAS.map((i) => i.id))};
 var s=JSON.parse(localStorage.getItem(K)||"null");if(s&&typeof s!=="object")s=null;
@@ -67,6 +63,7 @@ if(v==="off"){s=null}else{s=s||{ideas:[]};s.ideas=s.ideas||[];
 v.split(",").forEach(function(t){t=t.trim();if(!t)return;var neg=t.charAt(0)==="-";if(neg)t=t.slice(1);
 if(t==="none"){delete s.example}else if(EX.indexOf(t)>=0){if(neg){if(s.example===t)delete s.example}else s.example=t}
 else if(ID.indexOf(t)>=0){s.ideas=s.ideas.filter(function(x){return x!==t});if(!neg)s.ideas.push(t)}});}}
+if(s){if(s.example&&EX.indexOf(s.example)<0)delete s.example;s.ideas=(s.ideas||[]).filter(function(i){return ID.indexOf(i)>=0})}
 if(q.has("today")){var d=q.get("today");if(/^\\d{4}-\\d{2}-\\d{2}$/.test(d)){s=s||{ideas:[]};s.today=d}else if(s){delete s.today}}
 if(s)localStorage.setItem(K,JSON.stringify(s));else localStorage.removeItem(K);
 if(s){var c=document.documentElement.classList;if(s.example&&EX.indexOf(s.example)>=0)c.add("look-"+s.example);

@@ -45,35 +45,40 @@ export default function LookMenu() {
       </button>
       {!look.closed && (
         <div className="look-menu-body">
-          <label className="look-menu-row">
-            Example
-            <select
-              value={look.example ?? ""}
-              onChange={(e) => change({ ...look, example: e.target.value || undefined })}
-            >
-              <option value="">None: the site as it is</option>
-              {EXAMPLES.map((e) => (
-                <option key={e.id} value={e.id}>
-                  {e.label}
-                </option>
+          {/* Between rounds there may be no examples or ideas: only the date */}
+          {EXAMPLES.length > 0 && (
+            <label className="look-menu-row">
+              Example
+              <select
+                value={look.example ?? ""}
+                onChange={(e) => change({ ...look, example: e.target.value || undefined })}
+              >
+                <option value="">None: the site as it is</option>
+                {EXAMPLES.map((e) => (
+                  <option key={e.id} value={e.id}>
+                    {e.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+          )}
+          {IDEAS.length > 0 && (
+            <fieldset>
+              <legend>Ideas</legend>
+              {IDEAS.map((i) => (
+                <label key={i.id}>
+                  <input
+                    type="checkbox"
+                    checked={on(i.id)}
+                    onChange={() =>
+                      change({ ...look, ideas: on(i.id) ? look.ideas.filter((x) => x !== i.id) : [...look.ideas, i.id] })
+                    }
+                  />
+                  {i.label}
+                </label>
               ))}
-            </select>
-          </label>
-          <fieldset>
-            <legend>Ideas</legend>
-            {IDEAS.map((i) => (
-              <label key={i.id}>
-                <input
-                  type="checkbox"
-                  checked={on(i.id)}
-                  onChange={() =>
-                    change({ ...look, ideas: on(i.id) ? look.ideas.filter((x) => x !== i.id) : [...look.ideas, i.id] })
-                  }
-                />
-                {i.label}
-              </label>
-            ))}
-          </fieldset>
+            </fieldset>
+          )}
           <label className="look-menu-row">
             Pretend it&apos;s
             <input

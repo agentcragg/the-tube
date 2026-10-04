@@ -10,7 +10,6 @@ import { LAUREL_LABEL, LaurelMark, laurelLines } from "@/components/laurels";
 import { londonParts, useLondonNow } from "@/lib/clock";
 import { badgeTime, bookingUrl, formatDate, isPast, type Film } from "@/lib/films";
 import { HOUSE_HONOUR } from "@/lib/rabbit-hole";
-import { useLook, usePretendDay } from "@/lib/use-look";
 
 // The "Coming up" box: everything still to come, a tab for nights that have
 // already happened, and a search field that filters as you type.
@@ -23,13 +22,10 @@ const TABS = [
 export default function ComingUp({ films, seats }: { films: Film[]; seats: Record<string, number> }) {
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("upcoming");
   const [q, setQ] = useState("");
-  // The Well used look, or the look switch's ?today in any look, splits on
-  // the London day, so ?today moves nights into Past nights. Until the clock
-  // is known, and with neither, it's isPast().
+  // Nights split on the London day, so the look switch's ?today moves them
+  // into Past nights too. Until the clock is known, it's isPast().
   const now = useLondonNow();
-  const used = useLook("used");
-  const pretend = usePretendDay();
-  const today = (used || pretend) && now ? londonParts(now).isoDate : null;
+  const today = now ? londonParts(now).isoDate : null;
   const over = (iso: string) => (today ? iso < today : isPast(iso));
 
   const upcoming = films.filter((f) => !over(f.date));
@@ -63,8 +59,6 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
             onClick={() => setTab(t.id)}
           >
             {t.label}
-            {/* Counts in brackets: every night on the tab, whatever the search */}
-            <span className="x-counts idea-count"> ({(t.id === "past" ? past : upcoming).length})</span>
           </button>
         ))}
       </div>
@@ -80,15 +74,15 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
         ) : (
           <ul className="film-grid">
             {shown.map((f) => {
-              // Well used: a night that's over keeps its card, with the
-              // wall's laurel, its age and "Screened" in place of Book
+              // A night that's over keeps its card, with the wall's laurel,
+              // its age and "Screened" in place of Book
               const gone = over(f.date);
               return (
                 <li key={f.slug}>
                   <Link href={`/films/${f.slug}`}>
                     <Scrubber frames={f.stills} seed={f.slug} alt={f.title} duration={badgeTime(f)} />
                     {gone && (
-                      <span className="x-used card-laurel">
+                      <span className="card-laurel">
                         <LaurelMark lines={laurelLines(f.date.slice(0, 4))} label={LAUREL_LABEL} />
                       </span>
                     )}
@@ -111,7 +105,7 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
                     <li>
                       <CalendarIcon /> <Tonight date={f.date} fallback={formatDate(f.date)} />
                       {gone && today && (
-                        <span className="x-used night-ago">
+                        <span className="night-ago">
                           {" "}
                           (<Ago iso={f.date} relativeOnly />)
                         </span>
@@ -121,10 +115,13 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
                       <TicketIcon /> {seats[f.slug] ?? 30} of 30 seats left
                     </li>
                   </ul>
-                  <a className={gone ? "book book-small no-used" : "book book-small"} href={bookingUrl(f)}>
-                    Book
-                  </a>
-                  {gone && <span className="x-used screened">{HOUSE_HONOUR.after}</span>}
+                  {gone ? (
+                    <span className="screened">{HOUSE_HONOUR.after}</span>
+                  ) : (
+                    <a className="book book-small" href={bookingUrl(f)}>
+                      Book
+                    </a>
+                  )}
                 </li>
               );
             })}

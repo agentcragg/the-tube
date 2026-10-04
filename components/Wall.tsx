@@ -122,9 +122,9 @@ function Tile({
             {video.suggestedOn && `, ${formatDay(video.suggestedOn)}`}
           </span>
         )}
-        {/* Well used: how long ago the sheet says it came in */}
+        {/* How long ago the sheet says it came in */}
         {video.suggestedOn && (
-          <span className="x-used">
+          <span>
             <Ago iso={video.suggestedOn} />
           </span>
         )}

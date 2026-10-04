@@ -114,6 +114,16 @@ main { padding: 0 var(--gutter) 40px; }
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.4);
 }
 .book:hover { background: linear-gradient(var(--btn-1), var(--btn-2) 40%, var(--btn-2)); color: #fff; }
+/* Takes Book's place once the night is over: flat and grey, nothing to press */
+.screened {
+  display: inline-block; padding: 4px 10px;
+  font: bold 12px var(--sans); color: #666;
+  background: #f4f4f4; border: 1px solid #ccc; border-radius: 3px;
+}
+.film-grid .screened { margin-top: 2px; }
+/* Level with the grey buttons beside it */
+.action-row .screened { padding: 6px 10px; }
+.action-row:has(> .screened) .book { display: none; }
 .links li { padding: 3px 0; }
 .links a::before { content: "→ "; }
 /* Infinite wall: the page becomes a full-height canvas */
@@ -171,11 +181,16 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
   font: 14px var(--sans); padding: 5px 8px;
   border: 1px solid #999; border-radius: 0; background: #fff;
 }
+/* 2008 YouTube's Upload button: yellow is for suggesting, red for booking.
+   Stretched to the field's height, so the two make one bar. */
 .suggest button {
-  font: bold 13px var(--sans); padding: 5px 14px;
-  background: linear-gradient(#fff, #ddd); border: 1px solid #999; border-radius: 3px; cursor: pointer;
+  align-self: stretch;
+  font: bold 12px var(--sans); color: #994800; padding: 0 14px;
+  background: linear-gradient(#fff19d, #fede42); border: 1px solid #d7b400; border-radius: 3px; cursor: pointer;
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.6);
 }
-.suggest button:hover { background: linear-gradient(#fff, #ccc); }
+.suggest button:hover { background: linear-gradient(#fff6b8, #fdd52a); }
+.suggest button:disabled { opacity: 0.6; }
 
 .status-error { color: var(--accent); }
 .status-ok { color: #070; }
@@ -212,6 +227,10 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 .box-body > p { margin: 0; }
 .box-more { margin-top: 10px !important; text-align: right; font-weight: bold; }
 .box-empty { color: var(--muted); padding: 20px 0; }
+/* 2008's headerless box: the label set inside the frame, no icon */
+.box-plain { border-color: #ccc; }
+.box-plain .box-head { background: none; border: 0; padding: 10px 12px 0; }
+.box-plain .box-head h2 { font-size: 16px; color: #4a4a4a; }
 
 .box-search { display: flex; gap: 4px; }
 .box-search input { font: 13px var(--sans); padding: 3px 6px; border: 1px solid #999; width: 170px; }
@@ -249,11 +268,21 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 .meta li { display: flex; align-items: center; gap: 5px; margin-bottom: 2px; }
 .meta svg { flex-shrink: 0; }
 .meta-big { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 13px; margin: 8px 0 14px; }
+/* components/Tonight.tsx: the date line on the night itself */
+.meta .tonight { font-weight: bold; color: var(--accent); }
+/* " (3 weeks ago)" after a past night's date */
+.night-ago { color: #999; }
 .film-grid .book-small { margin-top: 2px; }
 
 .next-up .next-when { font: bold 13px var(--sans); color: var(--accent); }
 .next-up .next-title { font-size: 18px; font-weight: bold; margin: 2px 0 4px; }
 .next-up .next-count { color: var(--muted); font-size: 12px; }
+/* The film's picture beside the count; flow-root keeps it inside the box */
+.next-up { display: flow-root; }
+.next-still {
+  float: right; width: 120px; aspect-ratio: 16 / 9; object-fit: cover;
+  border: 3px double #999; padding: 2px; margin: 0 0 4px 8px;
+}
 
 .mini-list { list-style: none; margin: 0; padding: 0; }
 .mini-list li + li { margin-top: 8px; }
@@ -285,10 +314,17 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 
 .related-list { list-style: none; margin: 0; padding: 0; }
 .related-list li + li { margin-top: 10px; }
-.related-list a { display: grid; grid-template-columns: 124px 1fr; gap: 8px; text-decoration: none; color: var(--ink); }
-.related-list strong { display: block; font-size: 13px; line-height: 1.2; color: var(--link); }
+.related-list a { display: grid; grid-template-columns: 124px 1fr; gap: 8px; text-decoration: none; color: var(--link); }
+.related-list strong { display: block; font-size: 13px; line-height: 1.2; }
 .related-list em { display: block; font-style: normal; font-size: 11px; color: var(--muted); }
 .box .links { list-style: none; margin: 0; padding: 0; }
+
+/* Content links you've opened go the period's visited purple; hovering shows
+   what it always did. :visited can only change colour, so titles inside
+   these links take the link's colour rather than their own blue. Left alone:
+   tabs, Book, the grey buttons, » links and Just suggested (all /wall).
+   Film pages' panels: watch.css. */
+:is(.film-grid h3 a, .next-title a, .related-list a):visited:not(:hover) { color: #551a8b; }
 
 /* ---------- Phones and touch screens ---------- */
 
@@ -326,3 +362,4 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 .footer-fat li span { display: block; font-size: 11px; opacity: 0.7; }
 .footer-fat p { margin: 0; line-height: 1.6; }
 .footer-fat a { color: var(--foot-link); }
+.site-footer a:visited:not(:hover) { color: #c9c; }

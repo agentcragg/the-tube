@@ -11,9 +11,6 @@ import "./endeavour.css";
 import "./laurels.css";
 // The look switch's options go last so they win over the defaults above
 import "./looks.css";
-import "./look-building.css";
-import "./look-used.css";
-import "./look-08.css";
 import "./ideas.css";
 
 export const metadata: Metadata = {
@@ -77,8 +74,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                 </ul>
               </section>
             </div>
-            {/* Footer closing line idea */}
-            <p className="x-colophon colophon-line">© {new Date().getFullYear()} The Tube</p>
           </footer>
         </div>
         <LookMenu />

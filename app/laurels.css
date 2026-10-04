@@ -73,6 +73,22 @@
   flex-shrink: 0;
 }
 
+/* Past nights: the same laurel top left of the still, on programme cards
+   (ComingUp.tsx) and film pages, with a stronger halo: at these sizes a pale
+   still can swallow it */
+.film-grid a:has(> .card-laurel), .still-frame:has(> .still-laurel) { position: relative; }
+.card-laurel .laurel { left: 8px; top: 8px; width: 84px; }
+.still-laurel .laurel { left: 12px; top: 12px; width: 120px; }
+:is(.card-laurel, .still-laurel) .laurel {
+  filter: drop-shadow(0 0 0.8px rgb(0 0 0 / 0.95)) drop-shadow(0 0 3px rgb(0 0 0 / 0.6));
+}
+/* There's room for "DEPTFORD" at these sizes on phones too */
+@media (max-width: 720px), (hover: none) {
+  :is(.card-laurel, .still-laurel) .laurel-place { display: inline; }
+  :is(.card-laurel, .still-laurel) .laurel-top { font-size: 7.6px; transform: none; }
+  :is(.card-laurel, .still-laurel) .laurel-year { font-size: 6.4px; transform: none; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .laurel { transition: none; }
 }

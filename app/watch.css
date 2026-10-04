@@ -27,6 +27,9 @@
   overflow-wrap: anywhere;
 }
 .rh-card:hover strong, .rh-card:focus-visible strong { text-decoration: underline; }
+/* Clips play in place, so they're never visited: the watched store
+   (Scrubber's scrub-watched) gives them the visited purple instead */
+.rh-card:has(.scrub-watched):not(:hover, :focus-visible) strong { color: #551a8b; }
 .rh-card em { display: block; margin-top: 2px; font: 11px/1.35 var(--sans); font-style: normal; color: #666; }
 .rh-out { color: #999; }
 /* The player opens at the top of the box, full width, bar like the wall's */
@@ -46,7 +49,9 @@
 
 /* The films' old websites, after the clips: each in a flat grey browser
    window with its old address */
-.rh-site { display: block; text-decoration: none; color: var(--ink); }
+.rh-site { display: block; text-decoration: none; color: var(--link); }
+/* Blue on hover too, like the clips' titles */
+.rh-site:hover { color: var(--link); }
 .rh-site figure { margin: 0; }
 .rh-frame { border: 1px solid var(--box-edge); background: #fff; }
 .rh-window {
@@ -65,7 +70,7 @@
 }
 .rh-site img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 9; object-fit: cover; object-position: top; }
 .rh-site figcaption { margin-top: 5px; }
-.rh-site em { display: block; font: 11px/1.35 var(--sans); font-style: normal; color: var(--link); }
+.rh-site em { display: block; font: 11px/1.35 var(--sans); font-style: normal; }
 .rh-site:hover em, .rh-site:focus-visible em { text-decoration: underline; }
 
 /* ---------- Sidebar panels ---------- */
@@ -108,10 +113,13 @@
 .wp-linking .wp-year { width: 3.5em; padding-right: 8px; text-align: right; color: #666; }
 .wp-url { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Message boards */
-.wp-threads { margin: 0; padding: 0 0 0 16px; font-size: 12px; line-height: 1.4; }
-.wp-threads li + li { margin-top: 3px; }
-.wp-user { font-size: 11px; color: #666; }
+/* Message boards, as forum rows: the thread, then the year of the Wayback copy */
+.wp-threads { list-style: none; margin: 0; padding: 0; font-size: 12px; line-height: 1.4; }
+.wp-threads li { padding: 4px 0; border-bottom: 1px dotted #999; }
+.wp-user, .wp-cap { font-size: 11px; color: #666; }
+
+/* Links you've opened go the visited purple (globals.css) */
+:is(.wp-linking a, .wp-threads a, .rh-site):visited:not(:hover) { color: #551a8b; }
 
 /* ---------- Phones and touch ---------- */
 
@@ -126,7 +134,8 @@
   .wp-stats ol, .wp-linking { font-size: 12px; }
   .wp-url a, .wp-threads a { display: block; padding: 10px 0; }
   .wp-url a { overflow: hidden; text-overflow: ellipsis; }
-  .wp-threads li + li { margin-top: 0; }
+  /* The year stays beside the tall titles */
+  .wp-threads li { display: flex; align-items: baseline; gap: 4px; padding: 0; }
 }
 
 @media (max-width: 720px) {

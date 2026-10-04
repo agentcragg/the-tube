@@ -72,6 +72,8 @@
 .tv-next-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; grid-template-columns: repeat(6, minmax(0, 1fr)); }
 .tv-next-thumb { position: relative; display: block; border: 1px solid var(--frame); padding: 2px; background: #fff; margin-bottom: 4px; }
 .tv-next-thumb img { display: block; width: 100%; aspect-ratio: 16 / 9; object-fit: cover; }
+/* Watched in this browser: the wall's red line along the bottom */
+.tv-watched { position: absolute; left: 2px; right: 2px; bottom: 2px; height: 3px; background: var(--accent); }
 .tv-next-thumb i {
   position: absolute; right: 4px; bottom: 4px; padding: 0 3px;
   background: rgb(0 0 0 / 0.75); color: #fff; font: bold 10px/1.4 var(--sans); font-style: normal;

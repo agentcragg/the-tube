@@ -20,8 +20,6 @@ import Comments, { type Posted } from "@/components/tv/Comments";
 import { londonParts } from "@/lib/clock";
 import { COPY as WATCH_COPY } from "@/lib/rabbit-hole";
 import { COPY, nowPlaying, postTimes, upNext, type Video } from "@/lib/tv";
-import { tvNow } from "@/lib/tv-now";
-import { useLook } from "@/lib/use-look";
 import { thumb } from "@/lib/videos";
 import { markWatched, useWatched } from "@/lib/watched";
 
@@ -86,22 +84,14 @@ export default function Tv({ channel }: { channel: Video[] }) {
   const key = on && video ? `${video.id}-${on.endsAtMs}-${tune}` : null;
   const loud = sound || (key !== null && unmuted === key);
 
-  // Well used: half a minute on screen counts as watched, so the basement
-  // leaves the same red lines as the wall and the rabbit holes
-  const used = useLook("used");
+  // Half a minute on screen counts as watched, so the basement leaves the
+  // same red lines as the wall and the rabbit holes
   const watched = useWatched();
   const playingId = video?.id;
   useEffect(() => {
-    if (!used || !playingId) return;
+    if (!playingId) return;
     const timer = setTimeout(() => markWatched(playingId), 30_000);
     return () => clearTimeout(timer);
-  }, [used, playingId]);
-
-  // The tvscreen idea: the footer drawing's screen shows this video too
-  useEffect(() => {
-    if (!playingId) return;
-    tvNow.set(playingId);
-    return () => tvNow.set(null);
   }, [playingId]);
 
   // The comments posted so far, and when the next one is due
@@ -196,8 +186,8 @@ export default function Tv({ channel }: { channel: Video[] }) {
                 <span className="tv-next-thumb">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={thumb(v.id, "mq")} alt="" loading="lazy" />
-                  {/* Well used: the wall's red line, under the running time */}
-                  {watched.has(v.id) && <span className="x-used tv-watched" />}
+                  {/* The wall's red line, under the running time */}
+                  {watched.has(v.id) && <span className="tv-watched" />}
                   <i aria-hidden="true">{length(v.seconds)}</i>
                 </span>
                 <span>

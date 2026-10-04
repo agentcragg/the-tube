@@ -1,15 +1,13 @@
 // A film page's watch-page parts, 2008 YouTube style. The Rabbit hole goes in
 // the main column under the programme notes (RabbitHole); the sidebar opens
 // with these panels: Statistics & Data (honours and sites linking to the
-// film), open, and, where one existed, the film's old IMDb message board.
-// Native <details>, so no JS beyond the last honour's tense and the Well
-// used look opening the boards (Boards). Data: lib/watch.ts. Films without
-// clips keep the plain Rabbit hole box and get none of this (see the film
-// page).
+// film), and, where one existed, the film's old IMDb message board, both
+// open. Native <details>, so no JS beyond the last honour's tense. Data:
+// lib/watch.ts. Films without clips keep the plain Rabbit hole box and get
+// none of this (see the film page).
 
 import type { Film } from "@/lib/films";
 import { COPY, HOUSE_HONOUR, type WatchData } from "@/lib/rabbit-hole";
-import Boards from "./Boards";
 import HouseHonour from "./HouseHonour";
 
 export { default as RabbitHole } from "./RabbitHole";
@@ -70,7 +68,8 @@ export function WatchPanels({ film, data }: { film: Film; data: WatchData }): Re
       </details>
 
       {boards && (
-        <Boards>
+        // Open on arrival, so the old thread titles show
+        <details className="wp" open>
           <summary>{boards.label}</summary>
           <div className="wp-body">
             <ul className="wp-threads">
@@ -82,14 +81,14 @@ export function WatchPanels({ film, data }: { film: Film; data: WatchData }): Re
                       {t.title}
                     </a>
                     {t.user && <span className="wp-user"> {t.user}</span>}
-                    {/* Well used: the year of the Wayback copy */}
-                    {year && <span className="x-used wp-cap"> ({year})</span>}
+                    {/* The year of the Wayback copy */}
+                    {year && <span className="wp-cap"> ({year})</span>}
                   </li>
                 );
               })}
             </ul>
           </div>
-        </Boards>
+        </details>
       )}
     </div>
   );

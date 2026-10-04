@@ -63,23 +63,3 @@ export function sceneAs(state: State, now: Date, films: Film[], wallIds: string[
     eggVideo: state === "egg" ? eggVideoFor(isoDate, wallIds) : undefined,
   };
 }
-
-// The time switch's pick (Strip.tsx), "" for real time. Shared so the
-// building look's crops (Crop.tsx) show the same time of day as the footer.
-let picked: State | "" = "";
-const listeners = new Set<() => void>();
-
-export const timePick = {
-  get: () => picked,
-  set(state: State | "") {
-    if (state === picked) return;
-    picked = state;
-    listeners.forEach((l) => l());
-  },
-  subscribe(l: () => void) {
-    listeners.add(l);
-    return () => {
-      listeners.delete(l);
-    };
-  },
-};
