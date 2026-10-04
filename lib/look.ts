@@ -33,6 +33,10 @@ export const IDEAS: Option[] = [
   { id: "tabtitle", label: "Tab title on screening nights" },
   { id: "pumpkin", label: "Pumpkins for Halloween" },
   { id: "fireworks", label: "Fireworks for Bonfire Night" },
+  { id: "cycle", label: "Thumbnails cycle on hover" },
+  { id: "spinner", label: "Loading spinner" },
+  { id: "ticker", label: "Ticker under the tabs" },
+  { id: "yellowfade", label: "Yellow fade on changes" },
 ];
 
 export type Look = { example?: string; ideas: string[]; today?: string; closed?: boolean };

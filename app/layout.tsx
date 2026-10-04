@@ -6,7 +6,9 @@ import Header from "@/components/Header";
 import HouseLights from "@/components/HouseLights";
 import Intro from "@/components/Intro";
 import LookMenu from "@/components/LookMenu";
+import NavSpinner from "@/components/NavSpinner";
 import TabTitle from "@/components/TabTitle";
+import Ticker from "@/components/Ticker";
 import Tune from "@/components/Tune";
 import { films, formatDate, isPast, VENUE } from "@/lib/films";
 import { LOOK_SCRIPT } from "@/lib/look";
@@ -25,6 +27,10 @@ import "./idea-tune.css";
 import "./idea-lights.css";
 import "./idea-pumpkin.css";
 import "./idea-fireworks.css";
+import "./idea-cycle.css";
+import "./idea-spinner.css";
+import "./idea-ticker.css";
+import "./idea-yellowfade.css";
 
 export const metadata: Metadata = {
   title: "The Tube",
@@ -42,6 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Intro />
         <div className="page">
           <Header />
+          <Ticker />
           <main>{children}</main>
           <footer className="site-footer">
             <EndeavourStrip films={films} />
@@ -92,6 +99,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </div>
         <Channel />
         <Tune />
+        <NavSpinner />
         <LookMenu />
         <HouseLights films={films} />
         <TabTitle films={films} />
