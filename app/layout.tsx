@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { EndeavourStrip } from "@/components/endeavour";
 import Header from "@/components/Header";
+import HouseLights from "@/components/HouseLights";
 import LookMenu from "@/components/LookMenu";
+import TabTitle from "@/components/TabTitle";
 import { films, formatDate, isPast, VENUE } from "@/lib/films";
 import { LOOK_SCRIPT } from "@/lib/look";
 import "./globals.css";
@@ -12,6 +14,9 @@ import "./laurels.css";
 // The look switch's options go last so they win over the defaults above
 import "./looks.css";
 import "./ideas.css";
+import "./idea-lights.css";
+import "./idea-pumpkin.css";
+import "./idea-fireworks.css";
 
 export const metadata: Metadata = {
   title: "The Tube",
@@ -77,6 +82,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           </footer>
         </div>
         <LookMenu />
+        <HouseLights films={films} />
+        <TabTitle films={films} />
       </body>
     </html>
   );

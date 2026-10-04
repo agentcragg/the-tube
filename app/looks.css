@@ -29,3 +29,12 @@
   justify-self: start; cursor: pointer; font: bold 11px Arial, Helvetica, sans-serif; padding: 3px 8px;
   background: linear-gradient(#fff, #ddd); border: 1px solid #999; border-radius: 3px;
 }
+
+.x-lights { display: none; }
+html.idea-lights .x-lights { display: revert; }
+
+.x-pumpkin { display: none; }
+html.idea-pumpkin .x-pumpkin { display: revert; }
+
+.x-fireworks { display: none; }
+html.idea-fireworks .x-fireworks { display: revert; }

@@ -24,7 +24,12 @@ type Option = { id: string; label: string };
 
 export const EXAMPLES: Option[] = [];
 
-export const IDEAS: Option[] = [];
+export const IDEAS: Option[] = [
+  { id: "lights", label: "House lights on screening nights" },
+  { id: "tabtitle", label: "Tab title on screening nights" },
+  { id: "pumpkin", label: "Pumpkins for Halloween" },
+  { id: "fireworks", label: "Fireworks for Bonfire Night" },
+];
 
 export type Look = { example?: string; ideas: string[]; today?: string; closed?: boolean };
 
