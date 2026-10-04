@@ -84,6 +84,9 @@ export default async function WhatsOn() {
           </div>
         </section>
 
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img className="side-gif" src="/gifs/dog-cinema.gif" alt="Dogs in a cinema, watching the curtains" width={340} height={227} />
+
         <section className="box">
           <div className="box-head">
             <h2>
