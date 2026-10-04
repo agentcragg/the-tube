@@ -24,7 +24,12 @@ type Option = { id: string; label: string };
 
 export const EXAMPLES: Option[] = [];
 
-export const IDEAS: Option[] = [];
+export const IDEAS: Option[] = [
+  { id: "cycle", label: "Thumbnails cycle on hover" },
+  { id: "spinner", label: "Loading spinner" },
+  { id: "ticker", label: "Ticker under the tabs" },
+  { id: "yellowfade", label: "Yellow fade on changes" },
+];
 
 export type Look = { example?: string; ideas: string[]; today?: string; closed?: boolean };
 

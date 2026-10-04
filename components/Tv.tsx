@@ -15,6 +15,7 @@
 // computer the videos after it load with sound; a phone needs it for each.
 
 import { useEffect, useRef, useState, type Ref } from "react";
+import CycleThumb from "@/components/CycleThumb";
 import { TvIcon } from "@/components/Icons";
 import Comments, { type Posted } from "@/components/tv/Comments";
 import { londonParts } from "@/lib/clock";
@@ -184,8 +185,7 @@ export default function Tv({ channel }: { channel: Video[] }) {
             {next.map(({ video: v, atMs }) => (
               <li key={atMs}>
                 <span className="tv-next-thumb">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={thumb(v.id, "mq")} alt="" loading="lazy" />
+                  <CycleThumb id={v.id} src={thumb(v.id, "mq")} loading="lazy" />
                   {/* The wall's red line, under the running time */}
                   {watched.has(v.id) && <span className="tv-watched" />}
                   <i aria-hidden="true">{length(v.seconds)}</i>

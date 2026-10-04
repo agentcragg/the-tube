@@ -3,6 +3,8 @@ import Link from "next/link";
 import { EndeavourStrip } from "@/components/endeavour";
 import Header from "@/components/Header";
 import LookMenu from "@/components/LookMenu";
+import NavSpinner from "@/components/NavSpinner";
+import Ticker from "@/components/Ticker";
 import { films, formatDate, isPast, VENUE } from "@/lib/films";
 import { LOOK_SCRIPT } from "@/lib/look";
 import "./globals.css";
@@ -12,6 +14,10 @@ import "./laurels.css";
 // The look switch's options go last so they win over the defaults above
 import "./looks.css";
 import "./ideas.css";
+import "./idea-cycle.css";
+import "./idea-spinner.css";
+import "./idea-ticker.css";
+import "./idea-yellowfade.css";
 
 export const metadata: Metadata = {
   title: "The Tube",
@@ -28,6 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body>
         <div className="page">
           <Header />
+          <Ticker />
           <main>{children}</main>
           <footer className="site-footer">
             <EndeavourStrip films={films} />
@@ -76,6 +83,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </div>
           </footer>
         </div>
+        <NavSpinner />
         <LookMenu />
       </body>
     </html>

@@ -8,6 +8,8 @@
 import { useState } from "react";
 import Scrubber from "@/components/Scrubber";
 import { clipFrames, COPY, type Clip } from "@/lib/rabbit-hole";
+import { preloadFrames } from "@/lib/use-cycle";
+import { useLook } from "@/lib/use-look";
 import { markWatched, useWatched } from "@/lib/watched";
 
 export default function ClipCard({
@@ -27,6 +29,9 @@ export default function ClipCard({
   // pointer on the card. Till then the still stands in for them: one download
   // a card, and the scrub bar and the swipe are there as before.
   const [warm, setWarm] = useState(false);
+  // The look switch's "cycle" idea: the frames step by themselves on a hover,
+  // so they're fetched straight away to be there when their turn comes
+  const cycle = useLook("cycle");
   const watched = useWatched().has(clip.id);
   const frames = clipFrames(clip);
   const from = [clip.by, clip.year].filter(Boolean).join(" · ");
@@ -47,7 +52,14 @@ export default function ClipCard({
       onAuxClick={(e) => {
         if (e.button === 1) markWatched(clip.id);
       }}
-      onPointerEnter={warm ? undefined : () => setWarm(true)}
+      onPointerEnter={
+        warm
+          ? undefined
+          : () => {
+              setWarm(true);
+              if (cycle) preloadFrames(frames.slice(1));
+            }
+      }
     >
       <div className="rh-thumb">
         {/* 4:3 frames cropped to 16:9, which takes a widescreen video's black bars off */}
@@ -58,6 +70,7 @@ export default function ClipCard({
           duration={clip.length}
           lazy={lazy}
           watched={watched}
+          cycle={cycle}
         />
       </div>
       <strong>{clip.title}</strong>

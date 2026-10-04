@@ -1,11 +1,14 @@
 "use client";
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { barsFor, zoomPastBars } from "@/lib/letterbox";
+import { CYCLE_FIRST_MS, CYCLE_MS } from "@/lib/use-cycle";
 
 // A film's stills in a row, one showing at a time.
 // Mouse: move across the image to scrub through them, like old YouTube thumbnails.
 // Touch: swipe sideways to flick through them.
+// With `cycle` (the look switch's idea) the mouse doesn't scrub: resting on
+// it steps through the frames after the first by itself, as 2008 YouTube did.
 // With no real frames it shows generated placeholders.
 // A still with black bars baked in is zoomed just past them (lib/letterbox.ts).
 
@@ -67,6 +70,7 @@ export default function Scrubber({
   duration,
   lazy,
   watched,
+  cycle,
 }: {
   frames: string[];
   seed: string;
@@ -74,11 +78,13 @@ export default function Scrubber({
   duration?: string; // e.g. "2:24:21"; badge hidden when not given
   lazy?: boolean; // don't load even the first frame until it's on screen (e.g. inside a closed panel)
   watched?: boolean; // already seen in this browser (lib/watched.ts): the bar stays full, on touch screens too
+  cycle?: boolean;
 }) {
   const count = frames.length || PLACEHOLDER_FRAMES;
   const [i, setI] = useState(0);
   const [active, setActive] = useState(false);
   const strip = useRef<HTMLDivElement>(null);
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const show = (n: number) => {
     setI(n);
@@ -86,16 +92,33 @@ export default function Scrubber({
     if (s) s.scrollLeft = n * s.clientWidth;
   };
 
+  // Frames 1, 2, 3, then round again; frame 0 is the still it rests on
+  const startCycle = () => {
+    clearTimeout(timer.current);
+    let n = 0;
+    const step = () => {
+      show((n++ % (count - 1)) + 1);
+      timer.current = setTimeout(step, CYCLE_MS);
+    };
+    timer.current = setTimeout(step, CYCLE_FIRST_MS);
+  };
+  useEffect(() => () => clearTimeout(timer.current), []);
+
   return (
     <div
       className={watched ? "scrub scrub-watched" : "scrub"}
       onMouseMove={(e) => {
+        if (cycle) return;
         const r = e.currentTarget.getBoundingClientRect();
         const n = Math.min(count - 1, Math.floor(((e.clientX - r.left) / r.width) * count));
         if (n !== i) show(n);
       }}
-      onMouseEnter={() => setActive(true)}
+      onMouseEnter={() => {
+        setActive(true);
+        if (cycle && count > 1) startCycle();
+      }}
       onMouseLeave={() => {
+        clearTimeout(timer.current);
         setActive(false);
         show(0);
       }}
