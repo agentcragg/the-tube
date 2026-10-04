@@ -1,33 +1,45 @@
 /**
- * The Tube: suggestion sheet (version 3).
+ * The Tube: suggestion sheet (version 4).
  *
  * Paste this into the Google Sheet's Apps Script editor (Extensions > Apps Script),
- * replacing what's there, and save. Pick setUpAutoRefresh in the menu next to
+ * replacing what's there, and save. Then Deploy > Manage deployments > Edit (the
+ * pencil) > Version: New version > Deploy. The web app keeps its URL. Coming
+ * from version 3 that's all: this version needs no new permissions.
+ * (From version 2 or earlier, also pick setUpAutoRefresh in the menu next to
  * Run, press Run, and allow access when Google asks (Advanced > Go to ... if it
  * warns): it sets the sheet to tell the website whenever it's edited, so ticks
- * show up straight away. Then Deploy > Manage deployments > Edit (the pencil) >
- * Version: New version > Deploy. The web app keeps its URL.
- * (Setting up from scratch: Deploy > New deployment > Web app, execute as Me,
- * access Anyone, and put the URL in lib/suggestions.ts.)
+ * show up straight away. Setting up from scratch: Deploy > New deployment >
+ * Web app, execute as Me, access Anyone, and put the URL in lib/suggestions.ts.)
  *
  * Every video on the wall is a row: tick "On the wall?" to show it, untick to
- * hide it. The first time this version runs, the videos that were already on
- * the wall (STARTERS below) are added under the headers as ticked rows, or
+ * hide it. The first time version 3 or later runs, the videos that were already
+ * on the wall (STARTERS below) are added under the headers as ticked rows, or
  * ticked where they are if they're in the sheet already. That only happens
  * once; to run it again, delete "startersAdded" in Project Settings > Script
  * properties. Suggestions from the website, YouTube or TikTok, arrive as new
  * rows at the bottom.
  *
- * Columns: On the wall? | Title | Channel | Link | Suggested | Video ID
+ * Columns: On the wall? | Title | Channel | Link | Suggested | Video ID | Withdrawn | Key
  * A TikTok's Video ID is "tt" followed by TikTok's number for the video.
+ *
+ * Version 4 adds the last two columns the first time it runs. Whoever suggested
+ * a video can withdraw it from the website while it's unticked: Withdrawn gets
+ * the date, and the row goes grey and struck through but stays in the sheet.
+ * Suggesting it again brings it back. Key is the website's proof that it's the
+ * same person; it's hidden and best left alone. Rows from before version 4
+ * have no key, so they can only be withdrawn from the visitor's own list.
  */
 
-const VERSION = 3;
+const VERSION = 4;
 // The website, which is told about every edit (its app/api/sheet-changed)
 const SITE = "https://the-tube-seven.vercel.app";
-const HEADERS = ["On the wall?", "Title", "Channel", "Link", "Suggested", "Video ID"];
+const HEADERS = ["On the wall?", "Title", "Channel", "Link", "Suggested", "Video ID", "Withdrawn", "Key"];
 const YOUTUBE_ID = /^[\w-]{11}$/;
 const TIKTOK_ID = /^tt\d{10,24}$/;
+// Made by the website for each suggestion (app/api/suggest)
+const KEY = /^[\w-]{16,64}$/;
+// The most videos one ?status= asks about
+const STATUS_MAX = 30;
 
 // What was on the wall before version 2 (seedVideos in the website's
 // lib/videos.ts), in the same order. Channels are from YouTube.
@@ -77,8 +89,44 @@ function sheet_() {
     sh.appendRow(HEADERS);
     sh.getRange(1, 1, 1, HEADERS.length).setFontWeight("bold");
     sh.setFrozenRows(1);
+    sh.hideColumns(8);
   }
   return sh;
+}
+
+// Where Withdrawn and Key are. A sheet from before version 4 gets them added
+// after its last column, once.
+function columns_(sh) {
+  const find = () => {
+    const head = sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map((h) => String(h).trim());
+    return { withdrawn: head.indexOf("Withdrawn") + 1, key: head.indexOf("Key") + 1 };
+  };
+  let c = find();
+  if (c.withdrawn && c.key) return c;
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    c = find();
+    if (!c.withdrawn) {
+      c.withdrawn = sh.getLastColumn() + 1;
+      sh.getRange(1, c.withdrawn).setValue("Withdrawn").setFontWeight("bold");
+    }
+    if (!c.key) {
+      c.key = sh.getLastColumn() + 1;
+      sh.getRange(1, c.key).setValue("Key").setFontWeight("bold");
+      sh.hideColumns(c.key);
+    }
+    return c;
+  } finally {
+    SpreadsheetApp.flush();
+    lock.releaseLock();
+  }
+}
+
+// Every row under the headers, as far as the last column this script uses
+function rows_(sh, c) {
+  if (sh.getLastRow() < 2) return [];
+  return sh.getRange(2, 1, sh.getLastRow() - 1, Math.max(6, c.withdrawn, c.key)).getValues();
 }
 
 function json_(data) {
@@ -103,6 +151,14 @@ function text_(value, max) {
 function tikTokLink_(id, url) {
   const m = String(url || "").match(/^https:\/\/www\.tiktok\.com\/@[\w.]*\/video\/(\d+)$/);
   return m && "tt" + m[1] === id ? m[0] : "https://www.tiktok.com/@/video/" + id.slice(2);
+}
+
+// A withdrawn row is greyed and struck through; null puts it back as it was
+function strike_(sh, row, on) {
+  sh.getRange(row, 1, 1, sh.getLastColumn())
+    .setBackground(on ? "#eeeeee" : null)
+    .setFontColor(on ? "#999999" : null)
+    .setFontLine(on ? "line-through" : null);
 }
 
 // Once only: the starters go in as ticked rows under the headers. One that's in
@@ -132,9 +188,9 @@ function addStarters_(sh) {
     ]);
     if (rows.length) {
       sh.insertRowsAfter(1, rows.length);
-      const range = sh.getRange(2, 1, rows.length, HEADERS.length);
-      range.clearFormat(); // new rows would otherwise copy the bold header row
-      range.setValues(rows);
+      // new rows would otherwise copy the bold header row
+      sh.getRange(2, 1, rows.length, Math.max(6, sh.getLastColumn())).clearFormat();
+      sh.getRange(2, 1, rows.length, 6).setValues(rows);
       // insertCheckboxes() unticks them all, so tick them again
       sh.getRange(2, 1, rows.length, 1).insertCheckboxes().check();
     }
@@ -145,7 +201,8 @@ function addStarters_(sh) {
   }
 }
 
-// The website sends new suggestions here: a YouTube ID, or a TikTok's ID and link
+// The website sends new suggestions here: a YouTube ID, or a TikTok's ID and
+// link, with the key for withdrawing it. And withdrawals: {action: "withdraw", id, key}.
 function doPost(e) {
   let d;
   try {
@@ -153,31 +210,95 @@ function doPost(e) {
   } catch (err) {
     return json_({ ok: false, error: "bad request" });
   }
+  if (d.action === "withdraw") return json_(withdraw_(String(d.id || ""), String(d.key || "")));
   const id = String(d.id || "");
   const tiktok = TIKTOK_ID.test(id);
   if (!tiktok && !YOUTUBE_ID.test(id)) return json_({ ok: false, error: "bad id" });
+  const key = KEY.test(String(d.key || "")) ? String(d.key) : "";
 
   const sh = sheet_();
   addStarters_(sh);
+  const c = columns_(sh);
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
-    if (ids_(sh).indexOf(id) !== -1) return json_({ ok: true, duplicate: true });
+    const rows = rows_(sh, c);
+    const at = rows.findIndex((r) => String(r[5]).trim() === id);
+    if (at !== -1) {
+      const r = rows[at];
+      // Withdrawn and suggested again: back it comes, with the new key
+      if (r[0] !== true && r[c.withdrawn - 1] !== "") {
+        sh.getRange(at + 2, 5).setValue(new Date());
+        sh.getRange(at + 2, c.withdrawn).setValue("");
+        sh.getRange(at + 2, c.key).setValue(text_(key, 64));
+        strike_(sh, at + 2, false);
+        return json_({ ok: true, version: VERSION, key: !!key });
+      }
+      return json_({ ok: true, version: VERSION, duplicate: true });
+    }
 
-    sh.appendRow([
+    const row = [
       false,
       text_(d.title, 200),
       text_(d.channel, 100),
       tiktok ? tikTokLink_(id, d.url) : "https://www.youtube.com/watch?v=" + id,
       new Date(),
       id,
-    ]);
+    ];
+    while (row.length < Math.max(c.withdrawn, c.key)) row.push("");
+    row[c.key - 1] = text_(key, 64);
+    sh.appendRow(row);
     sh.getRange(sh.getLastRow(), 1).insertCheckboxes();
-    return json_({ ok: true });
+    return json_({ ok: true, version: VERSION, key: !!key });
   } finally {
     SpreadsheetApp.flush(); // so a suggestion waiting on the lock sees this row
     lock.releaseLock();
   }
+}
+
+// Only with the key it was suggested with, and only while it's unticked
+function withdraw_(id, key) {
+  if (!isId_(id) || !KEY.test(key)) return { ok: false, error: "bad request" };
+  const sh = sheet_();
+  const c = columns_(sh);
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    const rows = rows_(sh, c);
+    const at = rows.findIndex((r) => String(r[5]).trim() === id && String(r[c.key - 1]) === key);
+    if (at === -1) {
+      const there = rows.some((r) => String(r[5]).trim() === id);
+      return { ok: false, error: there ? "wrong key" : "no row" };
+    }
+    if (rows[at][0] === true) return { ok: false, error: "on the wall" };
+    if (rows[at][c.withdrawn - 1] === "") {
+      sh.getRange(at + 2, c.withdrawn).setValue(new Date());
+      strike_(sh, at + 2, true);
+    }
+    return { ok: true, withdrawn: true };
+  } finally {
+    SpreadsheetApp.flush();
+    lock.releaseLock();
+  }
+}
+
+// Where each video is: "wall" (ticked), "waiting", "withdrawn", or "gone" (no row)
+function status_(sh, list) {
+  const ids = list.split(",").map((s) => s.trim()).filter(isId_).slice(0, STATUS_MAX);
+  const c = columns_(sh);
+  const rows = rows_(sh, c);
+  const status = {};
+  ids.forEach((id) => {
+    const mine = rows.filter((r) => String(r[5]).trim() === id);
+    status[id] = mine.some((r) => r[0] === true)
+      ? "wall"
+      : mine.some((r) => r[c.withdrawn - 1] === "")
+        ? "waiting"
+        : mine.length
+          ? "withdrawn"
+          : "gone";
+  });
+  return status;
 }
 
 // Every edit tells the website, which checks the notice with doGet (?confirm)
@@ -214,14 +335,16 @@ function noticeSent_(notice) {
 }
 
 // The website reads the ticked rows, which are everything on the wall, from
-// here; and checks change notices with ?confirm=
+// here; checks change notices with ?confirm=; and asks after suggestions with
+// ?status=id,id,...
 function doGet(e) {
-  const confirm = e && e.parameter && e.parameter.confirm;
-  if (confirm) return json_({ confirmed: noticeSent_(String(confirm)) });
+  const p = (e && e.parameter) || {};
+  if (p.confirm) return json_({ confirmed: noticeSent_(String(p.confirm)) });
   const sh = sheet_();
   addStarters_(sh);
+  if (p.status !== undefined) return json_({ version: VERSION, status: status_(sh, String(p.status)) });
   if (sh.getLastRow() < 2) return json_({ version: VERSION, videos: [] });
-  const rows = sh.getRange(2, 1, sh.getLastRow() - 1, HEADERS.length).getValues();
+  const rows = sh.getRange(2, 1, sh.getLastRow() - 1, 6).getValues();
   const videos = rows
     .filter((r) => r[0] === true && isId_(String(r[5]).trim()))
     .map((r) => ({

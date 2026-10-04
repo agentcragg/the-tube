@@ -24,7 +24,9 @@ type Option = { id: string; label: string };
 
 export const EXAMPLES: Option[] = [];
 
-export const IDEAS: Option[] = [];
+export const IDEAS: Option[] = [
+  { id: "queue-side", label: "Your suggestions in a sidebar" },
+];
 
 export type Look = { example?: string; ideas: string[]; today?: string; closed?: boolean };
 
