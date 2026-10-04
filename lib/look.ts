@@ -26,6 +26,9 @@ export const EXAMPLES: Option[] = [];
 
 export const IDEAS: Option[] = [
   { id: "queue-side", label: "Your suggestions in a sidebar" },
+  { id: "intro", label: "TV intro" },
+  { id: "channel", label: "Channel change" },
+  { id: "tune", label: "Pictures tune in" },
 ];
 
 export type Look = { example?: string; ideas: string[]; today?: string; closed?: boolean };
