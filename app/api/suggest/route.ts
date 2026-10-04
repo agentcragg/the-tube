@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { lookUpTikTok, resolveShortTikTok } from "@/app/api/tiktok/lookup";
 import { SHEET_URL } from "@/lib/suggestions";
 import { parseTikTok, parseYouTubeId } from "@/lib/videos";
@@ -5,6 +6,8 @@ import { parseTikTok, parseYouTubeId } from "@/lib/videos";
 // Takes a suggestion from the wall and adds it to the Google Sheet.
 // The body is {url} with whatever was pasted (or {id}, a YouTube ID, from older pages).
 // The video is looked up on YouTube or TikTok here, so the sheet only ever gets real videos.
+// Each suggestion gets a random key, kept by the sheet (version 4 on) and by
+// the browser that sent it, which can then withdraw it (./withdraw).
 export async function POST(request: Request) {
   if (!SHEET_URL) {
     return Response.json({ error: "Suggestions aren't switched on yet." }, { status: 503 });
@@ -38,12 +41,13 @@ export async function POST(request: Request) {
     return Response.json({ error: "That doesn't look like a YouTube or TikTok link." }, { status: 400 });
   }
 
-  let sent: { ok?: boolean; error?: string } | null = null;
+  const key = randomBytes(18).toString("base64url");
+  let sent: { ok?: boolean; error?: string; key?: boolean } | null = null;
   try {
     const res = await fetch(SHEET_URL, {
       method: "POST",
       headers: { "Content-Type": "text/plain" }, // Apps Script reads the raw body
-      body: JSON.stringify(video),
+      body: JSON.stringify({ ...video, key }),
     });
     if (res.ok) sent = await res.json();
   } catch {}
@@ -54,5 +58,7 @@ export async function POST(request: Request) {
   if (sent?.ok !== true) {
     return Response.json({ error: "Something went wrong sending that. Try again in a minute." }, { status: 502 });
   }
-  return Response.json(video);
+  // The key only goes back if the sheet kept it: earlier versions ignore it,
+  // and a video someone else suggested first stays theirs
+  return Response.json(sent.key === true ? { ...video, key } : video);
 }

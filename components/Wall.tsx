@@ -1,8 +1,11 @@
 "use client";
 
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import Ago from "@/components/Ago";
 import { Laurel } from "@/components/laurels";
+import SuggestTray from "@/components/SuggestTray";
+import { pendingStore, setTrayClosed, usePending, useTrayClosed, type Pending, type PendingState } from "@/lib/pending";
+import type { SuggestionState } from "@/lib/suggestions";
 import {
   credit,
   isTikTok,
@@ -35,38 +38,39 @@ const FRICTION = 0.95; // per-frame slowdown after a flick; closer to 1 glides f
 const DRAG_THRESHOLD = 4; // px before a press counts as a drag rather than a click
 const MAX_FLING = 45; // px per frame cap, so a violent flick doesn't fly off for miles
 
-type Pending = { id: string; title: string; author?: string; at?: number }; // at: when it was sent
-const STORAGE_KEY = "tube-pending";
-// A suggestion that's never approved is forgotten after this long
-const FORGET_AFTER_MS = 30 * 24 * 60 * 60 * 1000;
+// The visitor's own suggestions (lib/pending.ts) are on the wall too, for
+// them only: greyed until they're approved. A new one flies from the box onto
+// the wall, which glides over to catch it.
+type Cell = [number, number];
+type Glide = { from: { x: number; y: number }; to: { x: number; y: number }; t0: number; ms: number };
+// Where the waiting ones go when the wall opens: round the tile it starts on
+const SLOTS: Cell[] = [
+  [0, -1],
+  [0, 1],
+  [1, 0],
+  [-1, 0],
+  [1, 1],
+  [-1, 1],
+  [1, -1],
+  [-1, -1],
+  [0, 2],
+  [2, 0],
+  [-2, 0],
+  [0, -2],
+];
+const FLY_MS = 900;
+const FADE_MS = 2600; // the yellow fade on one just sent or found
+const LEAVE_MS = 400;
+const HOLD_MS = 2500; // the drift waits this long after a glide, so you can see what it found
+// Ask where the visitor's suggestions have got to this often, while the page is in view
+const ASK_EVERY_MS = 60 * 1000;
+const ASK_MAX = 30; // the most /api/suggest/status takes at once
+// What the sheet says can be this old (the status route's cache), so it's only
+// believed against a suggestion when it was heard well after that was sent,
+// or found on the wall
+const STALE_MS = 2 * 60 * 1000;
 
-// The submitter's own suggestions that aren't on the wall yet, kept in their
-// browser. One drops off the list once it's on the wall.
-const EMPTY: Pending[] = [];
-let cache: Pending[] | null = null;
-const listeners = new Set<() => void>();
-const pendingStore = {
-  get(): Pending[] {
-    if (cache) return cache;
-    try {
-      cache = JSON.parse(localStorage.getItem(STORAGE_KEY) ?? "[]");
-    } catch {
-      cache = [];
-    }
-    return cache!;
-  },
-  set(next: Pending[]) {
-    cache = next;
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-    } catch {}
-    listeners.forEach((l) => l());
-  },
-  subscribe(l: () => void) {
-    listeners.add(l);
-    return () => listeners.delete(l);
-  },
-};
+const reducedMotion = () => matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 // A fixed lattice step keeps nearby cells on different videos
 const videoIndex = (cx: number, cy: number, count: number) => (((cx * 5 + cy * 7) % count) + count) % count;
@@ -80,17 +84,28 @@ function Tile({
   watched,
   onOpen,
   onHover,
+  mine,
+  fade,
+  land,
+  nudge,
 }: {
   video: Video;
   style: React.CSSProperties;
   watched: boolean; // opened in this browser before: a red line along the bottom
   onOpen: () => void;
   onHover: (on: boolean) => void;
+  mine?: PendingState | "leaving"; // one of the visitor's own suggestions
+  fade?: number; // the yellow fade; a new number starts it again
+  land?: boolean; // just landed
+  nudge?: Cell; // a neighbour just landed: pushed this way for a moment
 }) {
+  const className = ["tile", mine && `tile-mine tile-${mine}`, land && "tile-land", nudge && "tile-nudge"]
+    .filter(Boolean)
+    .join(" ");
   return (
     <button
-      className="tile"
-      style={style}
+      className={className}
+      style={nudge ? ({ ...style, "--nx": nudge[0], "--ny": nudge[1] } as React.CSSProperties) : style}
       onClick={onOpen}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
@@ -135,6 +150,12 @@ function Tile({
           <span className="sr-only">Watched</span>
         </span>
       )}
+      {mine === "waiting" && (
+        <span className="tile-note">
+          <span className="queue-spinner" aria-hidden="true" /> Waiting for approval
+        </span>
+      )}
+      {fade !== undefined && <span key={fade} className="queue-fade" />}
     </button>
   );
 }
@@ -150,26 +171,129 @@ export default function Wall({ videos }: { videos: Video[] }) {
   const hovering = useRef(false);
   const playing = useRef(false);
   const [view, setView] = useState({ cx: 0, cy: 0, cols: 8, rows: 6 });
+  const glide = useRef<Glide | null>(null); // under way to one of the visitor's tiles
+  const hold = useRef(0); // no drift until then
+  const field = useRef<HTMLInputElement>(null);
+  const tray = useRef<HTMLElement>(null);
 
   const [open, setOpen] = useState<Video | null>(null);
   const [input, setInput] = useState("");
   const [status, setStatus] = useState<{ kind: "error" | "ok" | "busy"; msg: string } | null>(null);
-  const pending = useSyncExternalStore(pendingStore.subscribe, pendingStore.get, () => EMPTY);
-  // Still waiting: not on the wall yet
-  const waiting = pending.filter((p) => !videos.some((v) => v.id === p.id));
+  const pending = usePending();
+  const trayClosed = useTrayClosed();
   const watched = useWatched();
+  // What the sheet says about the visitor's suggestions (/api/suggest/status)
+  const [states, setStates] = useState<Record<string, SuggestionState>>({});
+  const [heardAt, setHeardAt] = useState(0);
+  const [landed, setLanded] = useState<Record<string, Cell>>({}); // sent this visit: where they landed
+  const [landing, setLanding] = useState<{ id: string; cell: Cell; from: DOMRect } | null>(null);
+  // The yellow fade, on a cell, or (cell left out) on the visitor's own tile for that video
+  const [fade, setFade] = useState<{ id: string; cell?: Cell; n: number; land: boolean } | null>(null);
+  const lastHeard = useRef<Record<string, SuggestionState>>({});
+  const [leaving, setLeaving] = useState<Record<string, { p: Pending; cell: Cell }>>({});
+  const [busy, setBusy] = useState<string | null>(null);
+
+  const onWall = useMemo(() => new Set(videos.map((v) => v.id)), [videos]);
+  const stateOf = useCallback(
+    (p: Pending): PendingState =>
+      p.withdrawnAt ? "withdrawn" : p.wallAt || onWall.has(p.id) || states[p.id] === "wall" ? "wall" : "waiting",
+    [onWall, states],
+  );
+
+  // The visitor's own tiles, by cell: the ones not on this page's wall yet.
+  // Each keeps its slot for the visit (counted oldest first, so a new one
+  // doesn't move the rest); one sent this visit stays where it landed.
+  const own = useMemo(() => {
+    const cells = new Map<string, { p: Pending; mine: PendingState | "leaving" }>();
+    const at = new Map<string, Cell>();
+    const put = (p: Pending, cell: Cell | undefined, mine: PendingState | "leaving") => {
+      const k = cell && `${cell[0]},${cell[1]}`;
+      if (!cell || !k || cells.has(k)) return;
+      cells.set(k, { p, mine });
+      at.set(p.id, cell);
+    };
+    [...pending]
+      .reverse()
+      .filter((p) => !onWall.has(p.id))
+      .forEach((p, i) => {
+        if (!p.withdrawnAt) put(p, landed[p.id] ?? SLOTS[i], stateOf(p));
+      });
+    Object.values(leaving).forEach(({ p, cell }) => put(p, cell, "leaving"));
+    return { cells, at };
+  }, [pending, landed, leaving, onWall, stateOf]);
 
   useEffect(() => {
     playing.current = !!open;
   }, [open]);
 
-  // Once a suggestion's on the wall, or it's been a month, it's off the list
-  // for good, so unticking it later doesn't bring it back as waiting
+  // Ask the sheet where they've got to: now, every minute or so, and on coming back to the tab
+  const askIds = pending
+    .filter((p) => !p.withdrawnAt)
+    .map((p) => p.id)
+    .slice(0, ASK_MAX)
+    .sort()
+    .join(",");
+  useEffect(() => {
+    if (!askIds) return;
+    let live = true;
+    const ask = async () => {
+      if (document.hidden) return;
+      try {
+        const res = await fetch(`/api/suggest/status?ids=${askIds}`);
+        const data = res.ok ? await res.json() : null;
+        if (!live || !data?.states) return;
+        // Approved while they were looking: it lights up
+        const approved = Object.keys(data.states).find(
+          (id) => data.states[id] === "wall" && lastHeard.current[id] === "waiting",
+        );
+        lastHeard.current = data.states;
+        setStates(data.states);
+        setHeardAt(Date.now());
+        if (approved) setFade({ id: approved, n: Date.now(), land: false });
+      } catch {}
+    };
+    ask();
+    const timer = setInterval(ask, ASK_EVERY_MS);
+    document.addEventListener("visibilitychange", ask);
+    return () => {
+      live = false;
+      clearInterval(timer);
+      document.removeEventListener("visibilitychange", ask);
+    };
+  }, [askIds]);
+
+  // Keep the list in step. Once on the wall it says so; if it's taken off the
+  // wall again, or its row's deleted, it's off the list rather than back to waiting.
   useEffect(() => {
     const now = Date.now();
-    const keep = pending.filter((p) => !videos.some((v) => v.id === p.id) && !(p.at && now - p.at > FORGET_AFTER_MS));
-    if (keep.length !== pending.length) pendingStore.set(keep);
-  }, [pending, videos]);
+    let changed = false;
+    const next = pending.flatMap((p) => {
+      if (p.withdrawnAt) return [p];
+      const s = states[p.id];
+      if (onWall.has(p.id) || s === "wall") {
+        if (p.wallAt) return [p];
+        changed = true;
+        return [{ ...p, wallAt: now }];
+      }
+      if (!s || heardAt - (p.wallAt ?? p.at ?? 0) < STALE_MS) return [p];
+      if (s === "withdrawn") {
+        changed = true;
+        return [{ ...p, withdrawnAt: now }];
+      }
+      if (p.wallAt || s === "gone") {
+        changed = true;
+        return [];
+      }
+      return [p];
+    });
+    if (changed) pendingStore.set(next);
+  }, [pending, states, heardAt, onWall]);
+
+  useEffect(() => {
+    if (!fade) return;
+    const t = setTimeout(() => setFade(null), FADE_MS);
+    return () => clearTimeout(t);
+  }, [fade]);
 
   // Move the layer directly; only re-render when a new row/column of cells is needed.
   const apply = useCallback(() => {
@@ -193,6 +317,47 @@ export default function Wall({ videos }: { videos: Video[] }) {
     [apply],
   );
 
+  // The part of the wall that can be seen: not under the tray. Layout
+  // positions (both are in .wall-stage), so the tray's slide-in doesn't count.
+  const visible = useCallback(() => {
+    const el = viewport.current!;
+    let w = el.clientWidth;
+    let h = el.clientHeight;
+    const t = tray.current;
+    if (t) {
+      if (t.offsetTop > h / 2) h = Math.min(h, t.offsetTop);
+      else if (t.offsetLeft > w / 2) w = Math.min(w, t.offsetLeft);
+    }
+    return { w, h };
+  }, []);
+
+  const middleCell = useCallback((): Cell => {
+    const { w, h } = visible();
+    return [Math.floor((w / 2 - offset.current.x) / CELL_W), Math.floor((h / 2 - offset.current.y) / CELL_H)];
+  }, [visible]);
+
+  // Glides the wall until this cell's in the middle of what can be seen, and
+  // says where the wall will end up
+  const glideTo = useCallback(
+    ([cx, cy]: Cell) => {
+      const { w, h } = visible();
+      const to = { x: w / 2 - (cx * CELL_W + TILE_W / 2), y: h / 2 - (cy * CELL_H + TILE_H / 2) };
+      const from = { ...offset.current };
+      velocity.current = { x: 0, y: 0 };
+      drift.current = 0;
+      hold.current = performance.now() + HOLD_MS;
+      const far = Math.hypot(to.x - from.x, to.y - from.y);
+      if (reducedMotion() || far < 1) {
+        glide.current = null;
+        moveBy(to.x - from.x, to.y - from.y);
+      } else {
+        glide.current = { from, to, t0: performance.now(), ms: Math.min(1400, Math.max(600, far * 0.9)) };
+      }
+      return to;
+    },
+    [moveBy, visible],
+  );
+
   useLayoutEffect(() => {
     const el = viewport.current!;
     // Start with a tile centred
@@ -201,6 +366,22 @@ export default function Wall({ videos }: { videos: Video[] }) {
 
     let raf = 0;
     const tick = () => {
+      // Gliding to one of the visitor's suggestions: eased, and nothing else moves it
+      const g = glide.current;
+      if (g) {
+        const t = Math.min(1, (performance.now() - g.t0) / g.ms);
+        const e = t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2;
+        moveBy(
+          g.from.x + (g.to.x - g.from.x) * e - offset.current.x,
+          g.from.y + (g.to.y - g.from.y) * e - offset.current.y,
+        );
+        if (t === 1) {
+          glide.current = null;
+          hold.current = performance.now() + HOLD_MS;
+        }
+        raf = requestAnimationFrame(tick);
+        return;
+      }
       const v = velocity.current;
       const coasting = Math.abs(v.x) > 0.05 || Math.abs(v.y) > 0.05;
       if (!drag.current && coasting) {
@@ -210,7 +391,8 @@ export default function Wall({ videos }: { videos: Video[] }) {
         v.x = v.y = 0;
       }
 
-      const idle = !drag.current && !coasting && !hovering.current && !playing.current;
+      const idle =
+        !drag.current && !coasting && !hovering.current && !playing.current && performance.now() > hold.current;
       drift.current += ((idle ? 1 : 0) - drift.current) * DRIFT_EASE;
 
       const dx = (drag.current ? 0 : v.x) + DRIFT.x * drift.current;
@@ -223,6 +405,8 @@ export default function Wall({ videos }: { videos: Video[] }) {
     const onResize = () => apply();
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
+      glide.current = null;
+      hold.current = 0;
       velocity.current = { x: 0, y: 0 };
       moveBy(-e.deltaX, -e.deltaY);
     };
@@ -242,6 +426,8 @@ export default function Wall({ videos }: { videos: Video[] }) {
       const d = { ArrowLeft: [1, 0], ArrowRight: [-1, 0], ArrowUp: [0, 1], ArrowDown: [0, -1] }[e.key];
       if (d) {
         e.preventDefault();
+        glide.current = null;
+        hold.current = 0;
         velocity.current = { x: d[0] * 14, y: d[1] * 14 };
       }
     };
@@ -253,7 +439,9 @@ export default function Wall({ videos }: { videos: Video[] }) {
     if (e.button !== 0) return;
     // A press while the wall is gliding just stops it; it shouldn't open a video
     const v = velocity.current;
-    const stopping = Math.hypot(v.x, v.y) > 1;
+    const stopping = Math.hypot(v.x, v.y) > 1 || !!glide.current;
+    glide.current = null;
+    hold.current = 0;
     suppressClick.current = false;
     velocity.current = { x: 0, y: 0 };
     drag.current = { x: e.clientX, y: e.clientY, t: performance.now(), moved: 0, stopping };
@@ -297,16 +485,156 @@ export default function Wall({ videos }: { videos: Video[] }) {
     }
   };
 
+  // The nearest tile showing this video, if it's on the wall
+  const nearest = (id: string): Cell | null => {
+    const i = videos.findIndex((v) => v.id === id);
+    if (i < 0) return null;
+    const [mx, my] = middleCell();
+    for (let r = 0; r <= 24; r++) {
+      for (let dy = -r; dy <= r; dy++) {
+        for (let dx = -r; dx <= r; dx++) {
+          const cell: Cell = [mx + dx, my + dy];
+          if (
+            Math.max(Math.abs(dx), Math.abs(dy)) === r &&
+            videoIndex(cell[0], cell[1], videos.length) === i &&
+            !own.cells.has(`${cell}`)
+          ) {
+            return cell;
+          }
+        }
+      }
+    }
+    return null;
+  };
+
+  // Brings one into view and gives it the yellow fade, here and in the tray
+  const find = (id: string) => {
+    const cell = own.at.get(id) ?? nearest(id);
+    if (!cell) return;
+    glideTo(cell);
+    setFade({ id, cell, n: Date.now(), land: false });
+  };
+
+  // Where a new one lands: just past the middle of the view, so the wall moves to catch it
+  const landingCell = (): Cell => {
+    const [mx, my] = middleCell();
+    for (let r = 0; ; r++) {
+      for (const [dx, dy] of [
+        [1, 1],
+        [1, 0],
+        [0, 1],
+        [1, -1],
+        [-1, 1],
+        [0, -1],
+        [-1, 0],
+        [-1, -1],
+      ]) {
+        const cell: Cell = [mx + dx * (r + 1), my + dy * (r + 1)];
+        if (!own.cells.has(`${cell}`)) return cell;
+      }
+    }
+  };
+
+  // The flight: the thumbnail leaves the box, arcs over and lands on its cell
+  // as the wall glides there. Then a thump, the neighbours budge, the yellow fade.
+  useLayoutEffect(() => {
+    if (!landing) return;
+    const { id, cell, from } = landing;
+    const to = glideTo(cell);
+    const v = viewport.current!.getBoundingClientRect();
+    const end = { x: v.left + to.x + cell[0] * CELL_W, y: v.top + to.y + cell[1] * CELL_H };
+    const flyer = document.createElement("div");
+    flyer.className = "queue-flyer";
+    Object.assign(flyer.style, { left: `${end.x}px`, top: `${end.y}px`, width: `${TILE_W}px`, height: `${TILE_H}px` });
+    const img = document.createElement("img");
+    img.src = isTikTok(id) ? tikTokThumb(id) : thumb(id, "hq");
+    img.alt = "";
+    flyer.append(img);
+    document.body.append(flyer);
+    // Starts small, where the link was typed
+    const s = 64 / TILE_W;
+    const sx = from.left + 6 - end.x;
+    const sy = from.top + from.height / 2 - (TILE_H * s) / 2 - end.y;
+    const flight = flyer.animate(
+      [
+        { transform: `translate(${sx}px, ${sy}px) scale(${s})`, opacity: 0 },
+        { transform: `translate(${sx}px, ${sy}px) scale(${s})`, opacity: 1, offset: 0.08 },
+        { transform: `translate(${sx * 0.45}px, ${sy * 0.45 - 90}px) scale(1.2) rotate(-5deg)`, offset: 0.55 },
+        { transform: "none", opacity: 1 },
+      ],
+      { duration: reducedMotion() ? 1 : FLY_MS, easing: "cubic-bezier(.45, 0, .3, 1)" },
+    );
+    flight.onfinish = () => {
+      flyer.remove();
+      setLanding(null);
+      setFade({ id, cell, n: Date.now(), land: true });
+    };
+    return () => {
+      flight.onfinish = null;
+      flight.cancel();
+      flyer.remove();
+    };
+  }, [landing, glideTo]);
+
+  async function withdraw(p: Pending) {
+    // Off this browser's list only: the tile goes, the sheet keeps it
+    const forget = () => {
+      leave(p);
+      pendingStore.forget(p.id);
+    };
+    if (!p.key) return forget();
+    setBusy(p.id);
+    let done: { withdrawn?: boolean; state?: SuggestionState } | null = null;
+    try {
+      const res = await fetch("/api/suggest/withdraw", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: p.id, key: p.key }),
+      });
+      if (res.ok) done = await res.json();
+    } catch {}
+    setBusy(null);
+    if (!done) return setStatus({ kind: "error", msg: "Couldn't withdraw that. Try again in a minute." });
+    if (done.withdrawn) {
+      leave(p);
+      pendingStore.mark(p.id, "withdrawnAt");
+    } else if (done.state === "wall") {
+      pendingStore.mark(p.id, "wallAt");
+    } else {
+      forget();
+    }
+  }
+
+  // Its tile shrinks away rather than vanishing
+  const leave = (p: Pending) => {
+    const cell = own.at.get(p.id);
+    if (!cell) return;
+    setLeaving((l) => ({ ...l, [p.id]: { p, cell } }));
+    setTimeout(
+      () =>
+        setLeaving((l) => {
+          const rest = { ...l };
+          delete rest[p.id];
+          return rest;
+        }),
+      LEAVE_MS,
+    );
+  };
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const yt = parseYouTubeId(input);
     const tt = yt ? null : parseTikTok(input);
     if (!yt && !tt) return setStatus({ kind: "error", msg: "That doesn't look like a YouTube or TikTok link." });
-    const known = (id: string) => videos.some((v) => v.id === id) || pending.some((p) => p.id === id);
-    const alreadyIn = () => setStatus({ kind: "error", msg: "Someone's already suggested that one." });
+    const known = (id: string) => onWall.has(id) || pending.some((p) => p.id === id && !p.withdrawnAt);
+    // And there it is
+    const alreadyIn = (id: string) => {
+      setStatus({ kind: "error", msg: "Someone's already suggested that one." });
+      find(id);
+    };
     // A short TikTok link only says which video it is once the server has followed it
     const id = yt ?? (tt && "id" in tt ? tt.id : null);
-    if (id && known(id)) return alreadyIn();
+    if (id && known(id)) return alreadyIn(id);
     setStatus({ kind: "busy", msg: "Sending…" });
     let res: Response;
     try {
@@ -320,9 +648,15 @@ export default function Wall({ videos }: { videos: Video[] }) {
     }
     const data = await res.json().catch(() => ({ error: "Something went wrong sending that. Try again in a minute." }));
     if (!res.ok) return setStatus({ kind: "error", msg: data.error });
-    if (!id && known(data.id)) return alreadyIn();
+    if (!id && known(data.id)) return alreadyIn(data.id);
 
-    pendingStore.set([{ id: data.id, title: data.title, author: data.channel, at: Date.now() }, ...pending]);
+    const mine: Pending = { id: data.id, title: data.title, author: data.channel, at: Date.now(), key: data.key };
+    // One withdrawn earlier this visit comes back as new
+    pendingStore.set([mine, ...pendingStore.get().filter((p) => p.id !== mine.id)]);
+    const cell = landingCell();
+    setLanded((l) => ({ ...l, [mine.id]: cell }));
+    setLanding({ id: mine.id, cell, from: field.current!.getBoundingClientRect() });
+    setTrayClosed(false);
     setInput("");
     setStatus({
       kind: "ok",
@@ -337,7 +671,33 @@ export default function Wall({ videos }: { videos: Video[] }) {
   const tiles = [];
   for (let cy = view.cy; cy < view.cy + view.rows; cy++) {
     for (let cx = view.cx; cx < view.cx + view.cols; cx++) {
+      const mine = own.cells.get(`${cx},${cy}`);
+      // Still in the air: the cell keeps what it had until it lands
+      if (mine && landing?.id !== mine.p.id) {
+        const video = { id: mine.p.id, title: mine.p.title, channel: mine.p.author };
+        const here = !!fade && (fade.cell ? fade.cell[0] === cx && fade.cell[1] === cy : fade.id === mine.p.id);
+        tiles.push(
+          <Tile
+            key={`${cx},${cy},${mine.p.id}`}
+            video={video}
+            watched={watched.has(video.id)}
+            onOpen={() => {
+              markWatched(video.id);
+              setOpen(video);
+            }}
+            onHover={onHover}
+            mine={mine.mine}
+            fade={here ? fade.n : undefined}
+            land={here && fade.land}
+            style={{ left: cx * CELL_W, top: cy * CELL_H, width: TILE_W, height: TILE_H }}
+          />,
+        );
+        continue;
+      }
       const video = videos[videoIndex(cx, cy, videos.length)];
+      const at = fade?.cell;
+      const here = !!at && at[0] === cx && at[1] === cy;
+      const near = !!at && fade.land && !here && Math.abs(at[0] - cx) <= 1 && Math.abs(at[1] - cy) <= 1;
       tiles.push(
         <Tile
           key={`${cx},${cy}`}
@@ -348,6 +708,8 @@ export default function Wall({ videos }: { videos: Video[] }) {
             setOpen(video);
           }}
           onHover={onHover}
+          fade={here && fade ? fade.n : undefined}
+          nudge={near ? [Math.sign(cx - at[0]), Math.sign(cy - at[1])] : undefined}
           style={{ left: cx * CELL_W, top: cy * CELL_H, width: TILE_W, height: TILE_H }}
         />,
       );
@@ -360,6 +722,7 @@ export default function Wall({ videos }: { videos: Video[] }) {
         <form className="suggest" onSubmit={submit}>
           <label htmlFor="yt">Suggest a video</label>
           <input
+            ref={field}
             id="yt"
             value={input}
             onChange={(e) => setInput(e.target.value)}
@@ -372,7 +735,9 @@ export default function Wall({ videos }: { videos: Video[] }) {
         </form>
         <p className="wall-explainer">
           {status ? (
-            <span className={`status-${status.kind}`}>{status.msg}</span>
+            <span className={`status-${status.kind}`}>
+              {status.kind === "busy" && <span className="queue-spinner" aria-hidden="true" />} {status.msg}
+            </span>
           ) : (
             <>
               Every screening at THE TUBE is preceded by a curated selection of oddities scavenged
@@ -380,35 +745,52 @@ export default function Wall({ videos }: { videos: Video[] }) {
               screen treatment, you great big dogs. Everything on this wall was suggested by someone.
             </>
           )}
-          {waiting.length > 0 && <span className="pending-count"> · {waiting.length} of yours waiting for approval</span>}
         </p>
       </div>
 
-      <div
-        ref={viewport}
-        className="wall-viewport"
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        onClickCapture={(e) => {
-          if (suppressClick.current) {
-            suppressClick.current = false;
-            e.stopPropagation();
-            e.preventDefault();
-          }
-        }}
-        tabIndex={0}
-        aria-label="Suggested videos. Drag, scroll or use the arrow keys to look around."
-      >
-        <div ref={layer} className="wall-layer">
-          {tiles}
+      <div className="wall-stage">
+        <div
+          ref={viewport}
+          className="wall-viewport"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={endDrag}
+          onPointerCancel={endDrag}
+          onClickCapture={(e) => {
+            if (suppressClick.current) {
+              suppressClick.current = false;
+              e.stopPropagation();
+              e.preventDefault();
+            }
+          }}
+          tabIndex={0}
+          aria-label="Suggested videos. Drag, scroll or use the arrow keys to look around."
+        >
+          <div ref={layer} className="wall-layer">
+            {tiles}
+          </div>
         </div>
+
+        {pending.length > 0 && (
+          <SuggestTray
+            trayRef={tray}
+            items={pending.map((p) => ({ p, state: stateOf(p) }))}
+            closed={trayClosed}
+            busy={busy}
+            fade={fade ?? undefined}
+            onToggle={() => setTrayClosed(!trayClosed)}
+            onFind={(p) => find(p.id)}
+            onWithdraw={withdraw}
+          />
+        )}
       </div>
 
       {open && (
         <div className="modal" onClick={() => setOpen(null)} role="dialog" aria-label={open.title || open.channel}>
-          <div className={isTikTok(open.id) ? "modal-inner modal-tall" : "modal-inner"} onClick={(e) => e.stopPropagation()}>
+          <div
+            className={isTikTok(open.id) ? "modal-inner modal-tall" : "modal-inner"}
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-bar">
               <span>{open.title || open.channel}</span>
               <button onClick={() => setOpen(null)} aria-label="Close">

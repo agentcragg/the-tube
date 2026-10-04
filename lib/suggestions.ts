@@ -92,6 +92,60 @@ export async function tickedVideos(): Promise<Video[] | null> {
   return videos.length ? videos : null;
 }
 
+// Version 4 of the script can withdraw a suggestion, given the key the website
+// made for it, and say where any suggestion has got to (?status=)
+export type SuggestionState = "waiting" | "wall" | "withdrawn" | "gone";
+export const STATUS_MAX = 30;
+const STATES: SuggestionState[] = ["waiting", "wall", "withdrawn", "gone"];
+const canWithdraw = (sheet: Sheet | null) => !!sheet && (sheet.version ?? 1) >= 4;
+
+// Where each of these suggestions is, or null if the sheet can't be reached.
+// Before version 4 the sheet only says what's on the wall, so anything else
+// counts as waiting.
+export async function suggestionStates(ids: string[]): Promise<Record<string, SuggestionState> | null> {
+  const sheet = await readSheet();
+  if (!sheet) return null;
+  if (canWithdraw(sheet)) {
+    try {
+      const url = `${SHEET_URL}${SHEET_URL.includes("?") ? "&" : "?"}status=${ids.join(",")}`;
+      const res = await fetch(url, { next: { revalidate: 30, tags: [SHEET_TAG] } });
+      const status = res.ok ? (await res.json())?.status : null;
+      if (status && typeof status === "object") {
+        return Object.fromEntries(ids.map((id) => [id, STATES.includes(status[id]) ? status[id] : "gone"]));
+      }
+    } catch {}
+  }
+  const wall = new Set((await wallVideos()).map((v) => v.id));
+  return Object.fromEntries(ids.map((id) => [id, wall.has(id) ? "wall" : "waiting"]));
+}
+
+// Takes a suggestion out of the sheet: true once it's marked withdrawn there;
+// false when the sheet can't (before version 4) or won't (it's been ticked, or
+// isn't there, which state says); null if the sheet can't be reached.
+export async function withdrawFromSheet(
+  id: string,
+  key: string,
+): Promise<{ withdrawn: boolean; state?: SuggestionState } | null> {
+  const sheet = await readSheet();
+  if (!sheet) return null;
+  if (!canWithdraw(sheet)) return { withdrawn: false };
+  try {
+    const res = await fetch(SHEET_URL, {
+      method: "POST",
+      headers: { "Content-Type": "text/plain" }, // Apps Script reads the raw body
+      body: JSON.stringify({ action: "withdraw", id, key }),
+    });
+    if (!res.ok) return null;
+    const d = await res.json();
+    if (d?.ok === true) return { withdrawn: true };
+    if (d?.error === "on the wall") return { withdrawn: false, state: "wall" };
+    if (d?.error === "no row") return { withdrawn: false, state: "gone" };
+    return { withdrawn: false };
+  } catch {
+    return null;
+  }
+}
+
 // Whether the sheet really did send this change notice: it keeps the last
 // one it sent, and says yes only to that one, for a few minutes
 export async function sheetSentNotice(notice: string): Promise<boolean> {

@@ -9,9 +9,11 @@ import "./globals.css";
 import "./watch.css";
 import "./endeavour.css";
 import "./laurels.css";
+import "./queue.css";
 // The look switch's options go last so they win over the defaults above
 import "./looks.css";
 import "./ideas.css";
+import "./idea-queue-side.css";
 
 export const metadata: Metadata = {
   title: "The Tube",
