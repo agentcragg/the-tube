@@ -285,6 +285,7 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
   float: right; width: 120px; aspect-ratio: 16 / 9; object-fit: cover;
   border: 3px double #999; padding: 2px; margin: 0 0 4px 8px;
 }
+.side-banner { display: block; width: 100%; height: auto; margin: 0 0 16px; }
 /* A night's own picture (Film.art), full width, in the same double frame */
 .next-art { position: relative; display: block; border: 3px double #999; padding: 2px; margin: 6px 0 6px; }
 .next-art img { display: block; width: 100%; height: auto; }
@@ -360,6 +361,7 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
   /* Next screening first, then the programme, then the rest of the sidebar */
   .home .side { display: contents; }
   .home .side > .box:first-child { order: -1; }
+  .home .side > .side-banner { order: -1; margin: 0; }
   .home .box { margin-bottom: 0; }
 
   .box-search { flex: 1 1 100%; }

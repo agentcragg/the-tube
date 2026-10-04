@@ -23,6 +23,16 @@ export default async function WhatsOn() {
       <aside className="side">
         <NextScreening next={next} days={daysUntil(next.date)} />
 
+        {/* A 468x60 banner, loose in the sidebar the way old sites had them */}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          className="side-banner"
+          src="/gifs/grandmother.gif"
+          alt="Would you go see a movie your grandmother recommended?"
+          width={468}
+          height={60}
+        />
+
         <section className="box">
           <div className="box-head">
             <h2>
