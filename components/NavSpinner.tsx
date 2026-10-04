@@ -2,9 +2,8 @@
 
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useLook } from "@/lib/use-look";
 
-// The look switch's "spinner" idea: 2008's ring of grey dots while the next
+// 2008's ring of grey dots while the next
 // page is on its way. A click on a link to another page here starts it, and
 // the new page arriving (its path changes) stops it, so it only ever shows
 // for as long as the page really takes. Its CSS waits a moment before
@@ -13,7 +12,6 @@ import { useLook } from "@/lib/use-look";
 const GIVE_UP_MS = 20_000; // in case a navigation never finishes
 
 export default function NavSpinner() {
-  const on = useLook("spinner");
   const path = usePathname();
   const [waiting, setWaiting] = useState<string | null>(null); // the path it was clicked from
   // A new page, however it came (Back included), ends any wait
@@ -24,7 +22,6 @@ export default function NavSpinner() {
   }
 
   useEffect(() => {
-    if (!on) return;
     const onClick = (e: MouseEvent) => {
       if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const a = (e.target as Element).closest?.("a[href]");
@@ -38,7 +35,7 @@ export default function NavSpinner() {
     // Capture, so it's seen before a link's own handler takes the click over
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
-  }, [on, path]);
+  }, [path]);
 
   useEffect(() => {
     if (!waiting) return;
@@ -46,7 +43,7 @@ export default function NavSpinner() {
     return () => clearTimeout(timer);
   }, [waiting]);
 
-  if (!on || waiting !== path) return null;
+  if (waiting !== path) return null;
   return (
     <div className="nav-spinner" role="status">
       <span className="spinner" aria-hidden />

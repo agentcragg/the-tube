@@ -147,3 +147,32 @@
   .tray, .tile-land, .tile-nudge { animation: none; }
   .queue-spinner { animation-duration: 2s; }
 }
+
+/* On wider screens the tray is a 2008 sidebar box at the top right of the
+   wall rather than a strip along the bottom. Phones keep the strip. */
+@media (min-width: 900px) {
+  :root .tray {
+    left: auto; bottom: auto; top: 14px; right: var(--gutter); width: 300px; max-height: calc(100% - 28px);
+    display: flex; flex-direction: column;
+    border: 1px solid var(--box-edge); border-radius: 4px; overflow: hidden;
+    box-shadow: 0 3px 12px rgb(0 0 0 / 0.22);
+    animation-name: queue-side-in;
+  }
+  :root .tray-bar { padding: 6px 10px; flex: none; }
+  :root .tray-list { flex-direction: column; gap: 0; padding: 0; overflow: hidden auto; }
+  :root .tray-item {
+    width: auto; display: grid; grid-template-columns: 120px 1fr; gap: 9px; align-items: start;
+    padding: 8px 10px; border-bottom: 1px solid #e5e5e5;
+  }
+  :root .tray-item:last-child { border-bottom: 0; }
+  :root .tray-thumb, :root .tray-ask { width: 120px; }
+  :root .tray-ask { left: 10px; top: 8px; }
+  :root .tray-x { right: auto; left: 110px; top: 11px; }
+  :root .tray-text { margin-top: 0; }
+  :root .tray-title {
+    white-space: normal; font-size: 12px;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;
+  }
+  :root .tray-state { margin-top: 3px; }
+}
+@keyframes queue-side-in { from { translate: calc(100% + 40px) 0; } }

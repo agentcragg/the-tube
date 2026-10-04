@@ -26,8 +26,6 @@ type Option = { id: string; label: string };
 export const EXAMPLES: Option[] = [];
 
 export const IDEAS: Option[] = [
-  { id: "queue-side", label: "Your suggestions in a sidebar" },
-  { id: "intro", label: "TV intro" },
   { id: "channel", label: "Channel change" },
   { id: "tune", label: "Pictures tune in" },
   { id: "lights", label: "House lights on screening nights" },
@@ -35,7 +33,6 @@ export const IDEAS: Option[] = [
   { id: "pumpkin", label: "Pumpkins for Halloween" },
   { id: "fireworks", label: "Fireworks for Bonfire Night" },
   { id: "cycle", label: "Thumbnails cycle on hover" },
-  { id: "spinner", label: "Loading spinner" },
   { id: "ticker", label: "Ticker under the tabs" },
   { id: "yellowfade", label: "Yellow fade on changes" },
   { id: "dither", label: "Dithered stills" },

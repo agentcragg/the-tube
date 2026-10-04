@@ -21,15 +21,14 @@ import "./queue.css";
 // The look switch's options go last so they win over the defaults above
 import "./looks.css";
 import "./ideas.css";
-import "./idea-queue-side.css";
-import "./idea-intro.css";
+import "./intro.css";
 import "./idea-channel.css";
 import "./idea-tune.css";
 import "./idea-lights.css";
 import "./idea-pumpkin.css";
 import "./idea-fireworks.css";
 import "./idea-cycle.css";
-import "./idea-spinner.css";
+import "./spinner.css";
 import "./idea-ticker.css";
 import "./idea-yellowfade.css";
 import "./idea-dither.css";

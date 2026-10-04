@@ -1,0 +1,65 @@
+/* ---------- Loading spinner ---------- */
+
+/* 2008's ring of grey dots, as GIFs (public/loading): spinner.gif and
+   spinner-16.gif for light grounds, spinner-dark.gif for black ones. Each
+   sits behind a picture or a player and shows only until that has arrived:
+   an <img> paints over its own background once it has loaded, an iframe
+   once its page has. Nothing waits on it. */
+
+/* Thumbnails and stills */
+:root .tile { background: #eee url(/loading/spinner.gif) center / 32px no-repeat; }
+:root .scrub-frame { background: #000 url(/loading/spinner-dark.gif) center / 32px no-repeat; }
+:root .mini-list img,
+:root .next-still { background: #fff url(/loading/spinner-16.gif) center / 16px no-repeat; }
+:root .mini-list .tt-thumb { background: #000 url(/loading/spinner-dark.gif) center / 16px no-repeat; }
+:root .mini-list .tt-thumb img { background: none; }
+:root .tv-next-thumb img { background: #fff url(/loading/spinner.gif) center / 32px no-repeat; }
+:root .rh-frame img { background: #fff url(/loading/spinner.gif) center / 32px no-repeat; }
+
+/* Players, until YouTube's own page has drawn */
+:root :is(.modal-inner, .rh-player, .tv-screen) iframe {
+  background: #000 url(/loading/spinner-dark.gif) center / 32px no-repeat;
+}
+/* Basement TV's "Tuning in…", before the browser knows the time */
+:root .tv-screen p { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+:root .tv-screen p::before {
+  content: ""; width: 32px; height: 32px; background: url(/loading/spinner-dark.gif) center / 32px no-repeat;
+}
+
+/* The wall's "Sending…" while a suggestion goes off, in place of the queue's own spinner */
+:root .status-busy::before {
+  content: ""; display: inline-block; width: 16px; height: 16px; margin-right: 5px; vertical-align: -3px;
+  background: url(/loading/spinner-16.gif) center / 16px no-repeat;
+}
+:root .status-busy .queue-spinner { display: none; }
+
+/* Between pages (components/NavSpinner.tsx): the page that's going fades
+   back and the box sits in the middle of the window. Both wait a fifth of a
+   second, so a page that's already here never flashes them. */
+:root .nav-spinner {
+  position: fixed; left: 50%; top: 50%; z-index: 50; translate: -50% -50%;
+  display: flex; align-items: center; gap: 8px; padding: 10px 16px 10px 12px;
+  background: #fff; border: 1px solid #bbb; border-radius: 4px; box-shadow: 0 2px 10px rgb(0 0 0 / 0.2);
+  font: bold 13px var(--sans); color: #666;
+  animation: nav-spinner-in 1ms 200ms both;
+}
+:root .nav-spinner .spinner {
+  width: 32px; height: 32px; background: url(/loading/spinner.gif) center / 32px no-repeat;
+}
+:root body:has(.nav-spinner) main { animation: nav-spinner-dim 150ms 200ms both; }
+@keyframes nav-spinner-in { from { visibility: hidden; } }
+@keyframes nav-spinner-dim { to { opacity: 0.4; } }
+
+/* Still dots, for anyone who's asked their computer for less movement */
+@media (prefers-reduced-motion: reduce) {
+  :root .tile,
+  :root .tv-next-thumb img,
+  :root .rh-frame img,
+  :root .nav-spinner .spinner { background-image: url(/loading/spinner.png); }
+  :root :is(.scrub-frame, .mini-list .tt-thumb),
+  :root .tv-screen p::before,
+  :root :is(.modal-inner, .rh-player, .tv-screen) iframe { background-image: url(/loading/spinner-dark.png); }
+  :root :is(.mini-list img, .next-still),
+  :root .status-busy::before { background-image: url(/loading/spinner-16.png); }
+  :root .mini-list .tt-thumb img { background: none; }
+}

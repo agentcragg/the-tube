@@ -1,6 +1,6 @@
 import scene from "@/lib/intro.json";
 
-// The TV intro (idea "intro", components/Intro.tsx): on the first page of a
+// The TV intro (components/Intro.tsx): on the first page of a
 // visit the site opens on a dithered TV against a basement wall; it comes on,
 // flickers through stills from the programme, then the view pushes into the
 // screen and the site is behind it. The pictures are made by
@@ -54,11 +54,11 @@ export const TV_WIDE = "/intro/tv-wide.png";
 export const TV_TALL = "/intro/tv-tall.png";
 const TALL = "(max-aspect-ratio: 2/3)";
 
-// Plays this time: the idea's on, it hasn't played yet this visit (or
-// ?look=intro asks again), and nobody's asked for less movement. ES5.
+// Plays this time: it hasn't played yet this visit (or ?look=intro in the
+// address asks again), and nobody's asked for less movement. ES5.
 const PLAYS = `var d=document.documentElement,c=d.classList,K=${JSON.stringify(INTRO_KEY)};
 var q=new URLSearchParams(location.search).get("look"),again=!!q&&q.split(",").indexOf("intro")>=0;
-var plays=c.contains("idea-intro")&&(again||!sessionStorage.getItem(K))&&!matchMedia("(prefers-reduced-motion: reduce)").matches;`;
+var plays=(again||!sessionStorage.getItem(K))&&!matchMedia("(prefers-reduced-motion: reduce)").matches;`;
 
 // In <head>, straight after the look script: starts the TV picture on its way
 // while the page's CSS still is, so it's usually in by the time the intro starts.

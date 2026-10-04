@@ -16,7 +16,7 @@ export default function Intro() {
 
   const [wl, wt, ww, wh] = scene.tv.wide.screen;
   const [tl, tt, tw, th] = scene.tv.tall.screen;
-  // Each picture's shape and where its screen is, for app/idea-intro.css
+  // Each picture's shape and where its screen is, for app/intro.css
   const r = (n: number) => Math.round(n * 100) / 100;
   const vars = {
     "--wide-k": r(scene.tv.wide.width / scene.tv.wide.height),
@@ -31,7 +31,7 @@ export default function Intro() {
     <>
       <div
         id="tv-intro"
-        className="tv-intro x-intro"
+        className="tv-intro"
         aria-hidden
         style={vars}
         data-wide={TV_WIDE}
