@@ -4,7 +4,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import Tonight from "@/components/Tonight";
 import { londonParts, useLondonNow } from "@/lib/clock";
-import { films, formatDate, isPast } from "@/lib/films";
+import { films, formatDate } from "@/lib/films";
 import { useLook } from "@/lib/use-look";
 
 // The look switch's "ticker" idea: a thin strip under the tabs that scrolls
@@ -26,10 +26,12 @@ export default function Ticker() {
   const list = useRef<HTMLUListElement>(null);
   const [seconds, setSeconds] = useState<number | null>(null);
 
-  // Nights split on the London day, as on What's on, so ?today moves them too
+  // Nights split on the London day, as on What's on, so ?today moves them too.
+  // None until the clock is known: film pages are built at deploy, so the
+  // server's idea of what's past can be weeks old and wouldn't hydrate.
   const now = useLondonNow();
   const today = now ? londonParts(now).isoDate : null;
-  const nights = films.filter((f) => (today ? f.date >= today : !isPast(f.date))).slice(0, NIGHTS);
+  const nights = today ? films.filter((f) => f.date >= today).slice(0, NIGHTS) : [];
 
   useEffect(() => {
     if (!on) return;
