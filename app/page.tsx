@@ -9,9 +9,6 @@ import { SAMPLE_SEATS } from "@/lib/seats";
 import { latestVideos } from "@/lib/suggestions";
 import { credit, isTikTok, thumb, tikTokLink, tikTokThumb } from "@/lib/videos";
 
-const daysUntil = (iso: string) =>
-  Math.ceil((new Date(iso + "T00:00:00").getTime() - Date.now()) / 86_400_000);
-
 export default async function WhatsOn() {
   const next = films.find((f) => !isPast(f.date)) ?? films[films.length - 1];
   const latest = await latestVideos(6);
@@ -21,7 +18,7 @@ export default async function WhatsOn() {
       <ComingUp films={films} seats={SAMPLE_SEATS} />
 
       <aside className="side">
-        <NextScreening next={next} days={daysUntil(next.date)} />
+        <NextScreening next={next} />
 
         {/* A 468x60 Moviefone banner, loose in the sidebar the way old sites had them */}
         <a className="side-banner" href="https://www.youtube.com/watch?v=vauf_3nOzH0" target="_blank" rel="noreferrer">
