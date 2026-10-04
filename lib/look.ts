@@ -37,6 +37,10 @@ export const IDEAS: Option[] = [
   { id: "spinner", label: "Loading spinner" },
   { id: "ticker", label: "Ticker under the tabs" },
   { id: "yellowfade", label: "Yellow fade on changes" },
+  { id: "dither", label: "Dithered stills" },
+  { id: "letterboard", label: "Letterboard" },
+  { id: "leader", label: "Countdown leader" },
+  { id: "handout", label: "Photocopied notes" },
 ];
 
 export type Look = { example?: string; ideas: string[]; today?: string; closed?: boolean };

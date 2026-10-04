@@ -31,6 +31,10 @@ import "./idea-cycle.css";
 import "./idea-spinner.css";
 import "./idea-ticker.css";
 import "./idea-yellowfade.css";
+import "./idea-dither.css";
+import "./idea-letterboard.css";
+import "./idea-leader.css";
+import "./idea-handout.css";
 
 export const metadata: Metadata = {
   title: "The Tube",

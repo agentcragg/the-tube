@@ -1,0 +1,18 @@
+/* ideas: "leader" (public/leader.gif, made by scripts/leader-gif.mjs). Wherever
+   a still or a video is on its way, the projectionist's countdown leader
+   turns in the middle of the dark, in place of 2008's spinning loader. It
+   sits behind the picture, so the picture covers it as soon as it's in. */
+
+html.idea-leader :is(.scrub, .rh-player, .modal-inner, .tv-screen, .tile) {
+  background-image: url(/leader.gif); background-position: center; background-repeat: no-repeat;
+}
+/* Basement TV's words while it tunes in sit where the leader would */
+html.idea-leader .tv-screen:has(> p) { background-image: none; }
+/* Small pictures: Next screening's and Just suggested's */
+html.idea-leader :is(.next-still, .mini-list img) {
+  background: #9b9b9b url(/leader.gif) center / 48px 36px no-repeat;
+  background-clip: content-box;
+}
+/* Twice the size under a film page's big still, kept sharp; the still itself stays smooth */
+html.idea-leader .still-frame > .scrub { background-size: 128px 96px; image-rendering: pixelated; }
+html.idea-leader .still-frame > .scrub img:not(.scrub-dither) { image-rendering: auto; }
