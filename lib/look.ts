@@ -7,6 +7,7 @@
 //   ?look=<example>       one example at a time
 //   ?look=<idea>,<idea>   add ideas; ?look=-<idea> takes one away
 //   ?look=none            no example, ideas kept
+//   ?look=clear,intro     everything off first, then just the ones after it
 //   ?today=2027-01-26     the browser behaves as if it's that day in London
 //                         (the time of day stays real); ?today=off
 //
@@ -78,7 +79,7 @@ var q=new URLSearchParams(location.search);
 if(q.has("look")){var v=q.get("look");
 if(v==="off"){s=null}else{s=s||{ideas:[]};s.ideas=s.ideas||[];
 v.split(",").forEach(function(t){t=t.trim();if(!t)return;var neg=t.charAt(0)==="-";if(neg)t=t.slice(1);
-if(t==="none"){delete s.example}else if(EX.indexOf(t)>=0){if(neg){if(s.example===t)delete s.example}else s.example=t}
+if(t==="clear"){s.ideas=[];delete s.example}else if(t==="none"){delete s.example}else if(EX.indexOf(t)>=0){if(neg){if(s.example===t)delete s.example}else s.example=t}
 else if(ID.indexOf(t)>=0){s.ideas=s.ideas.filter(function(x){return x!==t});if(!neg)s.ideas.push(t)}});}}
 if(s){if(s.example&&EX.indexOf(s.example)<0)delete s.example;s.ideas=(s.ideas||[]).filter(function(i){return ID.indexOf(i)>=0})}
 if(q.has("today")){var d=q.get("today");if(/^\\d{4}-\\d{2}-\\d{2}$/.test(d)){s=s||{ideas:[]};s.today=d}else if(s){delete s.today}}
