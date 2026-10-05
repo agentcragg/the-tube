@@ -140,3 +140,13 @@ html.dark .tv-c-score { color: color-mix(in oklab, color-mix(in oklab, #390, #1d
   to { background-color: var(--l-box); }
 }
 html.dark .tv-c-new { animation-name: tv-drop, lights-tv-yellow; }
+
+/* After dark the sky fades up into the page, with no rule between them */
+html.dark .site-footer:has(.en-strip:not([data-state="morning"], [data-state="day"])) {
+  border-top-color: var(--bg);
+  background: linear-gradient(var(--bg), var(--foot-2));
+}
+html.dark .en-strip:not([data-state="morning"], [data-state="day"]) {
+  -webkit-mask-image: linear-gradient(transparent, #000 30%, #000 84%, rgb(0 0 0 / 0.55) 93%, transparent);
+  mask-image: linear-gradient(transparent, #000 30%, #000 84%, rgb(0 0 0 / 0.55) 93%, transparent);
+}

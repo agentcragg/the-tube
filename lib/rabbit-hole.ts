@@ -32,12 +32,9 @@ export type WatchData = {
   boards?: { label: string; threads: { title: string; url: string; user?: string }[] };
 };
 
-// DRAFT: the last honour on every film with panels. "Screening" becomes
-// "Screened" once the night is over (London time). The year is the film's.
+// DRAFT: what a night that's over says in place of Book
 export const HOUSE_HONOUR = {
-  before: "Screening",
   after: "Screened",
-  where: "Basement of Endeavour - Deptford",
 };
 
 // DRAFT: wording, after YouTube's own (Feb 2008)

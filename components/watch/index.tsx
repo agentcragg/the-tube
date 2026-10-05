@@ -2,13 +2,12 @@
 // the main column under the programme notes (RabbitHole); the sidebar opens
 // with these panels: Statistics & Data (honours and sites linking to the
 // film), and, where one existed, the film's old IMDb message board, both
-// open. Native <details>, so no JS beyond the last honour's tense. Data:
+// open. Native <details>, so no JS. Data:
 // lib/watch.ts. Films without clips keep the plain Rabbit hole box and get
 // none of this (see the film page).
 
 import type { Film } from "@/lib/films";
-import { COPY, HOUSE_HONOUR, type WatchData } from "@/lib/rabbit-hole";
-import HouseHonour from "./HouseHonour";
+import { COPY, type WatchData } from "@/lib/rabbit-hole";
 
 export { default as RabbitHole } from "./RabbitHole";
 
@@ -32,40 +31,42 @@ export function WatchPanels({ film, data }: { film: Film; data: WatchData }): Re
 
   return (
     <div className="wp-group">
-      {/* Always has at least one honour: the night itself */}
-      <details className="wp" open>
-        <summary>{COPY.stats}</summary>
-        <div className="wp-body wp-stats">
-          <h4>{COPY.honours(honours.length + 1)}</h4>
-          <ol>
-            {honours.map((h) => (
-              <li key={h}>{h}</li>
-            ))}
-            <li>
-              <HouseHonour date={film.date} {...HOUSE_HONOUR} />
-            </li>
-          </ol>
-          {linking && (
-            <>
-              <h4 id={linkingId}>{COPY.linking(linking.length)}</h4>
-              <table className="wp-linking" aria-labelledby={linkingId}>
-                <tbody>
-                  {linking.map((l) => (
-                    <tr key={l.url}>
-                      <td className="wp-year">{l.year}</td>
-                      <td className="wp-url">
-                        <a href={l.url} target="_blank" rel="noreferrer" title={l.url}>
-                          {bare(l.url)}
-                        </a>
-                      </td>
-                    </tr>
+      {(honours.length > 0 || linking) && (
+        <details className="wp" open>
+          <summary>{COPY.stats}</summary>
+          <div className="wp-body wp-stats">
+            {honours.length > 0 && (
+              <>
+                <h4>{COPY.honours(honours.length)}</h4>
+                <ol>
+                  {honours.map((h) => (
+                    <li key={h}>{h}</li>
                   ))}
-                </tbody>
-              </table>
-            </>
-          )}
-        </div>
-      </details>
+                </ol>
+              </>
+            )}
+            {linking && (
+              <>
+                <h4 id={linkingId}>{COPY.linking(linking.length)}</h4>
+                <table className="wp-linking" aria-labelledby={linkingId}>
+                  <tbody>
+                    {linking.map((l) => (
+                      <tr key={l.url}>
+                        <td className="wp-year">{l.year}</td>
+                        <td className="wp-url">
+                          <a href={l.url} target="_blank" rel="noreferrer" title={l.url}>
+                            {bare(l.url)}
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </>
+            )}
+          </div>
+        </details>
+      )}
 
       {boards && (
         // Open on arrival, so the old thread titles show
