@@ -18,7 +18,6 @@
 
 import Link from "next/link";
 import { thumb } from "@/lib/videos";
-import { SeasonalStreet } from "./Seasonal";
 import type { Scene as SceneT, State } from "./state";
 
 export const G = 130; // ground line
@@ -447,7 +446,7 @@ function Basement() {
       <rect className="en-o en-wall" x={828} y={G} width={344} height={86} />
       <rect className="en-room" x={834} y={G + 2} width={332} height={78} />
       <rect className="en-o en-wall" x={828} y={G} width={314} height={10} />
-      {/* The look switch's house lights: the screen's light on the room */}
+      {/* Dark mode: the screen's light on the room (app/dark.css) */}
       <rect className="en-screen-glow" x={868} y={143} width={136} height={52} clipPath="url(#en-room)" />
       {/* Out of tab order: the footer's own link does this for the keyboard.
           Not prefetched, since the footer is on every page. */}
@@ -735,7 +734,6 @@ export default function Scene({ scene, busy = NONE, children }: { scene: SceneT 
         <rect fill="url(#en-deep)" x={0} y={G + 5} width={2000} height={240 - G - 5} />
         <Basement />
         {scene && <Layer key={scene.state} scene={scene} busy={busy} />}
-        {scene && <SeasonalStreet scene={scene} />}
       </g>
 
       {/* 3am to 4am: the projector runs for an empty room, showing something off the wall.

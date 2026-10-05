@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Ago from "@/components/Ago";
 import ComingUp from "@/components/ComingUp";
-import CycleThumb from "@/components/CycleThumb";
 import { PinIcon, TvIcon } from "@/components/Icons";
 import NextScreening from "@/components/NextScreening";
 import { films, isPast, VENUE } from "@/lib/films";
@@ -57,7 +56,8 @@ export default async function WhatsOn() {
                       </a>
                     ) : (
                       <Link href="/wall">
-                        <CycleThumb id={v.id} src={thumb(v.id, "hq")} />
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={thumb(v.id, "hq")} alt="" />
                         {words}
                       </Link>
                     )}

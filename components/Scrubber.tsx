@@ -1,21 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState } from "react";
-import { ditherSrc, type DitherWidth } from "@/lib/dither";
+import { useCallback, useRef, useState } from "react";
 import { barsFor, zoomPastBars } from "@/lib/letterbox";
-import { CYCLE_FIRST_MS, CYCLE_MS } from "@/lib/use-cycle";
 
 // A film's stills in a row, one showing at a time.
 // Mouse: move across the image to scrub through them, like old YouTube thumbnails.
 // Touch: swipe sideways to flick through them.
-// With `cycle` (the look switch's idea) the mouse doesn't scrub: resting on
-// it steps through the frames after the first by itself, as 2008 YouTube did.
 // With no real frames it shows generated placeholders.
 // A still with black bars baked in is zoomed just past them (lib/letterbox.ts).
-// With the look switch's "dither" idea, a scrubber given a dither width shows
-// its first still as a dithered GIF until the pointer arrives (idea-dither.css).
-// The GIF is in the page from the start, so it's there before React loads,
-// and lazy, so nobody without the idea (who never sees it) fetches it.
 
 const PLACEHOLDER_FRAMES = 4;
 
@@ -37,7 +29,7 @@ function placeholder(seed: string, i: number) {
 // One still, in its own clipping box. A still listed in lib/letterbox.ts as
 // having black bars zooms in past them once it has loaded, inside that box
 // (so the strip's scrolling and swiping don't see the zoom).
-function Still({ src, alt, eager, dither }: { src: string; alt: string; eager: boolean; dither?: string }) {
+function Still({ src, alt, eager }: { src: string; alt: string; eager: boolean }) {
   const [zoom, setZoom] = useState(1);
   const bars = barsFor(src);
   const check = useCallback(
@@ -52,13 +44,8 @@ function Still({ src, alt, eager, dither }: { src: string; alt: string; eager: b
   const ref = useCallback((img: HTMLImageElement | null) => {
     if (img?.complete) check(img);
   }, [check]);
-  const style = zoom > 1 ? { transform: `scale(${zoom})` } : undefined;
   return (
     <span className="scrub-frame">
-      {dither && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img className="scrub-dither x-dither" src={dither} alt="" loading="lazy" draggable={false} style={style} />
-      )}
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         ref={ref}
@@ -67,7 +54,7 @@ function Still({ src, alt, eager, dither }: { src: string; alt: string; eager: b
         loading={eager ? "eager" : "lazy"}
         draggable={false}
         onLoad={(e) => check(e.currentTarget)}
-        style={style}
+        style={zoom > 1 ? { transform: `scale(${zoom})` } : undefined}
       />
     </span>
   );
@@ -80,8 +67,6 @@ export default function Scrubber({
   duration,
   lazy,
   watched,
-  cycle,
-  dither,
 }: {
   frames: string[];
   seed: string;
@@ -89,14 +74,11 @@ export default function Scrubber({
   duration?: string; // e.g. "2:24:21"; badge hidden when not given
   lazy?: boolean; // don't load even the first frame until it's on screen (e.g. inside a closed panel)
   watched?: boolean; // already seen in this browser (lib/watched.ts): the bar stays full, on touch screens too
-  cycle?: boolean;
-  dither?: DitherWidth; // about the width it's shown at, for the "dither" idea
 }) {
   const count = frames.length || PLACEHOLDER_FRAMES;
   const [i, setI] = useState(0);
   const [active, setActive] = useState(false);
   const strip = useRef<HTMLDivElement>(null);
-  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const show = (n: number) => {
     setI(n);
@@ -104,33 +86,16 @@ export default function Scrubber({
     if (s) s.scrollLeft = n * s.clientWidth;
   };
 
-  // Frames 1, 2, 3, then round again; frame 0 is the still it rests on
-  const startCycle = () => {
-    clearTimeout(timer.current);
-    let n = 0;
-    const step = () => {
-      show((n++ % (count - 1)) + 1);
-      timer.current = setTimeout(step, CYCLE_MS);
-    };
-    timer.current = setTimeout(step, CYCLE_FIRST_MS);
-  };
-  useEffect(() => () => clearTimeout(timer.current), []);
-
   return (
     <div
-      className={["scrub", watched && "scrub-watched", dither && "scrub-ditherable"].filter(Boolean).join(" ")}
+      className={watched ? "scrub scrub-watched" : "scrub"}
       onMouseMove={(e) => {
-        if (cycle) return;
         const r = e.currentTarget.getBoundingClientRect();
         const n = Math.min(count - 1, Math.floor(((e.clientX - r.left) / r.width) * count));
         if (n !== i) show(n);
       }}
-      onMouseEnter={() => {
-        setActive(true);
-        if (cycle && count > 1) startCycle();
-      }}
+      onMouseEnter={() => setActive(true)}
       onMouseLeave={() => {
-        clearTimeout(timer.current);
         setActive(false);
         show(0);
       }}
@@ -145,13 +110,7 @@ export default function Scrubber({
       >
         {Array.from({ length: count }, (_, n) =>
           frames.length ? (
-            <Still
-              key={n}
-              src={frames[n]}
-              alt={n === 0 ? alt : ""}
-              eager={n === 0 && !lazy}
-              dither={dither && n === 0 ? ditherSrc(frames[n], dither) : undefined}
-            />
+            <Still key={n} src={frames[n]} alt={n === 0 ? alt : ""} eager={n === 0 && !lazy} />
           ) : (
             <div
               key={n}

@@ -1,39 +1,8 @@
 /* ================= Look switch (lib/look.ts) ================= */
 
-/* Markup that belongs to one option is hidden unless that option is on, and
-   markup it replaces is hidden while it's on. Each option adds its id:
+/* Markup that belongs to one example is hidden unless that example is on,
+   and markup it replaces is hidden while it's on. Each example adds its id:
      .x-<id> { display: none; }
-     html.look-<id> .x-<id> { display: revert; }    (idea-<id> for an idea)
+     html.look-<id> .x-<id> { display: revert; }
      html.look-<id> .no-<id> { display: none; }
    and its own stylesheet gives its pieces the right display. */
-
-.look-menu {
-  position: fixed; left: 12px; bottom: 12px; z-index: 60; width: 250px;
-  background: #f1f1f1; border: 1px solid #999; border-radius: 4px; box-shadow: 0 3px 14px rgb(0 0 0 / 0.3);
-  font: 11px/1.4 Arial, Helvetica, sans-serif; color: #111;
-  color-scheme: light; /* stays light in dark mode */
-}
-.look-menu-head {
-  all: unset; box-sizing: border-box; cursor: pointer; width: 100%;
-  display: flex; justify-content: space-between; gap: 8px;
-  padding: 5px 8px; font-weight: bold;
-  background: linear-gradient(#f8f8f8, #dedede); border-radius: 4px;
-}
-.look-menu-body { display: grid; gap: 8px; padding: 8px; border-top: 1px solid #bbb; }
-.look-menu-row { display: grid; gap: 3px; font-weight: bold; }
-.look-menu-row select, .look-menu-row input { font: 11px Arial, Helvetica, sans-serif; max-width: 100%; }
-.look-menu fieldset { border: 1px solid #ccc; margin: 0; padding: 4px 6px 6px; display: grid; gap: 3px; }
-.look-menu legend { font-weight: bold; padding: 0 3px; }
-.look-menu fieldset label { display: flex; gap: 5px; align-items: center; cursor: pointer; }
-.look-menu fieldset input { margin: 0; }
-.look-menu-off {
-  justify-self: start; cursor: pointer; font: bold 11px Arial, Helvetica, sans-serif; padding: 3px 8px;
-  background: linear-gradient(#fff, #ddd); border: 1px solid #999; border-radius: 3px;
-}
-
-
-.x-pumpkin { display: none; }
-html.idea-pumpkin .x-pumpkin { display: revert; }
-
-.x-fireworks { display: none; }
-html.idea-fireworks .x-fireworks { display: revert; }

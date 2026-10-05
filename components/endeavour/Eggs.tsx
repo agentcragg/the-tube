@@ -563,7 +563,7 @@ function MovingABoard({ lit, behind, onDone }: { lit: boolean; behind: boolean; 
       {/* The drawing has the one at the end of the ledge over its corner. They
           stay in the drawing, and only the bit over the board is drawn again
           (held still, and wobbled with the board so the edges meet), so
-          whatever's in front of them (a pumpkin, at Halloween) stays there */}
+          whatever's in front of them stays there */}
       {behind && (
         <g clipPath="url(#en-aboard-outline)">
           <g ref={stay}>

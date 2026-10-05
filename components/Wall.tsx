@@ -16,7 +16,6 @@ import {
   tikTokThumb,
   type Video,
 } from "@/lib/videos";
-import { useCycle } from "@/lib/use-cycle";
 import { markWatched, useWatched } from "@/lib/watched";
 
 // An endless grid of thumbnails. Drag to move it; a hard flick keeps gliding
@@ -113,8 +112,6 @@ function Tile({
   const className = ["tile", mine && `tile-mine tile-${mine}`, land && "tile-land", nudge && "tile-nudge"]
     .filter(Boolean)
     .join(" ");
-  // The look switch's "cycle" idea: only the picture changes, while hovered or held
-  const cycle = useCycle(video.id, { skip: isTikTok(video.id), touch: true });
   return (
     <button
       className={className}
@@ -122,7 +119,6 @@ function Tile({
       onClick={onOpen}
       onMouseEnter={() => onHover(true)}
       onMouseLeave={() => onHover(false)}
-      {...cycle.bind}
     >
       {isTikTok(video.id) ? (
         // Upright, over a blurred and darkened copy of itself filling the tile,
@@ -138,7 +134,7 @@ function Tile({
           {/* hqdefault is 4:3 with the video letterboxed inside; cropping it to 16:9
               cuts the bars off both widescreen and 4:3 videos */}
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={cycle.src ?? thumb(video.id, "hq")} alt="" draggable={false} />
+          <img src={thumb(video.id, "hq")} alt="" draggable={false} />
           <Laurel videoId={video.id} />
         </>
       )}

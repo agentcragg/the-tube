@@ -16,7 +16,6 @@ import { useEffect, useState, type CSSProperties } from "react";
 import type { Film } from "@/lib/films";
 import { Moving, Spots, useEggs } from "./Eggs";
 import Scene from "./Scene";
-import { SeasonalSky } from "./Seasonal";
 import { STATES, type State } from "./state";
 import { pickState, usePicked, useScene } from "./use-scene";
 
@@ -52,7 +51,6 @@ export function EndeavourStrip({ films }: { films: Film[] }): React.ReactNode {
         {scene && <Spots scene={scene} eggs={eggs} />}
       </Scene>
       {scene && <Moving scene={scene} eggs={eggs} />}
-      <SeasonalSky scene={scene} />
       {showSwitch && (
         <div className="en-time">
           <label>

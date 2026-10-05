@@ -1,23 +1,16 @@
 import { useSyncExternalStore } from "react";
-import { pretendDay } from "@/lib/look";
 
 // London time for anything that changes with the clock (the Endeavour
 // drawing, the laurels on the wall, "Screening"/"Screened"). Pages are built
 // ahead of time, so this only runs in the browser: the server snapshot is null
 // and components should render a sensible static version until it isn't.
-// The look switch's ?today moves the date and keeps the real time of day.
 
 let cached: { minute: number; value: Date } | null = null;
 
 // The same Date for the whole minute, so the snapshot is stable between ticks
 function snapshot(): Date {
   const minute = Math.floor(Date.now() / 60_000);
-  if (!cached || cached.minute !== minute) {
-    const real = new Date();
-    const day = pretendDay();
-    const shift = day ? daysBetween(londonParts(real).isoDate, day) * 86_400_000 : 0;
-    cached = { minute, value: new Date(real.getTime() + shift) };
-  }
+  if (!cached || cached.minute !== minute) cached = { minute, value: new Date() };
   return cached.value;
 }
 

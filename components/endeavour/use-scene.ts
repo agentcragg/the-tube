@@ -4,9 +4,9 @@ import type { Film } from "@/lib/films";
 import { seedVideos } from "@/lib/videos";
 import { sceneAs, sceneAt, type Scene, type State } from "./state";
 
-// The scene the footer drawing shows, for anything else on the page that
-// follows the room (the look switch's ideas). The time switch's pick is kept
-// here rather than in the drawing, so they all move together when it changes.
+// The scene the footer drawing shows, and the time switch's pick, kept here
+// rather than in the drawing so dark mode (components/DarkMode.tsx) moves
+// with it when it changes.
 
 export const WALL_IDS = seedVideos.map((v) => v.id);
 

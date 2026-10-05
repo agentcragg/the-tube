@@ -5,8 +5,6 @@ import { LAUREL_LABEL, LaurelMark, laurelLines } from "@/components/laurels";
 import Scrubber from "@/components/Scrubber";
 import Screened from "@/components/Screened";
 import { RabbitHole, WatchPanels } from "@/components/watch";
-import Handout from "@/components/Handout";
-import Letterboard from "@/components/Letterboard";
 import Notes from "@/components/Notes";
 import Tonight from "@/components/Tonight";
 import { CalendarIcon, CanIcon, MicIcon, PinIcon, TicketIcon } from "@/components/Icons";
@@ -59,7 +57,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
     <div className="watch">
       <article>
         <div className="still-frame">
-          <Scrubber frames={film.stills} seed={film.slug} alt={film.title} dither={480} />
+          <Scrubber frames={film.stills} seed={film.slug} alt={film.title} />
           {/* The wall's laurel once the night is over */}
           <Screened date={film.date}>
             <span className="still-laurel">
@@ -68,10 +66,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           </Screened>
         </div>
 
-        <h1>
-          <span className="no-letterboard">{film.title}</span>
-          <Letterboard className="x-letterboard" title={film.title} date={film.date} />
-        </h1>
+        <h1>{film.title}</h1>
         <p className="credit">{film.credit}</p>
         {film.extra && (
           <p className="extra extra-big">
@@ -126,7 +121,6 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
           </div>
           <div className="box-body">
             <Notes text={film.notes ?? PLACEHOLDER_NOTES} />
-            <Handout film={film} notes={film.notes ?? PLACEHOLDER_NOTES} />
           </div>
         </section>
 
@@ -164,7 +158,7 @@ export default async function FilmPage({ params }: PageProps<"/films/[slug]">) {
               {nextUp.map((f) => (
                 <li key={f.slug}>
                   <Link href={`/films/${f.slug}`}>
-                    <Scrubber frames={f.stills} seed={f.slug} alt={f.title} dither={120} />
+                    <Scrubber frames={f.stills} seed={f.slug} alt={f.title} />
                     <span>
                       <strong>{f.title}</strong>
                       <em>{f.credit}</em>

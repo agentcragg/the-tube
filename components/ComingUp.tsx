@@ -10,7 +10,6 @@ import { LAUREL_LABEL, LaurelMark, laurelLines } from "@/components/laurels";
 import { londonParts, useLondonNow } from "@/lib/clock";
 import { badgeTime, bookingUrl, formatDate, isPast, type Film } from "@/lib/films";
 import { HOUSE_HONOUR } from "@/lib/rabbit-hole";
-import { useLook } from "@/lib/use-look";
 
 // The "Coming up" box: everything still to come, a tab for nights that have
 // already happened, and a search field that filters as you type.
@@ -23,8 +22,7 @@ const TABS = [
 export default function ComingUp({ films, seats }: { films: Film[]; seats: Record<string, number> }) {
   const [tab, setTab] = useState<(typeof TABS)[number]["id"]>("upcoming");
   const [q, setQ] = useState("");
-  // Nights split on the London day, so the look switch's ?today moves them
-  // into Past nights too. Until the clock is known, it's isPast().
+  // Nights split on the London day. Until the clock is known, it's isPast().
   const now = useLondonNow();
   const today = now ? londonParts(now).isoDate : null;
   const over = (iso: string) => (today ? iso < today : isPast(iso));
@@ -34,16 +32,6 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
   const shown = (tab === "past" ? past : upcoming).filter(
     (f) => !q || `${f.title} ${f.credit}`.toLowerCase().includes(q.toLowerCase()),
   );
-
-  // The look switch's "yellowfade" idea: a card a tab or the search brings
-  // in fades from yellow (app/idea-yellowfade.css). The ones there from the
-  // start, and ones that stay put, don't.
-  const yellowfade = useLook("yellowfade");
-  const slugs = shown.map((f) => f.slug);
-  const [was, setWas] = useState({ slugs, fresh: [] as string[] });
-  if (was.slugs.join() !== slugs.join()) {
-    setWas({ slugs, fresh: [...was.fresh, ...slugs.filter((s) => !was.slugs.includes(s))] });
-  }
 
   return (
     <section className="box">
@@ -89,9 +77,9 @@ export default function ComingUp({ films, seats }: { films: Film[]; seats: Recor
               // its age and "Screened" in place of Book
               const gone = over(f.date);
               return (
-                <li key={f.slug} className={yellowfade && was.fresh.includes(f.slug) ? "yf-new" : undefined}>
+                <li key={f.slug}>
                   <Link href={`/films/${f.slug}`}>
-                    <Scrubber frames={f.stills} seed={f.slug} alt={f.title} duration={badgeTime(f)} dither={320} />
+                    <Scrubber frames={f.stills} seed={f.slug} alt={f.title} duration={badgeTime(f)} />
                     {gone && (
                       <span className="card-laurel">
                         <LaurelMark lines={laurelLines(f.date.slice(0, 4))} label={LAUREL_LABEL} />
