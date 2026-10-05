@@ -273,16 +273,18 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 .night-ago { color: #999; }
 .film-grid .book-small { margin-top: 2px; }
 
-/* Next screening: the head is as tall as Coming up's (which holds the search
-   box) and the date bar as tall as its tabs, so the picture's top lines up
-   with the first row of stills beside it */
+/* Next screening, built like Coming up beside it: a head as tall as its
+   (which holds the search box), the date as the one tab in a bar like its
+   tabs, then a card. So the picture's top lines up with the first row of
+   stills. */
 .next-box .box-head { min-height: 36px; box-sizing: border-box; }
-.next-bar .next-when { padding: 7px 10px; border-bottom: 3px solid transparent; font-weight: bold; color: var(--accent); }
-.next-up .next-title { font-size: 15px; line-height: 1.25; margin: 8px 0 0; }
+.next-bar .on { padding: 7px 10px; border-bottom: 3px solid var(--accent); font-weight: bold; color: var(--ink); }
+.next-up .next-title { font-size: 15px; line-height: 1.25; margin: 8px 0 1px; }
+.next-up .credit { margin: 0; }
 .side-banner { display: block; width: 100%; height: auto; margin: 0 0 16px; }
 .side-banner img { display: block; width: 100%; height: auto; }
-/* The picture, out to the box's sides; 3px down, where the stills sit in their frames */
-.next-pic { display: block; margin: 3px -12px 0; }
+/* The picture in the same frame as the programme's stills */
+.next-pic { display: block; border: 1px solid var(--frame); padding: 2px; background: #fff; }
 .next-pic img { display: block; width: 100%; height: auto; }
 
 .mini-list { list-style: none; margin: 0; padding: 0; }

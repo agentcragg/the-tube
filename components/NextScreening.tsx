@@ -26,15 +26,15 @@ export default function NextScreening({ next: fromServer }: { next: Film }) {
           <CalendarIcon /> <Tonight date={next.date} fallback="Next screening" />
         </h2>
       </div>
-      {/* The date in a bar the height of Coming up's tabs, so the picture
+      {/* The date as the one tab in a bar like Coming up's, so the picture
           lines up with the programme's first row of stills */}
       <div className="box-tabs next-bar">
-        <span className="next-when">{formatDate(next.date)}</span>
+        <span className="on">{formatDate(next.date)}</span>
       </div>
       <div className="box-body next-up">
         <Link href={`/films/${next.slug}`} className="next-pic">
           {next.art ? (
-            // A picture made for the night (Matt's GIFs, in time), out to the box's sides
+            // A picture made for the night (Matt's GIFs, in time)
             // eslint-disable-next-line @next/next/no-img-element
             <img src={next.art} alt={next.title} />
           ) : (
@@ -54,6 +54,7 @@ export default function NextScreening({ next: fromServer }: { next: Film }) {
             <Letterboard className="x-letterboard" title={next.title} date={next.date} />
           </Link>
         </h3>
+        <p className="credit">{next.credit}</p>
       </div>
     </section>
   );

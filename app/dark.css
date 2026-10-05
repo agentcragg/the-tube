@@ -69,6 +69,7 @@ html.dark .wp,
 html.dark .still-frame,
 html.dark .rh-frame,
 html.dark .film-grid a:has(.scrub),
+html.dark .next-pic,
 html.dark .rh-thumb,
 html.dark .tv-next-thumb { background: var(--l-box); }
 html.dark .section-title {
