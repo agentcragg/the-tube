@@ -127,7 +127,9 @@
 .en-strip[data-state="night"] .en-shutter rect,
 .en-strip[data-state="egg"] .en-shutter rect { fill: #3a3a3a; }
 .en-shutter line { stroke: var(--line); stroke-width: 0.8; opacity: 0.6; }
-.en-shutter-down { opacity: 1; }
+/* The tandoori, behind its shutter: lit while it's open in the evening */
+.en-tandoori { fill: var(--win); }
+.en-strip:is([data-state="evening"], [data-state="setup"], [data-state="queue"], [data-state="screening"], [data-state="after"]) .en-tandoori { fill: var(--lit); }
 .en-roof { fill: color-mix(in srgb, var(--nbr1) 62%, #000); }
 .en-brick { fill: color-mix(in srgb, var(--nbr1) 80%, #000); }
 .en-awning { fill: color-mix(in srgb, var(--nbr2) 55%, #000); }
@@ -182,6 +184,39 @@
 .en-tv { cursor: pointer; }
 .en-strip .en-tv:hover .en-screen { fill: color-mix(in srgb, var(--screen) 86%, white); }
 .en-layer { pointer-events: none; }
+
+/* Things that move when they're clicked (components/endeavour/Eggs.tsx). The
+   spots are invisible, and bigger than what they're on, for fingers. */
+.en-spot { fill: transparent; cursor: pointer; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+/* Fingers, where the strip is short (tablets held upright): a see-through
+   line round each spot still catches taps, and none reaches the screen's link */
+@media (pointer: coarse) { .en-spot { stroke: transparent; stroke-width: 24; } }
+.en-moving { pointer-events: none; will-change: transform; }
+.en-strip .en-moving * { transition: none; }
+.en-wing { fill: none; stroke: #4d4d4d; stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; }
+
+/* A street lamp stutters; the bar's bulbs dip, and the room with them. In
+   steps, so the drawing's wobble is only redone a few times. */
+.en-flicker .en-lamp { animation: en-flicker-lamp 0.9s step-end; }
+.en-pool.en-flicker { animation: en-flicker-pool 0.9s step-end; }
+.en-lamp.en-dip { animation: en-dip-bulb 0.75s step-end; }
+.en-bar.en-dip { animation: en-dip-bar 0.75s step-end; }
+@keyframes en-flicker-lamp { 0%, 14%, 34% { fill: #6e6e6e; } 7%, 26%, 48% { fill: var(--lamp); } }
+@keyframes en-flicker-pool { 0%, 14%, 34% { opacity: 0; } 7%, 26%, 48% { opacity: 0.05; } }
+@keyframes en-dip-bulb { 0%, 22% { fill: #8a8a8a; } 9%, 44% { fill: var(--lamp); } 30% { fill: #c4c4c4; } }
+@keyframes en-dip-bar { 0%, 22% { fill: color-mix(in srgb, var(--bar) 90%, #000); } 9%, 44% { fill: var(--bar); } 30% { fill: color-mix(in srgb, var(--bar) 95%, #000); } }
+@media (prefers-reduced-motion: reduce) {
+  /* One dip, not a flicker */
+  .en-flicker .en-lamp, .en-pool.en-flicker, .en-lamp.en-dip, .en-bar.en-dip { animation-duration: 1.2s; }
+  .en-flicker .en-lamp { animation-name: en-dim-lamp; }
+  .en-pool.en-flicker { animation-name: en-dim-pool; }
+  .en-lamp.en-dip { animation-name: en-dim-bulb; }
+  .en-bar.en-dip { animation-name: en-dim-bar; }
+}
+@keyframes en-dim-lamp { 0% { fill: #9a9a9a; } 50% { fill: var(--lamp); } }
+@keyframes en-dim-pool { 0% { opacity: 0.025; } 50% { opacity: 0.05; } }
+@keyframes en-dim-bulb { 0% { fill: #b4b4b4; } 50% { fill: var(--lamp); } }
+@keyframes en-dim-bar { 0% { fill: color-mix(in srgb, var(--bar) 95%, #000); } 50% { fill: var(--bar); } }
 
 /* A new state fades in; colours ease across */
 .en-strip svg * { transition: fill 0.4s ease, opacity 0.4s ease; }

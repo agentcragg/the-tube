@@ -9,9 +9,12 @@
 // Time switch: visit any page with ?time to get a small menu on the drawing
 // for flicking through the times of day (remembered in that browser);
 // ?time=off hides it again. Everyone else just sees the real time.
+//
+// Some things in the drawing move when they're clicked (Eggs.tsx).
 
 import { useEffect, useState, type CSSProperties } from "react";
 import type { Film } from "@/lib/films";
+import { Moving, Spots, useEggs } from "./Eggs";
 import Scene from "./Scene";
 import { SeasonalSky } from "./Seasonal";
 import { STATES, type State } from "./state";
@@ -25,6 +28,7 @@ export function EndeavourStrip({ films }: { films: Film[] }): React.ReactNode {
   const scene = useScene(films);
   const picked = usePicked();
   const [showSwitch, setShowSwitch] = useState(false);
+  const eggs = useEggs(scene?.state);
 
   useEffect(() => {
     let on = false;
@@ -44,7 +48,10 @@ export function EndeavourStrip({ films }: { films: Film[] }): React.ReactNode {
 
   return (
     <div className="en-strip" data-state={scene?.state} style={style as CSSProperties}>
-      <Scene scene={scene} />
+      <Scene scene={scene} busy={eggs.busy}>
+        {scene && <Spots scene={scene} eggs={eggs} />}
+      </Scene>
+      {scene && <Moving scene={scene} eggs={eggs} />}
       <SeasonalSky scene={scene} />
       {showSwitch && (
         <div className="en-time">

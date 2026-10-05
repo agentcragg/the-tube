@@ -11,13 +11,17 @@
 // The basement screen is a link to Basement TV, the only way there: Matt
 // wants it found, not signposted. The drawing is hidden from screen readers
 // and the keyboard.
+//
+// Some things in it move when they're clicked (Eggs.tsx). While one does, it's
+// hidden here (busy) and a copy moves on a layer over the drawing; the spots
+// you click go in after the drawing (children).
 
 import Link from "next/link";
 import { thumb } from "@/lib/videos";
 import { SeasonalStreet } from "./Seasonal";
 import type { Scene as SceneT, State } from "./state";
 
-const G = 130; // ground line
+export const G = 130; // ground line
 
 // Deterministic "random", so the server and the browser draw the same skyline
 function seeded(seed: number) {
@@ -46,7 +50,7 @@ const FAR_SKYLINE = (() => {
 })();
 
 // Street lamps: where the post stands, and how high its head is
-const LAMPS = [
+export const LAMPS = [
   { x: 250, top: 50 },
   { x: 1156, top: 28 }, // in front of Endeavour, with the Deptford Broadway sign on it
 ];
@@ -79,14 +83,14 @@ const EARLY = [3, 4, 14, 15, 16, 25]; // seats already taken while the queue is 
 // Endeavour's shopfront, from photos: the wooden door to the flats (39) and
 // the black bar door, each under a barred transom, then the big window with
 // a ledge, stools, hanging bulbs and a round extractor in the corner.
-const WINDOW = { x: 925, y: 82, w: 233, h: 44 };
+export const WINDOW = { x: 925, y: 82, w: 233, h: 44 };
 const GOOSENECKS = [848, 896, 944, 992, 1040, 1088, 1136];
 const BULBS = [948, 1004, 1062, 1118];
 const STOOLS = [958, 990, 1022, 1054, 1086];
 
 // People at the ledge in the big window, by state
-const BAR_X = [944, 976, 1010, 1046, 1090, 1122];
-const BAR_PEOPLE: Record<State, number[]> = {
+export const BAR_X = [944, 976, 1010, 1046, 1090, 1122];
+export const BAR_PEOPLE: Record<State, number[]> = {
   morning: [],
   day: [1],
   evening: [0, 2, 4],
@@ -97,7 +101,6 @@ const BAR_PEOPLE: Record<State, number[]> = {
   night: [],
   egg: [],
 };
-
 // Stairs down at the back: eight steps from the bar floor to the basement floor
 const STEP_RUN = 8;
 const STEP_RISE = 10;
@@ -113,13 +116,13 @@ const stairPoints = (() => {
 })();
 const stepAt = (k: number) => ({ x: STAIR_TOP - STEP_RUN * k + STEP_RUN / 2, y: G + STEP_RISE * k });
 
-const LAMPS_ON: State[] = ["evening", "setup", "queue", "screening", "after", "night", "egg"];
+export const LAMPS_ON: State[] = ["evening", "setup", "queue", "screening", "after", "night", "egg"];
 const CHAIRS_OUT: State[] = ["setup", "queue"];
 const CHAIRS_STACKED: State[] = ["after", "night", "egg", "morning", "day", "evening"];
 
-function Lamp({ x, top }: { x: number; top: number }) {
+function Lamp({ x, top, flicker }: { x: number; top: number; flicker?: boolean }) {
   return (
-    <g>
+    <g className={flicker ? "en-flicker" : undefined}>
       <path className="en-post" d={`M${x} ${G} V${top + 6} Q${x} ${top} ${x + 8} ${top}`} />
       <rect className="en-o en-lamp" x={x + 5} y={top} width={9} height={4.5} rx={1} />
     </g>
@@ -138,22 +141,62 @@ function Arched({ x, y, w, h, lit, sill = true }: { x: number; y: number; w: num
   );
 }
 
-// A roller shutter, down at night and first thing (or always, if the shop has shut for good)
-function Shutter({ x, y, w, h, always }: { x: number; y: number; w: number; h: number; always?: boolean }) {
+// The shops' roller shutters, down at night and first thing: the tandoori's,
+// the shop with the awning's, Autocolour's and the corner building's
+export const SHUTTERS = [
+  { x: 378, y: 94, w: 110, h: G - 94 },
+  { x: 546, y: 101, w: 278, h: G - 101 },
+  { x: 1176, y: 93, w: 273, h: G - 93 },
+  { x: 1546, y: 93, w: 462, h: G - 93 },
+];
+export const SHUTTERS_DOWN: State[] = ["morning", "night", "egg"]; // as --shutter in app/endeavour.css
+
+// Whatever's painted on a shutter goes up and down with it (children)
+export function Shutter({ x, y, w, h, children }: { x: number; y: number; w: number; h: number; children?: React.ReactNode }) {
   const lines = Array.from({ length: Math.floor((h - 4) / 4.2) }, (_, i) => y + 4 + i * 4.2);
   return (
-    <g className={always ? "en-shutter en-shutter-down" : "en-shutter"}>
+    <g className="en-shutter">
       <rect className="en-o" x={x} y={y} width={w} height={h} />
       {lines.map((ly) => (
         <line key={ly} x1={x} x2={x + w} y1={ly} y2={ly} />
       ))}
+      {children}
     </g>
   );
 }
+export const TANDOORI_TAG =
+  "M404 100 Q390 104 394 116 Q398 125 410 120 M418 104 q6 -3 8 3 q2 6 -5 8 q8 1 7 8 M436 108 l6 -4 l-2 14 m6 -8 q8 -3 10 4 M392 125 H470";
+
+// The corner pub's hanging sign; it swings from the middle of its bracket
+export const SIGN_PIVOT = { x: 344, y: 63 };
+export function SignFace() {
+  return (
+    <>
+      <rect className="en-o en-case" x={336} y={66} width={16} height={14} />
+      <circle className="en-o en-nbr1" cx={344} cy={73} r={3.4} />
+    </>
+  );
+}
+
+// A street cabinet on the pavement, tagged
+export function Cabinet() {
+  return (
+    <>
+      <rect className="en-o en-cabinet" x={690} y={111} width={22} height={19} rx={1} />
+      <path className="en-tag" d="M694 118 q4 -4 7 0 q3 4 7 -1 M695 124 H708" />
+    </>
+  );
+}
+
+// Two bin bags by the street cabinet, each sitting on the pavement at x
+export const BAGS = [
+  { x: 722, d: "M716 130 Q713 121 720 119 L719 116 L723 118 Q730 120 728 130 Z" },
+  { x: 732, d: "M727 130 Q726 124 731 122 L731 119.5 L734 122 Q739 124 737 130 Z" },
+];
 
 // The rest of the block, after Street View, left to right. Kept simple: the
 // shapes, heights and windows are the real ones; the signs are left blank.
-function Neighbours() {
+function Neighbours({ busy }: { busy: Busy }) {
   return (
     <g>
       {/* Behind the pub: the taller brick block */}
@@ -177,11 +220,12 @@ function Neighbours() {
         <Arched key={x} x={x} y={90} w={36} h={G - 90} lit={i === 1 || i === 2} sill={false} />
       ))}
       {/* Its hanging sign */}
-      <path className="en-post en-post-thin" d="M334 63 H354 M338 63 V66 M350 63 V66" />
-      <rect className="en-o en-case" x={336} y={66} width={16} height={14} />
-      <circle className="en-o en-nbr1" cx={344} cy={73} r={3.4} />
+      <g visibility={away(busy, "sign")}>
+        <path className="en-post en-post-thin" d="M334 63 H354 M338 63 V66 M350 63 V66" />
+        <SignFace />
+      </g>
 
-      {/* Narrow cream house: one window a floor; the tandoori's shutter is down for good */}
+      {/* Narrow cream house: one window a floor; the tandoori downstairs */}
       <rect className="en-o en-nbr2" x={382} y={6} width={12} height={14} />
       <rect className="en-o en-nbr1" x={370} y={20} width={170} height={G - 20} />
       <rect fill="url(#en-pencil)" x={370} y={20} width={170} height={60} />
@@ -189,8 +233,13 @@ function Neighbours() {
       <Sash x={445} y={28} w={20} h={18} />
       <Sash x={445} y={54} w={20} h={18} lit />
       <rect className="en-o en-fascia" x={374} y={82} width={162} height={10} />
-      <Shutter x={378} y={94} w={110} h={G - 94} always />
-      <path className="en-tag" d="M404 100 Q390 104 394 116 Q398 125 410 120 M418 104 q6 -3 8 3 q2 6 -5 8 q8 1 7 8 M436 108 l6 -4 l-2 14 m6 -8 q8 -3 10 4 M392 125 H470" />
+      <rect className="en-o en-tandoori" x={382} y={97} width={72} height={G - 97} />
+      <rect className="en-o en-door" x={460} y={97} width={24} height={G - 97} />
+      <g visibility={away(busy, "shutter0")}>
+        <Shutter {...SHUTTERS[0]}>
+          <path className="en-tag" d={TANDOORI_TAG} />
+        </Shutter>
+      </g>
       <rect className="en-o en-frame" x={496} y={97} width={20} height={G - 97} />
 
       {/* Tall cream building, four storeys, two windows a floor; shop with an awning */}
@@ -208,12 +257,16 @@ function Neighbours() {
       <path className="en-awning-stripes" d={Array.from({ length: 23 }, (_, i) => `M${556 + i * 12} 92.5 L${554 + i * 12.3} 100.5`).join(" ")} />
       <rect className="en-o en-win" x={552} y={101} width={200} height={G - 101} />
       <rect className="en-o en-door" x={764} y={101} width={22} height={G - 101} />
-      <Shutter x={546} y={101} w={278} h={G - 101} />
+      <g visibility={away(busy, "shutter1")}>
+        <Shutter {...SHUTTERS[1]} />
+      </g>
       {/* On the pavement: a street cabinet, tagged, and the bin bags */}
-      <rect className="en-o en-cabinet" x={690} y={111} width={22} height={19} rx={1} />
-      <path className="en-tag" d="M694 118 q4 -4 7 0 q3 4 7 -1 M695 124 H708" />
-      <path className="en-o en-bag" d="M716 130 Q713 121 720 119 L719 116 L723 118 Q730 120 728 130 Z" />
-      <path className="en-o en-bag" d="M727 130 Q726 124 731 122 L731 119.5 L734 122 Q739 124 737 130 Z" />
+      <Cabinet />
+      <g visibility={away(busy, "bags")}>
+        {BAGS.map((b) => (
+          <path key={b.x} className="en-o en-bag" d={b.d} />
+        ))}
+      </g>
 
       {/* Autocolour: low brick shop with a hipped roof, one window upstairs */}
       <path className="en-o en-roof" d="M1162 53 L1186 36 H1439 L1463 53 Z" />
@@ -225,7 +278,9 @@ function Neighbours() {
       <rect className="en-o en-win" x={1180} y={96} width={110} height={30} />
       <rect className="en-o en-win" x={1296} y={96} width={110} height={30} />
       <rect className="en-o en-door" x={1413} y={96} width={30} height={G - 96} />
-      <Shutter x={1176} y={93} w={273} h={G - 93} />
+      <g visibility={away(busy, "shutter2")}>
+        <Shutter {...SHUTTERS[2]} />
+      </g>
 
       {/* Harton Street goes off between here and the next building: 20mph */}
       <path className="en-post en-post-thin" d={`M1497 ${G} V98`} />
@@ -256,7 +311,9 @@ function Neighbours() {
       {[1552, 1662, 1772, 1882].map((x) => (
         <rect key={x} className="en-o en-win" x={x} y={95} width={92} height={31} />
       ))}
-      <Shutter x={1546} y={93} w={462} h={G - 93} />
+      <g visibility={away(busy, "shutter3")}>
+        <Shutter {...SHUTTERS[3]} />
+      </g>
     </g>
   );
 }
@@ -294,8 +351,9 @@ function Gooseneck({ x }: { x: number }) {
   );
 }
 
-// Endeavour itself: bar at street level, basement cinema below
-function Endeavour() {
+// Endeavour itself: bar at street level, basement cinema below.
+// dip: the bulbs in the big window flicker, and the room with them.
+function Endeavour({ dip }: { dip: boolean }) {
   return (
     <g>
       <rect className="en-o en-end" x={830} y={22} width={340} height={G - 22} />
@@ -336,13 +394,13 @@ function Endeavour() {
       <rect className="en-o en-door" x={884} y={96} width={34} height={G - 96} />
       <rect className="en-o en-win" x={888} y={99} width={26} height={27} />
       {/* The big window */}
-      <rect className="en-o en-bar" x={WINDOW.x} y={WINDOW.y} width={WINDOW.w} height={WINDOW.h} />
+      <rect className={dip ? "en-o en-bar en-dip" : "en-o en-bar"} x={WINDOW.x} y={WINDOW.y} width={WINDOW.w} height={WINDOW.h} />
       <line className="en-bar-line" x1={WINDOW.x} x2={WINDOW.x + WINDOW.w} y1={109} y2={109} />
       <path className="en-rail" d={STOOLS.map((x) => `M${x - 4} 114 H${x + 4} M${x - 2.5} 114 V126 M${x + 2.5} 114 V126`).join(" ")} />
       <line className="en-bar-line" x1={1032} x2={1032} y1={WINDOW.y} y2={WINDOW.y + WINDOW.h} />
       <path className="en-cord" d={BULBS.map((x, i) => `M${x} ${WINDOW.y} V${WINDOW.y + (i % 2 ? 9 : 13)}`).join(" ")} />
       {BULBS.map((x, i) => (
-        <circle key={x} className="en-o en-lamp" cx={x} cy={WINDOW.y + (i % 2 ? 11 : 15)} r={2.2} />
+        <circle key={x} className={dip ? "en-o en-lamp en-dip" : "en-o en-lamp"} cx={x} cy={WINDOW.y + (i % 2 ? 11 : 15)} r={2.2} />
       ))}
       {/* The film on next, in the bottom corner of the window */}
       <rect className="en-o en-case" x={929} y={104} width={16} height={21} />
@@ -355,13 +413,26 @@ function Endeavour() {
   );
 }
 
-// The chalkboard on the pavement, and the street sign on its post
-function StreetFurniture() {
+// The chalkboard on the pavement; it rocks on its right foot
+export const ABOARD_FOOT = { x: 1149.5, y: G };
+export const ABOARD_EDGE = "M1128 112 H1146 L1149.5 130 H1124.5 Z";
+export function ABoard() {
   return (
-    <g>
-      <path className="en-o en-aboard-frame" d="M1128 112 H1146 L1149.5 130 H1124.5 Z" />
+    <>
+      <path className="en-o en-aboard-frame" d={ABOARD_EDGE} />
       <path className="en-o en-aboard" d="M1130 114.5 H1144 L1146.5 127.5 H1127.5 Z" />
       <path className="en-chalk" d="M1131.5 118 H1140 M1131 121.5 H1142.5 M1130.5 125 H1138" />
+    </>
+  );
+}
+
+// The chalkboard, and the street sign on its post
+function StreetFurniture({ busy }: { busy: Busy }) {
+  return (
+    <g>
+      <g visibility={away(busy, "aboard")}>
+        <ABoard />
+      </g>
       <rect className="en-o en-street-sign" x={1124} y={37} width={64} height={12} rx={1} />
       <text className="en-street-sign-text" x={1156} y={45.6} textAnchor="middle">
         Deptford Broadway
@@ -405,8 +476,22 @@ function Head({ x, y, r, rim }: { x: number; y: number; r: number; rim?: boolean
   );
 }
 
+// Where the pigeons sit by day, ledge by ledge: the pub's cornice, Autocolour's
+// roof and the corner building's string course
+export const PIGEONS = [
+  [
+    [150, 24],
+    [161, 24],
+  ],
+  [[1318, 36]],
+  [
+    [1712, 40],
+    [1726, 40],
+  ],
+];
+
 // A pigeon sitting on a ledge whose top is at y
-function Pigeon({ x, y }: { x: number; y: number }) {
+export function Pigeon({ x, y }: { x: number; y: number }) {
   return (
     <g className="en-bird">
       <ellipse cx={x} cy={y - 2.2} rx={3.4} ry={2.2} />
@@ -416,15 +501,42 @@ function Pigeon({ x, y }: { x: number; y: number }) {
   );
 }
 
-// An urban fox on the pavement, facing left, nose at x - 12
-function Fox({ x }: { x: number }) {
+// An urban fox on the pavement, facing left, nose at x - 12. When it's on the
+// move (Eggs.tsx) it brings its own legs and head.
+export const FOX_X = 266;
+export const foxHead = (x: number) =>
+  `M${x - 5} ${G - 9} L${x - 12} ${G - 8} L${x - 8.5} ${G - 12} L${x - 8} ${G - 15} L${x - 6.3} ${G - 12.5} L${x - 5} ${G - 15} L${x - 4.2} ${G - 11} Z`;
+export function Fox({ x, legs, head }: { x: number; legs?: React.ReactNode; head?: React.ReactNode }) {
   return (
     <g>
       <path className="en-o en-fox" d={`M${x + 6} ${G - 7} Q${x + 15} ${G - 11} ${x + 17} ${G - 5} Q${x + 12} ${G - 3} ${x + 6} ${G - 5} Z`} />
       <path className="en-fox-tip" d={`M${x + 14} ${G - 8.5} Q${x + 17} ${G - 8} ${x + 17} ${G - 5} Q${x + 15} ${G - 4.5} ${x + 14} ${G - 5} Z`} />
-      <path className="en-rail" d={`M${x - 4} ${G - 5} V${G} M${x - 1} ${G - 5} V${G} M${x + 3} ${G - 5} V${G} M${x + 6} ${G - 5} V${G}`} />
+      {legs ?? <path className="en-rail" d={`M${x - 4} ${G - 5} V${G} M${x - 1} ${G - 5} V${G} M${x + 3} ${G - 5} V${G} M${x + 6} ${G - 5} V${G}`} />}
       <ellipse className="en-o en-fox" cx={x} cy={G - 7} rx={7.5} ry={3.6} />
-      <path className="en-o en-fox" d={`M${x - 5} ${G - 9} L${x - 12} ${G - 8} L${x - 8.5} ${G - 12} L${x - 8} ${G - 15} L${x - 6.3} ${G - 12.5} L${x - 5} ${G - 15} L${x - 4.2} ${G - 11} Z`} />
+      {head ?? <path className="en-o en-fox" d={foxHead(x)} />}
+    </g>
+  );
+}
+
+// Someone at the ledge in the big window. turn: how far round they've turned
+// (Eggs.tsx), from -1 (to their left, as we see it) through 0 (facing us) to 1.
+export function personShape(x: number, turn = 0) {
+  const t = Math.abs(turn);
+  const s = 1 - 0.36 * t; // the shoulders narrow as they turn
+  const hx = x + 0.9 * turn;
+  const side = Math.sign(turn) * 4.2;
+  return {
+    hx,
+    nose: t ? `M${hx + side} 100.4 L${hx + side * (1 + 0.42 * t)} 102.4 L${hx + side} 103.6 Z` : "",
+    body: `M${x - 9 * s} 127 Q${x - 9 * s} 109.5 ${x} 109.5 Q${x + 9 * s} 109.5 ${x + 9 * s} 127 Z`,
+  };
+}
+export function Person({ x }: { x: number }) {
+  const p = personShape(x);
+  return (
+    <g className="en-figure">
+      <circle cx={p.hx} cy={102} r={4.5} />
+      <path d={p.body} />
     </g>
   );
 }
@@ -443,40 +555,43 @@ function StackedChairs({ x }: { x: number }) {
   return <path className="en-stack" d={`M${x} 210 V196 M${x + 12} 210 V172 ${seats}`} />;
 }
 
+// The light under a street lamp
+export const poolPath = ({ x, top }: (typeof LAMPS)[number]) => `M${x + 6} ${top + 4.5} H${x + 13} L${x + 32} ${G} H${x - 13} Z`;
+
 // Everything that belongs to one state. Keyed by state, so it fades in on change.
-function Layer({ scene }: { scene: SceneT }) {
+function Layer({ scene, busy }: { scene: SceneT; busy: Busy }) {
   const { state } = scene;
   return (
     <g className="en-layer">
       {LAMPS_ON.includes(state) &&
-        LAMPS.map(({ x, top }) => (
-          <path key={x} className="en-pool" d={`M${x + 6} ${top + 4.5} H${x + 13} L${x + 32} ${G} H${x - 13} Z`} />
+        LAMPS.map((lamp, i) => (
+          <path key={lamp.x} className={busy.has(`lamp${i}`) ? "en-pool en-flicker" : "en-pool"} d={poolPath(lamp)} />
         ))}
 
       {/* Pigeons on the ledges by day */}
       {(state === "morning" || state === "day") &&
-        [
-          [150, 24],
-          [161, 24],
-          [1318, 36],
-          [1712, 40],
-          [1726, 40],
-        ].map(([x, y]) => <Pigeon key={x} x={x} y={y} />)}
+        PIGEONS.map((ledge, i) => (
+          <g key={i} visibility={away(busy, `pigeons${i}`)}>
+            {ledge.map(([x, y]) => (
+              <Pigeon key={x} x={x} y={y} />
+            ))}
+          </g>
+        ))}
 
       {/* A fox under the lamp by the pub, after dark */}
-      {(state === "night" || state === "egg") && <Fox x={266} />}
+      {(state === "night" || state === "egg") && (
+        <g visibility={away(busy, "fox")}>
+          <Fox x={FOX_X} />
+        </g>
+      )}
 
       {/* People at the ledge in the big window */}
       <g clipPath="url(#en-windows)">
-        {BAR_PEOPLE[state].map((i) => {
-          const x = BAR_X[i];
-          return (
-            <g key={i} className="en-figure">
-              <circle cx={x} cy={102} r={4.5} />
-              <path d={`M${x - 9} 127 Q${x - 9} 109.5 ${x} 109.5 Q${x + 9} 109.5 ${x + 9} 127 Z`} />
-            </g>
-          );
-        })}
+        {BAR_PEOPLE[state].map((i) => (
+          <g key={i} visibility={away(busy, `person${i}`)}>
+            <Person x={BAR_X[i]} />
+          </g>
+        ))}
       </g>
 
       {/* Morning deliveries on the pavement */}
@@ -534,7 +649,14 @@ function Layer({ scene }: { scene: SceneT }) {
   );
 }
 
-export default function Scene({ scene }: { scene: SceneT | null }) {
+// What's moving on the layer over the drawing, so not drawn here: "fox", "bags",
+// "sign", "aboard", "shutter2", "pigeons0", "person4". The street lamps
+// ("lamp1") and the bar ("bar") flicker in place.
+type Busy = ReadonlySet<string>;
+const NONE: Busy = new Set();
+const away = (busy: Busy, id: string) => (busy.has(id) ? "hidden" : undefined);
+
+export default function Scene({ scene, busy = NONE, children }: { scene: SceneT | null; busy?: Busy; children?: React.ReactNode }) {
   return (
     <svg viewBox="0 -44 2000 284" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
       <defs>
@@ -595,12 +717,12 @@ export default function Scene({ scene }: { scene: SceneT | null }) {
           ))}
         </g>
         <path className="en-far" d={FAR_SKYLINE} />
-        <Neighbours />
-        <Endeavour />
-        {LAMPS.map((l) => (
-          <Lamp key={l.x} {...l} />
+        <Neighbours busy={busy} />
+        <Endeavour dip={busy.has("bar") && !!scene && LAMPS_ON.includes(scene.state)} />
+        {LAMPS.map((l, i) => (
+          <Lamp key={l.x} {...l} flicker={busy.has(`lamp${i}`)} />
         ))}
-        <StreetFurniture />
+        <StreetFurniture busy={busy} />
         <rect className="en-o en-pave" x={-4} y={G} width={2008} height={5} />
         <rect className="en-earth" x={0} y={G + 5} width={2000} height={110} />
         <rect fill="url(#en-hatch)" x={0} y={G + 5} width={2000} height={110} />
@@ -612,7 +734,7 @@ export default function Scene({ scene }: { scene: SceneT | null }) {
         ))}
         <rect fill="url(#en-deep)" x={0} y={G + 5} width={2000} height={240 - G - 5} />
         <Basement />
-        {scene && <Layer key={scene.state} scene={scene} />}
+        {scene && <Layer key={scene.state} scene={scene} busy={busy} />}
         {scene && <SeasonalStreet scene={scene} />}
       </g>
 
@@ -633,6 +755,7 @@ export default function Scene({ scene }: { scene: SceneT | null }) {
           clipPath="url(#en-screen-clip)"
         />
       )}
+      {children}
     </svg>
   );
 }
