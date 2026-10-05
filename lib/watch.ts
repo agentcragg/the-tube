@@ -143,8 +143,6 @@ export const WATCH: Record<string, WatchData> = {
   // Elsewhere), so it goes last, not in Start here.
   "in-the-dark": {
     clips: [
-      { id: "74s9vd5SmAQ", title: "The Most Vile Villain No One Knows", by: "Nightmare Movies", year: "2026", length: "26:08" },
-      { id: "SBk_UYactvA", title: "The Most Distressing Lost Movie Has Been Found", by: "We Are Not Alive", year: "2026", length: "23:09" },
       { id: "lbxpHqGMG1k", title: "In the Dark (2000) trailer", by: "Movie Clips", year: "2025", length: "1:16" },
       { id: "ZTB07NH9VW4", title: "Dark Dreamers: Richard Laymon", by: "Stanley Wiater", year: "2021", length: "12:09" },
       { id: "QsJSSzWT5jU", title: "The Strange International Fame of Richard Laymon", by: "CriminOlly", year: "2024", length: "7:13" },
@@ -172,7 +170,6 @@ export const WATCH: Record<string, WatchData> = {
       { id: "amdciMvDUqE", title: "Harmony Korine on Trash Humpers: the 2 Minute 48 Second Interview", by: "strangervideo", year: "2010", length: "2:52" },
       { id: "-HcMzd37bfo", title: "Harmony Korine Introduces Trash Humpers, Nashville Opening Night at the Belcourt", by: "Nashville Scene", year: "2010", length: "4:30" },
       { id: "CJn6zeBpuCk", title: "Gauging Public Opinion on Harmony Korine's Trash Humpers", by: "ultraculture", year: "2010", length: "4:48" },
-      { id: "5n0Tgt9vGoI", title: "America's Most Misunderstood Filmmaker", by: "Like Stories of Old", year: "2026", length: "1:07:19", start: 1145 },
       { id: "c2E3UqcZZqU", title: "Harmony Korine Wants to Make \"Titanic 2\"", by: "Letterman", year: "2025", length: "7:01" },
       { id: "eMVNjMF1Suo", title: "Umshini Wam", by: "osalvationcine", year: "2011", length: "15:01" },
     ],
@@ -206,16 +203,11 @@ export const WATCH: Record<string, WatchData> = {
   // Episode 1 is also in the night's programme; the series has no trailer
   "nebraska-city-special": {
     clips: [
-      { id: "mkRpQU2xVCo", title: "Promises (Nebraska City, Episode 1)", by: "Nick Varvaro", year: "2022", length: "4:46" },
       { id: "vFHSW-uzpms", title: "Nebraska City bloopers", by: "Nick Varvaro", year: "2026", length: "1:47" },
       { id: "6n1hfpDE2WE", title: "Jesus Christ on \"60 Minutes\"", by: "Nick Varvaro", year: "2017", length: "2:32" },
       { id: "cNSItMDLj-8", title: "The Rose Bushes of Manchester", by: "Nick Varvaro", year: "2017", length: "2:21" },
       { id: "IQRL2_aTRGU", title: "Fishing with Dad", by: "Nick Varvaro", year: "2023", length: "1:17" },
-      { id: "QrGrOK8oZG8", title: "Too Many Cooks", by: "Adult Swim", year: "2014", length: "11:11" },
       { id: "RqlQYBcsq54", title: "\"No Soup for You!\" (The Soup Nazi)", by: "Seinfeld", year: "2021", length: "5:09" },
-      { id: "O5eytlN_tlE", title: "Clark and Michael: The Series Preview", by: "clarkduke", year: "2007", length: "1:36" },
-      { id: "9m4epuxb_6Q", title: "City approves grant to film movie at Nebraska City", by: "News Channel Nebraska", year: "2022", length: "3:13" },
-      { id: "BdXFIKFPWoQ", title: "Snack Shack - Official Red Band Trailer", by: "Paramount Movies", year: "2024", length: "2:39" },
     ],
     links: [
       { label: "Dollar Bill, Nick Varvaro's album on Bandcamp", url: "https://nickvarvaro.bandcamp.com/album/dollar-bill", year: "2022" },
@@ -252,7 +244,6 @@ export const WATCH: Record<string, WatchData> = {
   skinamarink: {
     clips: [
       { id: "HVQzEzW4faA", title: "Heck", by: "Bitesized Nightmares", year: "2020", length: "28:49" },
-      { id: "APQqilSTxz0", title: "Skinamarink - Official Trailer", by: "Shudder", year: "2022", length: "1:43" },
       { id: "RGesb5A1rAI", title: "Nightmare 1 (contains strobing)", by: "Bitesized Nightmares", year: "2017", length: "4:10" },
       { id: "562XdGk_ano", title: "Mark Jenkin in conversation with Kyle Edward Ball", by: "Letterboxd", year: "2023", length: "40:32" },
       { id: "ju8u7sy_Ji8", title: "Kyle Edward Ball interviewed by Patton Oswalt (+ Q&A)", by: "Torini Basoren", year: "2023", length: "34:43" },
