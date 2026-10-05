@@ -10,7 +10,7 @@
 :root .tile { background: #eee url(/loading/spinner.gif) center / 32px no-repeat; }
 :root .scrub-frame { background: #000 url(/loading/spinner-dark.gif) center / 32px no-repeat; }
 :root .mini-list img,
-:root .next-still { background: #fff url(/loading/spinner-16.gif) center / 16px no-repeat; }
+:root .next-pic img { background: #eee url(/loading/spinner.gif) center / 32px no-repeat; }
 :root .mini-list .tt-thumb { background: #000 url(/loading/spinner-dark.gif) center / 16px no-repeat; }
 :root .mini-list .tt-thumb img { background: none; }
 :root .tv-next-thumb img { background: #fff url(/loading/spinner.gif) center / 32px no-repeat; }
@@ -59,7 +59,8 @@
   :root :is(.scrub-frame, .mini-list .tt-thumb),
   :root .tv-screen p::before,
   :root :is(.modal-inner, .rh-player, .tv-screen) iframe { background-image: url(/loading/spinner-dark.png); }
-  :root :is(.mini-list img, .next-still),
+  :root .next-pic img { background-image: url(/loading/spinner.png); }
+  :root .mini-list img,
   :root .status-busy::before { background-image: url(/loading/spinner-16.png); }
   :root .mini-list .tt-thumb img { background: none; }
 }

@@ -230,9 +230,6 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 .box-more { margin-top: 10px !important; text-align: right; font-weight: bold; }
 .box-empty { color: var(--muted); padding: 20px 0; }
 /* 2008's headerless box: the label set inside the frame, no icon */
-.box-plain { border-color: #ccc; }
-.box-plain .box-head { background: none; border: 0; padding: 10px 12px 0; }
-.box-plain .box-head h2 { font-size: 16px; color: #4a4a4a; }
 
 .box-search { display: flex; gap: 4px; }
 .box-search input { font: 13px var(--sans); padding: 3px 6px; border: 1px solid #999; width: 170px; }
@@ -276,19 +273,17 @@ body:has(.wall-page) main { flex: 1; min-height: 0; padding: 0; position: relati
 .night-ago { color: #999; }
 .film-grid .book-small { margin-top: 2px; }
 
-.next-up .next-when { font: bold 13px var(--sans); color: var(--accent); }
-.next-up .next-title { font-size: 18px; font-weight: bold; margin: 2px 0 4px; }
-/* The film's picture beside the count; flow-root keeps it inside the box */
-.next-up { display: flow-root; }
-.next-still {
-  float: right; width: 120px; aspect-ratio: 16 / 9; object-fit: cover;
-  border: 3px double #999; padding: 2px; margin: 0 0 4px 8px;
-}
+/* Next screening: the head is as tall as Coming up's (which holds the search
+   box) and the date bar as tall as its tabs, so the picture's top lines up
+   with the first row of stills beside it */
+.next-box .box-head { min-height: 36px; box-sizing: border-box; }
+.next-bar .next-when { padding: 7px 10px; border-bottom: 3px solid transparent; font-weight: bold; color: var(--accent); }
+.next-up .next-title { font-size: 15px; line-height: 1.25; margin: 8px 0 0; }
 .side-banner { display: block; width: 100%; height: auto; margin: 0 0 16px; }
 .side-banner img { display: block; width: 100%; height: auto; }
-/* A night's own picture (Film.art), unframed, out to the box's sides and bottom */
-.next-art { position: relative; display: block; margin: 8px -12px -12px; }
-.next-art img { display: block; width: 100%; height: auto; }
+/* The picture, out to the box's sides; 3px down, where the stills sit in their frames */
+.next-pic { display: block; margin: 3px -12px 0; }
+.next-pic img { display: block; width: 100%; height: auto; }
 
 .mini-list { list-style: none; margin: 0; padding: 0; }
 .mini-list li + li { margin-top: 8px; }

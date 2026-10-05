@@ -30,4 +30,4 @@ html.idea-dither .scrub-ditherable:hover .scrub-frame > img:not(.scrub-dither) {
 }
 
 /* Next screening's picture: the GIF only (components/NextScreening.tsx) */
-html.idea-dither .next-still { image-rendering: pixelated; }
+html.idea-dither .next-pic img { image-rendering: pixelated; }

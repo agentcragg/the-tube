@@ -15,7 +15,7 @@ html.idea-leader :is(.scrub, .rh-player, .modal-inner, .tv-screen, .tile) {
 /* Basement TV's words while it tunes in sit where the leader would */
 html.idea-leader .tv-screen:has(> p) { background-image: none; }
 /* Small pictures: Next screening's and Just suggested's */
-html.idea-leader :is(.next-still, .mini-list img) {
+html.idea-leader :is(.next-pic img, .mini-list img) {
   background: #9b9b9b var(--leader) center / 48px 36px no-repeat;
   background-clip: content-box;
 }

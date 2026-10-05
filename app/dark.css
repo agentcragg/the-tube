@@ -74,8 +74,6 @@ html.dark .tv-next-thumb { background: var(--l-box); }
 html.dark .section-title {
   background: linear-gradient(var(--box-1), var(--box-2)); border-color: var(--box-edge); color: var(--box-ink);
 }
-html.dark .box-plain { border-color: var(--box-edge); }
-html.dark .box-plain .box-head h2 { color: var(--l-ink2); }
 html.dark .box-tabs { background: var(--panel); border-color: var(--box-edge); }
 html.dark :is(.box-search input, .suggest input) {
   background: var(--l-field); border-color: var(--l-field-edge); color: var(--ink);
@@ -87,7 +85,6 @@ html.dark :is(.box-search button, .action) {
 html.dark .action:hover { background: linear-gradient(var(--tab-1), var(--tab-1)); color: var(--ink); }
 html.dark .screened { background: var(--panel); border-color: var(--box-edge); color: var(--muted); }
 html.dark :is(.mini-list img, .mini-list .tt-thumb) { border-color: var(--frame); }
-html.dark .next-still { border-color: var(--l-faint); }
 html.dark .wp-threads li { border-bottom-color: var(--l-faint); }
 html.dark .wp > summary::before { color: var(--muted); }
 html.dark .rh-card[aria-current="true"] { background: color-mix(in oklab, #ffc, #33311f var(--dn)); }
@@ -126,7 +123,7 @@ html.dark :is(.wp-linking a, .wp-threads a, .rh-site):visited:not(:hover),
 html.dark .rh-card:has(.scrub-watched):not(:hover, :focus-visible) strong { color: var(--l-visited); }
 
 /* In the dark, the pictures are the light in the room */
-html.dark :is(.film-grid a:has(.scrub), .still-frame, .next-still, .mini-list img, .mini-list .tt-thumb, .rh-thumb, .rh-frame, .tile) {
+html.dark :is(.film-grid a:has(.scrub), .still-frame, .next-pic img, .mini-list img, .mini-list .tt-thumb, .rh-thumb, .rh-frame, .tile) {
   box-shadow: 0 0 22px 1px var(--l-glow);
 }
 
