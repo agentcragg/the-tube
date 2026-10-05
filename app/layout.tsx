@@ -2,14 +2,15 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Channel from "@/components/Channel";
 import { EndeavourStrip } from "@/components/endeavour";
+import DarkMode from "@/components/DarkMode";
 import Header from "@/components/Header";
-import HouseLights from "@/components/HouseLights";
 import LookMenu from "@/components/LookMenu";
 import NavSpinner from "@/components/NavSpinner";
 import TabTitle from "@/components/TabTitle";
 import Ticker from "@/components/Ticker";
 import Tune from "@/components/Tune";
 import { films, formatDate, isPast, VENUE } from "@/lib/films";
+import { DARK_SCRIPT } from "@/lib/dark";
 import { LOOK_SCRIPT } from "@/lib/look";
 import "./globals.css";
 import "./watch.css";
@@ -21,7 +22,7 @@ import "./looks.css";
 import "./ideas.css";
 import "./idea-channel.css";
 import "./idea-tune.css";
-import "./idea-lights.css";
+import "./dark.css";
 import "./idea-pumpkin.css";
 import "./idea-fireworks.css";
 import "./idea-cycle.css";
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en-GB" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: LOOK_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: DARK_SCRIPT }} />
       </head>
       <body>
         <div className="page">
@@ -101,7 +103,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Tune />
         <NavSpinner />
         <LookMenu />
-        <HouseLights films={films} />
+        <DarkMode />
         <TabTitle films={films} />
       </body>
     </html>

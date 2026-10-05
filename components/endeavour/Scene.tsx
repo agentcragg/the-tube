@@ -377,7 +377,7 @@ function Basement() {
       <rect className="en-room" x={834} y={G + 2} width={332} height={78} />
       <rect className="en-o en-wall" x={828} y={G} width={314} height={10} />
       {/* The look switch's house lights: the screen's light on the room */}
-      <rect className="x-lights en-screen-glow" x={868} y={143} width={136} height={52} clipPath="url(#en-room)" />
+      <rect className="en-screen-glow" x={868} y={143} width={136} height={52} clipPath="url(#en-room)" />
       {/* Out of tab order: the footer's own link does this for the keyboard.
           Not prefetched, since the footer is on every page. */}
       <Link href="/tv" className="en-tv" tabIndex={-1} prefetch={false}>
