@@ -33,7 +33,7 @@ export const films: Film[] = [
   {
     slug: "southland-tales",
     title: "Southland Tales",
-    art: "/films/southland-tales/art-2.png",
+    art: "/films/southland-tales/art-3.png",
     credit: "Richard Kelly, 2006",
     date: "2027-01-19",
     runtime: 8661, // 2h 24m 21s, BBFC, UK cinema version (the 2020 Arrow cut is 2h 38m)

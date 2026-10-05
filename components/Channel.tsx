@@ -9,7 +9,7 @@ import { useLook } from "@/lib/use-look";
 // arrives, then it clears. It plays over the page once it's there, so it
 // never holds anything up.
 
-const STATIC = "/intro/static.png";
+const STATIC = "/tv-static.png";
 
 export default function Channel() {
   const on = useLook("channel");

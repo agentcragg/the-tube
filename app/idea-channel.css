@@ -4,7 +4,7 @@
    Kept faint: it should register, not interrupt. */
 html.idea-channel .channel-static {
   position: fixed; inset: 0; z-index: 999; pointer-events: none;
-  background: url(/intro/static.png) 0 0 / 320px 320px;
+  background: url(/tv-static.png) 0 0 / 320px 320px;
   image-rendering: pixelated;
   animation: channel-static 180ms step-end forwards;
 }

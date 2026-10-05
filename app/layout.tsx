@@ -4,14 +4,12 @@ import Channel from "@/components/Channel";
 import { EndeavourStrip } from "@/components/endeavour";
 import Header from "@/components/Header";
 import HouseLights from "@/components/HouseLights";
-import Intro from "@/components/Intro";
 import LookMenu from "@/components/LookMenu";
 import NavSpinner from "@/components/NavSpinner";
 import TabTitle from "@/components/TabTitle";
 import Ticker from "@/components/Ticker";
 import Tune from "@/components/Tune";
 import { films, formatDate, isPast, VENUE } from "@/lib/films";
-import { INTRO_PRELOAD } from "@/lib/intro";
 import { LOOK_SCRIPT } from "@/lib/look";
 import "./globals.css";
 import "./watch.css";
@@ -21,7 +19,6 @@ import "./queue.css";
 // The look switch's options go last so they win over the defaults above
 import "./looks.css";
 import "./ideas.css";
-import "./intro.css";
 import "./idea-channel.css";
 import "./idea-tune.css";
 import "./idea-lights.css";
@@ -47,10 +44,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="en-GB" suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: LOOK_SCRIPT }} />
-        <script dangerouslySetInnerHTML={{ __html: INTRO_PRELOAD }} />
       </head>
       <body>
-        <Intro />
         <div className="page">
           <Header />
           <Ticker />

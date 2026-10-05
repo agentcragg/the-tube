@@ -2,7 +2,7 @@
 
 /* Snow in a picture's place while it's on its way */
 html.idea-tune img.tuning {
-  background: #000 url(/intro/static.png) 0 0 / 320px 320px;
+  background: #000 url(/tv-static.png) 0 0 / 320px 320px;
   image-rendering: pixelated;
   animation: tune-snow 320ms step-end infinite;
 }

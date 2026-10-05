@@ -20,17 +20,6 @@ export default async function WhatsOn() {
       <aside className="side">
         <NextScreening next={next} />
 
-        {/* A 468x60 Moviefone banner, loose in the sidebar the way old sites had them */}
-        <a className="side-banner" href="https://www.youtube.com/watch?v=vauf_3nOzH0" target="_blank" rel="noreferrer">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/gifs/grandmother.gif"
-            alt="Would you go see a movie your grandmother recommended?"
-            width={468}
-            height={60}
-          />
-        </a>
-
         <section className="box">
           <div className="box-head">
             <h2>
@@ -82,8 +71,16 @@ export default async function WhatsOn() {
           </div>
         </section>
 
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img className="side-gif" src="/gifs/dog-cinema.gif" alt="Dogs in a cinema, watching the curtains" width={340} height={227} />
+        {/* A 468x60 Moviefone banner, loose in the sidebar the way old sites had them */}
+        <a className="side-banner" href="https://www.youtube.com/watch?v=vauf_3nOzH0" target="_blank" rel="noreferrer">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/gifs/grandmother.gif"
+            alt="Would you go see a movie your grandmother recommended?"
+            width={468}
+            height={60}
+          />
+        </a>
 
         <section className="box">
           <div className="box-head">

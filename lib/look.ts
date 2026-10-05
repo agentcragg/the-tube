@@ -7,7 +7,7 @@
 //   ?look=<example>       one example at a time
 //   ?look=<idea>,<idea>   add ideas; ?look=-<idea> takes one away
 //   ?look=none            no example, ideas kept
-//   ?look=clear,intro     everything off first, then just the ones after it
+//   ?look=clear,lights    everything off first, then just the ones after it
 //   ?today=2027-01-26     the browser behaves as if it's that day in London
 //                         (the time of day stays real); ?today=off
 //
