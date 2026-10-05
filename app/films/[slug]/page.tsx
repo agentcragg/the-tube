@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: PageProps<"/films/[slug]">) {
 }
 
 const PLACEHOLDER_NOTES =
-  "Programme notes go here. They can run as long as they need to: the box shows the first few lines, and the (more) link opens the rest, the way YouTube descriptions used to. This is filler text to show how a longer set of notes sits on the page. It carries on for a while so that the box has something to cut off, and so you can see what happens when it opens. A second paragraph's worth of filler would continue here, then a third.";
+  "This is a test! Programme notes go here. They can run as long as they need to, because the box shows the first few lines, and the (more) link opens the rest, the way YouTube descriptions used to. Can you believe it? This is more filler text to show how a longer set of notes might look. It carries on for a while so that the box has something to cut off, and so I can see what happens when it opens. Doctor Who is a TV show produced by the BBC, but it has now gone out to tender. A second paragraph's worth of filler would continue here, then a third. If you wanted to, the filler text could continue for pages. Pages!";
 
 // A calendar entry for the screening, as a download link
 function icsLink(title: string, date: string) {
