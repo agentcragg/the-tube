@@ -37,13 +37,10 @@ export const WATCH: Record<string, WatchData> = {
     clips: [
       { id: "jzye7gZOlXQ", title: "Sarah Michelle Gellar - Teen Horniness is Not a Crime", by: "paulovictorbrazil", year: "2007", length: "3:12" },
       { id: "Sbovtczv99U", title: "Southland Tales Original Trailer (Richard Kelly, 2006)", by: "Arrow Video", year: "2020", length: "2:27" },
-      { id: "MVSn_Ys98OY", title: "General Teena MacArthur Learns About The Twin", by: "southlandcannes", year: "2008", length: "1:17" },
       { id: "HHWujCeo0Fc", title: "Cannes 2006: l'accueil incroyable (et polémique) de Southland Tales avec The Rock", by: "Le Grand Journal - CANAL+", year: "2026", length: "6:14" },
       { id: "7DhIvovg2pg", title: "Southland Tales Red Carpet at AFI Fest 2007", by: "AFIFEST", year: "2007", length: "2:15" },
-      { id: "rcF5h7gczP0", title: "Southland Tales Q&A with Richard Kelly, moderated by Mark Olsen (Aero, 7 June 2026)", by: "Edward Wang", year: "2026", length: "33:38" },
       { id: "Cs4W1kYYAZU", title: "Southland Tales - This is the Way the World Ends (animated short)", by: "Ignacio Armstrong.", year: "2020", length: "9:12" },
       { id: "gCrSLMF_Gjw", title: "Southland Tales - USIDent TV / Surveilling the Southland", by: "Ignacio Armstrong.", year: "2020", length: "33:47" },
-      { id: "HDW1QhV43ls", title: "Understanding Southland Tales: Book I - Two Roads Diverge", by: "Jeremy Caesar", year: "2022", length: "19:24" },
       { id: "ss4AF91KOFw", title: "Kiss Me Deadly Trailer (1955)", by: "CRITERION", year: "2011", length: "2:31" },
     ],
     links: [
@@ -95,7 +92,6 @@ export const WATCH: Record<string, WatchData> = {
       { id: "HZn0HW9OHD4", title: "History of the Internet - Severe Tire Damage, the Internet's First Live Band", by: "LivingRaccoon", year: "2021", length: "7:00" },
       { id: "lcQNX1tE114", title: "\"Danting\" by David Blair (Danske Piger Viser Alt, 1996)", by: "CrubisTobise", year: "2020", length: "3:36" },
       { id: "i6U0DfI67Dc", title: "Trailer, Season 1: The Telepathic Motion Picture of THE LOST TRIBES", by: "The First Movie On The Internet", year: "2019", length: "3:42" },
-      { id: "wivH8-yvr4E", title: "What on Earth is Wax, or the Discovery of Television Among the Bees (1991)", by: "Style is Substance", year: "2022", length: "30:02" },
     ],
     // The NYT, Wired and Screen Slate pieces are under Sites linking
     links: [
@@ -191,8 +187,6 @@ export const WATCH: Record<string, WatchData> = {
   "a-self-induced-hallucination": {
     clips: [
       { id: "pac1_wEaQ2w", title: "A Self-Induced Hallucination - Fan Trailer", by: "Static Vision", year: "2020", length: "1:00" },
-      { id: "y0AnGfzgh_w", title: "We're All Going to the World's Fair - Official Trailer", by: "Utopia", year: "2022", length: "1:53" },
-      { id: "W8MbCobhPBg", title: "We're All Going to the World's Fair Q&A with Jane Schoenbrun", by: "Film at Lincoln Center", year: "2021", length: "44:50" },
       { id: "NZZL9GYI3Cs", title: "Original Slender Man Posts from Victor Surge (With Bonus Material and Interviews)", by: "Cocytus Media", year: "2026", length: "1:27:04" },
       { id: "Wmhfn3mgWUI", title: "Marble Hornets: Introduction", by: "Marble Hornets", year: "2009", length: "1:59" },
       { id: "JS7GZhNb7eM", title: "EverymanHYBRID #1 - Introduction", by: "EverymanHYBRID", year: "2010", length: "1:32" },
@@ -308,12 +302,8 @@ export const WATCH: Record<string, WatchData> = {
       { id: "bG1QcIGCwFA", title: "Alex Ross Perry and Carlen Altman Take a Trip", by: "BAMorg", year: "2011", length: "2:34" },
       { id: "Kx26gay_w2c", title: "Alex Ross Perry Signs a Pineapple", by: "Filmfreaksreview", year: "2013", length: "0:27" },
       { id: "CAFdEX2XU8U", title: "The Color Wheel: Interview with Alex Ross Perry", by: "Rapporto Confidenziale", year: "2013", length: "18:29" },
-      { id: "x42qh9iMdbQ", title: "Alex Ross Perry, Sean Price Williams & Nick Pinkerton: The Color Wheel Q&A at Roxy Cinema New York", by: "Roxy Cinema New York", year: "2022", length: "38:13" },
-      { id: "Nm_MT-k24bc", title: "Live at Caroline's NYC: Conspiracies, Hipster Bangs and the Homeless", by: "Carlen Altman Official", year: "2013", length: "6:37" },
       { id: "ZJqIOt7UHI0", title: "Impolex Preview", by: "Don Stahl", year: "2009", length: "1:58" },
-      { id: "vBKHsaYDKI4", title: "Impolex (2009) NoBudge Q&A, Part 1, 18 May 2012", by: "AlexRossPerry", year: "2012", length: "4:55" },
       { id: "kcvgiGFTcPE", title: "Listen Up Philip Q&A: Influence of Philip Roth (NYFF52)", by: "Film at Lincoln Center", year: "2014", length: "1:46" },
-      { id: "SiUI5H3SL6M", title: "Alex Ross Perry Audits a Video Store Collection", by: "Beyond Video", year: "2026", length: "10:39" },
     ],
     links: [
       { label: "MUBI Notebook: Ignatiy Vishnevetsky, 'The Lower Depths', the first review of it anywhere", url: "https://mubi.com/en/notebook/posts/the-lower-depths-alex-ross-perry-and-the-color-wheel", year: "2011" },
